@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F53A738A2BB2F829003C899A /* Shader+Copy.metal in Sources */ = {isa = PBXBuildFile; fileRef = F53A73892BB2F829003C899A /* Shader+Copy.metal */; };
-		F53A738C2BB2FC45003C899A /* Shader+Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53A738B2BB2FC45003C899A /* Shader+Copy.swift */; };
+		F53A738A2BB2F829003C899A /* Shader+Echo.metal in Sources */ = {isa = PBXBuildFile; fileRef = F53A73892BB2F829003C899A /* Shader+Echo.metal */; };
+		F53A738C2BB2FC45003C899A /* Shader+Echo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53A738B2BB2FC45003C899A /* Shader+Echo.swift */; };
 		F53A738E2BB300CD003C899A /* Shader+Raytrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53A738D2BB300CD003C899A /* Shader+Raytrace.swift */; };
 		F53A73902BB3015C003C899A /* Shader+Raytrace.metal in Sources */ = {isa = PBXBuildFile; fileRef = F53A738F2BB3015C003C899A /* Shader+Raytrace.metal */; };
 		F53A73942BB30967003C899A /* Shader+Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53A73932BB30967003C899A /* Shader+Math.swift */; };
@@ -21,8 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F53A73892BB2F829003C899A /* Shader+Copy.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shader+Copy.metal"; sourceTree = "<group>"; };
-		F53A738B2BB2FC45003C899A /* Shader+Copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Copy.swift"; sourceTree = "<group>"; };
+		F53A73892BB2F829003C899A /* Shader+Echo.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shader+Echo.metal"; sourceTree = "<group>"; };
+		F53A738B2BB2FC45003C899A /* Shader+Echo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Echo.swift"; sourceTree = "<group>"; };
 		F53A738D2BB300CD003C899A /* Shader+Raytrace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Raytrace.swift"; sourceTree = "<group>"; };
 		F53A738F2BB3015C003C899A /* Shader+Raytrace.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shader+Raytrace.metal"; sourceTree = "<group>"; };
 		F53A73932BB30967003C899A /* Shader+Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Math.swift"; sourceTree = "<group>"; };
@@ -80,8 +80,8 @@
 		F5A782862BB2D27800415220 /* Shader */ = {
 			isa = PBXGroup;
 			children = (
-				F53A73892BB2F829003C899A /* Shader+Copy.metal */,
-				F53A738B2BB2FC45003C899A /* Shader+Copy.swift */,
+				F53A73892BB2F829003C899A /* Shader+Echo.metal */,
+				F53A738B2BB2FC45003C899A /* Shader+Echo.swift */,
 				F53A73932BB30967003C899A /* Shader+Math.swift */,
 				F53A738F2BB3015C003C899A /* Shader+Raytrace.metal */,
 				F53A738D2BB300CD003C899A /* Shader+Raytrace.swift */,
@@ -160,12 +160,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F53A738C2BB2FC45003C899A /* Shader+Copy.swift in Sources */,
+				F53A738C2BB2FC45003C899A /* Shader+Echo.swift in Sources */,
 				F53A738E2BB300CD003C899A /* Shader+Raytrace.swift in Sources */,
 				F5A782852BB2CDDE00415220 /* Engine+View.swift in Sources */,
 				F53A73942BB30967003C899A /* Shader+Math.swift in Sources */,
 				F5A7828A2BB2D3ED00415220 /* Shader+Shader.swift in Sources */,
-				F53A738A2BB2F829003C899A /* Shader+Copy.metal in Sources */,
+				F53A738A2BB2F829003C899A /* Shader+Echo.metal in Sources */,
 				F5A7827F2BB2CCA600415220 /* main.swift in Sources */,
 				F53A73902BB3015C003C899A /* Shader+Raytrace.metal in Sources */,
 				F5A782832BB2CDA700415220 /* Engine+Window.swift in Sources */,

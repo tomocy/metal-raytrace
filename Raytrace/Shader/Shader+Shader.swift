@@ -8,7 +8,7 @@ extension Shader {
     struct Shader {
         var commandQueue: MTLCommandQueue
         var raytrace: Raytrace
-        var copy: Copy
+        var copy: Echo
     }
 }
 

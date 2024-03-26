@@ -2,7 +2,7 @@
 
 #include <metal_stdlib>
 
-namespace Copy {
+namespace Echo {
 struct Raster {
 public:
     struct Positions {
@@ -15,7 +15,7 @@ public:
 };
 }
 
-namespace Copy {
+namespace Echo {
 vertex Raster vertexMain(
     constant float2* vertices [[buffer(0)]],
     const ushort id [[vertex_id]]

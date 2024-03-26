@@ -3,12 +3,12 @@
 import Metal
 
 extension Shader {
-    struct Copy {
+    struct Echo {
         var pipelineStates: PipelineStates
     }
 }
 
-extension Shader.Copy {
+extension Shader.Echo {
     init(device: some MTLDevice, format: MTLPixelFormat) throws {
         pipelineStates = .init(
             render: try PipelineStates.make(with: device, format: format)
@@ -16,7 +16,7 @@ extension Shader.Copy {
     }
 }
 
-extension Shader.Copy {
+extension Shader.Echo {
     func encode(
         to buffer: some MTLCommandBuffer,
         as descriptor: MTLRenderPassDescriptor,
@@ -72,21 +72,21 @@ extension Shader.Copy {
     }
 }
 
-extension Shader.Copy {
+extension Shader.Echo {
     struct PipelineStates {
         var render: any MTLRenderPipelineState
     }
 }
 
-extension Shader.Copy.PipelineStates {
+extension Shader.Echo.PipelineStates {
     static func make(with device: some MTLDevice, format: MTLPixelFormat) throws -> some MTLRenderPipelineState {
         let desc = MTLRenderPipelineDescriptor.init()
 
         do {
             let lib = device.makeDefaultLibrary()
 
-            desc.vertexFunction = lib?.makeFunction(name: "Copy::vertexMain")!
-            desc.fragmentFunction = lib?.makeFunction(name: "Copy::fragmentMain")!
+            desc.vertexFunction = lib?.makeFunction(name: "Echo::vertexMain")!
+            desc.fragmentFunction = lib?.makeFunction(name: "Echo::fragmentMain")!
         }
 
         desc.colorAttachments[0].pixelFormat = format
