@@ -25,6 +25,8 @@ extension Shader.Copy {
         let encoder = buffer.makeRenderCommandEncoder(descriptor: descriptor)!
         defer { encoder.endEncoding() }
 
+        encoder.setRenderPipelineState(pipelineStates.render)
+
         encoder.setFragmentTexture(source, index: 0)
 
         // Fullscreen in NDC
