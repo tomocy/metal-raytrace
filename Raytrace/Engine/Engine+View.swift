@@ -35,6 +35,7 @@ extension Engine.View: MTKViewDelegate {
         guard let shader = shader else { return }
 
         let command = shader.commandQueue.makeCommandBuffer()!
+
         command.commit {
             let count = 128
             let a = generate(for: count)

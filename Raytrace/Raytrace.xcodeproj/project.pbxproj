@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F53A738A2BB2F829003C899A /* Shader+Copy.metal in Sources */ = {isa = PBXBuildFile; fileRef = F53A73892BB2F829003C899A /* Shader+Copy.metal */; };
+		F53A738C2BB2FC45003C899A /* Shader+Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53A738B2BB2FC45003C899A /* Shader+Copy.swift */; };
 		F5A782742BB2CC5000415220 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5A782732BB2CC5000415220 /* Assets.xcassets */; };
 		F5A7827F2BB2CCA600415220 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A7827E2BB2CCA600415220 /* main.swift */; };
 		F5A782812BB2CD2E00415220 /* Engine+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A782802BB2CD2E00415220 /* Engine+App.swift */; };
@@ -17,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F53A73892BB2F829003C899A /* Shader+Copy.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shader+Copy.metal"; sourceTree = "<group>"; };
+		F53A738B2BB2FC45003C899A /* Shader+Copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Copy.swift"; sourceTree = "<group>"; };
 		F5A7826C2BB2CC4E00415220 /* Raytrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Raytrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A782732BB2CC5000415220 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F5A782782BB2CC5000415220 /* Raytrace.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Raytrace.entitlements; sourceTree = "<group>"; };
@@ -72,6 +76,8 @@
 		F5A782862BB2D27800415220 /* Shader */ = {
 			isa = PBXGroup;
 			children = (
+				F53A73892BB2F829003C899A /* Shader+Copy.metal */,
+				F53A738B2BB2FC45003C899A /* Shader+Copy.swift */,
 				F5A782872BB2D28700415220 /* Shader+Shader.metal */,
 				F5A782892BB2D3ED00415220 /* Shader+Shader.swift */,
 			);
@@ -149,8 +155,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5A782882BB2D28700415220 /* Shader+Shader.metal in Sources */,
+				F53A738C2BB2FC45003C899A /* Shader+Copy.swift in Sources */,
 				F5A782852BB2CDDE00415220 /* Engine+View.swift in Sources */,
 				F5A7828A2BB2D3ED00415220 /* Shader+Shader.swift in Sources */,
+				F53A738A2BB2F829003C899A /* Shader+Copy.metal in Sources */,
 				F5A7827F2BB2CCA600415220 /* main.swift in Sources */,
 				F5A782832BB2CDA700415220 /* Engine+Window.swift in Sources */,
 				F5A782812BB2CD2E00415220 /* Engine+App.swift in Sources */,
