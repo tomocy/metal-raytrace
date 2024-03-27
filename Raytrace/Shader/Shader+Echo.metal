@@ -22,7 +22,12 @@ vertex Raster vertexMain(
 ) {
     const auto inNDC = vertices[id];
     const auto inClip = float4(inNDC, 0, 1);
-    const auto inUV = inNDC * 0.5 + 0.5;
+
+    // Map NDC (-1...1, -1...1) to UV (0...1, 1...0).
+    const auto inUV = float2(
+        inNDC.x * 0.5 + 0.5,
+        -inNDC.y * 0.5 + 0.5
+    );
 
     return {
         .position = {

@@ -11,6 +11,7 @@ kernel void compute(
     const float width = 1600;
     const float height = 1200;
 
-    target.write(float4(float(id.x) / width, float(id.y) / height, 0.4, 1), id);
+    const auto coordinate = id;
+    target.write(float4(float(id.x) / width, float(id.y) / height, 0.4, 1), coordinate);
 }
 }
