@@ -32,20 +32,32 @@ extension Engine.View: MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 
     func draw(in view: MTKView) {
-        guard let shader = shader else { return }
+        guard var shader = shader else { return }
 
-        let command = shader.commandQueue.makeCommandBuffer()!
+        do {
+            let command = shader.commandQueue.makeCommandBuffer()!
 
-        command.commit {
-            shader.raytrace.encode(to: command)
+            command.commit {
+                shader.accelerator.encode(to: command)
+            }
 
-            shader.copy.encode(
-                to: command,
-                as: currentRenderPassDescriptor!,
-                source: shader.raytrace.target.texture
-            )
+            command.waitUntilCompleted()
+        }
 
-            command.present(currentDrawable!)
+        do {
+            let command = shader.commandQueue.makeCommandBuffer()!
+
+            command.commit {
+                shader.raytrace.encode(to: command, accelerator: shader.accelerator.target!)
+
+                shader.echo.encode(
+                    to: command,
+                    as: currentRenderPassDescriptor!,
+                    source: shader.raytrace.target.texture
+                )
+
+                command.present(currentDrawable!)
+            }
         }
     }
 }

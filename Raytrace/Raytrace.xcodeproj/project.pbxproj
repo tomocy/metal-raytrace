@@ -18,6 +18,7 @@
 		F5A782832BB2CDA700415220 /* Engine+Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A782822BB2CDA700415220 /* Engine+Window.swift */; };
 		F5A782852BB2CDDE00415220 /* Engine+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A782842BB2CDDE00415220 /* Engine+View.swift */; };
 		F5A7828A2BB2D3ED00415220 /* Shader+Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A782892BB2D3ED00415220 /* Shader+Shader.swift */; };
+		F5E4F7A72BB4615100B21B16 /* Shader+Accelerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		F5A782822BB2CDA700415220 /* Engine+Window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Engine+Window.swift"; sourceTree = "<group>"; };
 		F5A782842BB2CDDE00415220 /* Engine+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Engine+View.swift"; sourceTree = "<group>"; };
 		F5A782892BB2D3ED00415220 /* Shader+Shader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Shader.swift"; sourceTree = "<group>"; };
+		F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Accelerator.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 		F5A782862BB2D27800415220 /* Shader */ = {
 			isa = PBXGroup;
 			children = (
+				F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */,
 				F53A73892BB2F829003C899A /* Shader+Echo.metal */,
 				F53A738B2BB2FC45003C899A /* Shader+Echo.swift */,
 				F53A73932BB30967003C899A /* Shader+Math.swift */,
@@ -165,6 +168,7 @@
 				F5A782852BB2CDDE00415220 /* Engine+View.swift in Sources */,
 				F53A73942BB30967003C899A /* Shader+Math.swift in Sources */,
 				F5A7828A2BB2D3ED00415220 /* Shader+Shader.swift in Sources */,
+				F5E4F7A72BB4615100B21B16 /* Shader+Accelerator.swift in Sources */,
 				F53A738A2BB2F829003C899A /* Shader+Echo.metal in Sources */,
 				F5A7827F2BB2CCA600415220 /* main.swift in Sources */,
 				F53A73902BB3015C003C899A /* Shader+Raytrace.metal in Sources */,

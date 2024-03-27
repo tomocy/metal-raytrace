@@ -41,13 +41,14 @@ extension Shader.Raytrace {
 }
 
 extension Shader.Raytrace {
-    func encode(to buffer: some MTLCommandBuffer) {
+    func encode(to buffer: some MTLCommandBuffer, accelerator: some MTLAccelerationStructure) {
         let encoder = buffer.makeComputeCommandEncoder()!
         defer { encoder.endEncoding() }
 
         encoder.setComputePipelineState(pipelineStates.compute)
 
         encoder.setTexture(target.texture, index: 0)
+        encoder.setAccelerationStructure(accelerator, bufferIndex: 0)
 
         do {
             let threadsPerGroup = MTLSize.init(width: 8, height: 8, depth: 1)

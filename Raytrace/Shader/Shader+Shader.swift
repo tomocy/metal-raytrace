@@ -7,16 +7,20 @@ enum Shader {}
 extension Shader {
     struct Shader {
         var commandQueue: MTLCommandQueue
+
+        var accelerator: Accelerator
         var raytrace: Raytrace
-        var copy: Echo
+        var echo: Echo
     }
 }
 
 extension Shader.Shader {
     init(device: some MTLDevice, size: CGSize, format: MTLPixelFormat) throws {
         commandQueue = device.makeCommandQueue()!
+
+        accelerator = .init()
         raytrace = try .init(device: device, size: size, format: format)
-        copy = try .init(device: device, format: format)
+        echo = try .init(device: device, format: format)
     }
 }
 
