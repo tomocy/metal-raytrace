@@ -15,11 +15,11 @@ extension Shader {
 }
 
 extension Shader.Shader {
-    init(device: some MTLDevice, size: CGSize, format: MTLPixelFormat) throws {
+    init(device: some MTLDevice, resolution: CGSize, format: MTLPixelFormat) throws {
         commandQueue = device.makeCommandQueue()!
 
         accelerator = .init()
-        raytrace = try .init(device: device, size: size, format: format)
+        raytrace = try .init(device: device, resolution: resolution, format: format)
         echo = try .init(device: device, format: format)
     }
 }

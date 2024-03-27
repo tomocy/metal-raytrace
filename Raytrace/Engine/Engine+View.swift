@@ -21,7 +21,7 @@ extension Engine {
 
             delegate = self
 
-            shader = try! .init(device: device, size: drawableSize, format: .bgra8Unorm)
+            shader = try! .init(device: device, resolution: drawableSize, format: .bgra8Unorm)
         }
 
         var shader: Shader.Shader?

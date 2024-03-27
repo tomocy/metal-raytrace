@@ -10,8 +10,8 @@ extension Shader {
 }
 
 extension Shader.Raytrace {
-    init(device: some MTLDevice, size: CGSize, format: MTLPixelFormat) throws {
-        target = Self.makeTarget(with: device, size: size, format: format)!
+    init(device: some MTLDevice, resolution: CGSize, format: MTLPixelFormat) throws {
+        target = Self.makeTarget(with: device, resolution: resolution, format: format)!
 
         pipelineStates = .init(
             compute: try PipelineStates.make(with: device)
@@ -22,12 +22,12 @@ extension Shader.Raytrace {
 extension Shader.Raytrace {
     static func makeTarget(
         with device: some MTLDevice,
-        size: CGSize,
+        resolution: CGSize,
         format: MTLPixelFormat
     ) -> Target? {
         let desc = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: format,
-            width: .init(size.width), height: .init(size.height),
+            width: .init(resolution.width), height: .init(resolution.height),
             mipmapped: false
         )
 
@@ -36,7 +36,7 @@ extension Shader.Raytrace {
 
         guard let texture = device.makeTexture(descriptor: desc) else { return nil }
 
-        return .init(size: size, texture: texture)
+        return .init(resolution: resolution, texture: texture)
     }
 }
 
@@ -55,8 +55,8 @@ extension Shader.Raytrace {
 
             encoder.dispatchThreadgroups(
                 .init(
-                    width: Int(target.size.width).align(by: threadsPerGroup.width) / threadsPerGroup.width,
-                    height: Int(target.size.height).align(by: threadsPerGroup.height) / threadsPerGroup.height,
+                    width: Int(target.resolution.width).align(by: threadsPerGroup.width) / threadsPerGroup.width,
+                    height: Int(target.resolution.height).align(by: threadsPerGroup.height) / threadsPerGroup.height,
                     depth: threadsPerGroup.depth
                 ),
                 threadsPerThreadgroup: threadsPerGroup
@@ -67,7 +67,7 @@ extension Shader.Raytrace {
 
 extension Shader.Raytrace {
     struct Target {
-        var size: CGSize
+        var resolution: CGSize
         var texture: any MTLTexture
     }
 }
