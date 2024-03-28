@@ -1,0 +1,9 @@
+{
+    "clangd.path": "/usr/local/opt/llvm/bin/clangd",
+    "clangd.arguments": [
+        "--enable-config"
+    ],
+    "files.associations": {
+        "*.metal": "cpp"
+    }
+}

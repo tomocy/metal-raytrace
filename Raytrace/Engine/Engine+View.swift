@@ -56,6 +56,8 @@ extension Engine.View: MTKViewDelegate {
                     source: shader.raytrace.target.texture
                 )
 
+                shader.debug.encode(to: command)
+
                 command.present(currentDrawable!)
             }
         }

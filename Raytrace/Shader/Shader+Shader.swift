@@ -11,6 +11,8 @@ extension Shader {
         var accelerator: Accelerator
         var raytrace: Raytrace
         var echo: Echo
+
+        var debug: Debug
     }
 }
 
@@ -21,6 +23,8 @@ extension Shader.Shader {
         accelerator = .init()
         raytrace = try .init(device: device, resolution: resolution, format: format)
         echo = try .init(device: device, format: format)
+
+        debug = .init(device: device)
     }
 }
 

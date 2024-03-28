@@ -1,0 +1,12 @@
+CompileFlags:
+  Compiler: /usr/local/opt/llvm/bin/clang++
+  Add:
+  - -std=c++14
+  - -xc++-header
+  - -ferror-limit=0
+  - -Wall
+  - -Wextra
+  - -pedantic
+
+Diagnostics:
+  UnusedIncludes: Strict

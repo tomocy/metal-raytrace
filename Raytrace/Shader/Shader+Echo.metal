@@ -19,7 +19,8 @@ namespace Echo {
 vertex Raster vertexMain(
     constant float2* vertices [[buffer(0)]],
     const ushort id [[vertex_id]]
-) {
+)
+{
     const auto inNDC = vertices[id];
     const auto inClip = float4(inNDC, 0, 1);
 
@@ -37,7 +38,8 @@ vertex Raster vertexMain(
     };
 }
 
-fragment float4 fragmentMain(const Raster r [[stage_in]], const metal::texture2d<float> source) {
+fragment float4 fragmentMain(const Raster r [[stage_in]], const metal::texture2d<float> source)
+{
     constexpr auto sampler = metal::sampler(
         metal::min_filter::nearest,
         metal::mag_filter::nearest,

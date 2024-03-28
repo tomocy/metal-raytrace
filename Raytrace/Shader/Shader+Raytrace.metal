@@ -7,7 +7,8 @@ kernel void compute(
     const uint2 id [[thread_position_in_grid]],
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
     const metal::raytracing::primitive_acceleration_structure accelerator [[buffer(0)]]
-) {
+)
+{
     namespace raytracing = metal::raytracing;
 
     // We know size of the target texture for now.
@@ -22,10 +23,7 @@ kernel void compute(
     // then UV to NDC (-1...1, 1...-1).
     const auto inScreen = id;
     const auto inUV = float2(inScreen) / float2(width, height);
-    const auto inNDC = float2(
-        inUV.x * 2 - 1,
-        inUV.y * -2 + 1
-    );
+    const auto inNDC = float2(inUV.x * 2 - 1, inUV.y * -2 + 1);
 
     raytracing::ray ray = {};
     ray.origin = float3(0, 0, -1); // We know the camera position for now.
