@@ -3,7 +3,7 @@
 #include <metal_stdlib>
 
 namespace Raytrace {
-kernel void compute(
+kernel void kernelMain(
     const uint2 id [[thread_position_in_grid]],
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
     const metal::raytracing::primitive_acceleration_structure accelerator [[buffer(0)]]

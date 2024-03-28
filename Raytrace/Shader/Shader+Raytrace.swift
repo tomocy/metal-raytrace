@@ -84,7 +84,7 @@ extension Shader.Raytrace.PipelineStates {
         let lib = device.makeDefaultLibrary()!
 
         return try device.makeComputePipelineState(
-            function: lib.makeFunction(name: "Raytrace::compute")!
+            function: lib.makeFunction(name: "Raytrace::kernelMain")!
         )
     }
 }
