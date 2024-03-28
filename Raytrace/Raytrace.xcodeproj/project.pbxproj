@@ -20,6 +20,8 @@
 		F5A7828A2BB2D3ED00415220 /* Shader+Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A782892BB2D3ED00415220 /* Shader+Shader.swift */; };
 		F5E4F7A72BB4615100B21B16 /* Shader+Accelerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */; };
 		F5E4F7AB2BB52E4900B21B16 /* Shader+SIMD.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7AA2BB52E4900B21B16 /* Shader+SIMD.swift */; };
+		F5E4F7AD2BB52EEC00B21B16 /* Shader+Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7AC2BB52EEC00B21B16 /* Shader+Mesh.swift */; };
+		F5E4F7AF2BB52FEB00B21B16 /* Shader+Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7AE2BB52FEB00B21B16 /* Shader+Array.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,8 @@
 		F5A782892BB2D3ED00415220 /* Shader+Shader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Shader.swift"; sourceTree = "<group>"; };
 		F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Accelerator.swift"; sourceTree = "<group>"; };
 		F5E4F7AA2BB52E4900B21B16 /* Shader+SIMD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+SIMD.swift"; sourceTree = "<group>"; };
+		F5E4F7AC2BB52EEC00B21B16 /* Shader+Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Mesh.swift"; sourceTree = "<group>"; };
+		F5E4F7AE2BB52FEB00B21B16 /* Shader+Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Array.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,9 +89,11 @@
 			isa = PBXGroup;
 			children = (
 				F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */,
+				F5E4F7AE2BB52FEB00B21B16 /* Shader+Array.swift */,
 				F53A73892BB2F829003C899A /* Shader+Echo.metal */,
 				F53A738B2BB2FC45003C899A /* Shader+Echo.swift */,
 				F53A73932BB30967003C899A /* Shader+Math.swift */,
+				F5E4F7AC2BB52EEC00B21B16 /* Shader+Mesh.swift */,
 				F53A738F2BB3015C003C899A /* Shader+Raytrace.metal */,
 				F53A738D2BB300CD003C899A /* Shader+Raytrace.swift */,
 				F5A782892BB2D3ED00415220 /* Shader+Shader.swift */,
@@ -173,10 +179,12 @@
 				F53A73942BB30967003C899A /* Shader+Math.swift in Sources */,
 				F5A7828A2BB2D3ED00415220 /* Shader+Shader.swift in Sources */,
 				F5E4F7A72BB4615100B21B16 /* Shader+Accelerator.swift in Sources */,
+				F5E4F7AD2BB52EEC00B21B16 /* Shader+Mesh.swift in Sources */,
 				F53A738A2BB2F829003C899A /* Shader+Echo.metal in Sources */,
 				F5A7827F2BB2CCA600415220 /* main.swift in Sources */,
 				F53A73902BB3015C003C899A /* Shader+Raytrace.metal in Sources */,
 				F5A782832BB2CDA700415220 /* Engine+Window.swift in Sources */,
+				F5E4F7AF2BB52FEB00B21B16 /* Shader+Array.swift in Sources */,
 				F5A782812BB2CD2E00415220 /* Engine+App.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

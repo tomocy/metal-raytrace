@@ -18,7 +18,7 @@ extension Shader.Accelerator {
         let desc = ({
             let desc = MTLPrimitiveAccelerationStructureDescriptor.init()
 
-            desc.geometryDescriptors = [describe(with: encoder.device)]
+            desc.geometryDescriptors = describe(with: encoder.device)
 
             return desc
         }) ()
@@ -37,50 +37,42 @@ extension Shader.Accelerator {
         )
     }
 
-    private func describe(with device: some MTLDevice) -> MTLAccelerationStructureGeometryDescriptor {
-        typealias Vertex = SIMD3<Float>
+    private func describe(with device: some MTLDevice) -> [MTLAccelerationStructureGeometryDescriptor] {
+        let mesh = try! MTKMesh.useOnlyPositions(
+            of: try! .init(
+                mesh: .init(
+                    planeWithExtent: .init(1, 1, 0),
+                    segments: .init(1, 1),
+                    geometryType: .triangles,
+                    allocator: MTKMeshBufferAllocator.init(device: device)
+                ),
+                device: device
+            ),
+            with: device
+        )
 
-        let desc = MTLAccelerationStructureTriangleGeometryDescriptor.init()
+        var descs: [MTLAccelerationStructureGeometryDescriptor] = []
 
-        do {
-            let vertices: [Vertex] = [
-                .init(-0.3, 0.3, 0),
-                .init(0.3, 0.3, 0),
-                .init(0.3, -0.3, 0),
-                .init(-0.3, -0.3, 0),
-            ]
+        mesh.submeshes.forEach { submesh in
+            assert(submesh.primitiveType == .triangle)
 
-            desc.vertexFormat = .float3
-            desc.vertexStride = MemoryLayout<Vertex>.stride
+            let desc = MTLAccelerationStructureTriangleGeometryDescriptor.init()
 
-            vertices.withUnsafeBytes { bytes in
-                desc.vertexBuffer = device.makeBuffer(
-                    bytes: bytes.baseAddress!,
-                    length: bytes.count,
-                    options: .storageModeShared
-                )
+            do {
+                desc.vertexFormat = .float3
+                desc.vertexStride = MemoryLayout<SIMD3<Float>.Packed>.stride
+                desc.vertexBuffer = mesh.vertexBuffers.first!.buffer
             }
+            do {
+                desc.indexType = .uint16
+                desc.indexBuffer = mesh.submeshes.first!.indexBuffer.buffer
+                desc.triangleCount = mesh.submeshes.first!.indexCount / 3
+            }
+
+            descs.append(desc)
         }
 
-        do {
-            let indices: [UInt16] = [
-                0, 1, 2,
-                2, 3, 0,
-            ]
-
-            desc.triangleCount = indices.count / 3
-            desc.indexType = .uint16
-
-            indices.withUnsafeBytes { bytes in
-                desc.indexBuffer = device.makeBuffer(
-                    bytes: bytes.baseAddress!,
-                    length: bytes.count,
-                    options: .storageModeShared
-                )
-            }
-        }
-
-        return desc
+        return descs
     }
 }
 

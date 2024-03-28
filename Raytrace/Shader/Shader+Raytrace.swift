@@ -1,5 +1,6 @@
 // tomocy
 
+import ModelIO
 import Metal
 
 extension Shader {
