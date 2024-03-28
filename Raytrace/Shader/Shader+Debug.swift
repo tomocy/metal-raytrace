@@ -58,7 +58,11 @@ extension Shader.Debug {
                 )
             }
 
-            let projection = Shader.Transform.identity
+            let projection = Shader.Transform.orthogonal(
+                top: 1, bottom: -1,
+                left: -1, right: 1,
+                near: 0, far: 10
+            )
             let view = Shader.Transform.translate(
                 .init(0, 0, 2)
             )
