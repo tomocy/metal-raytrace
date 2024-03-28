@@ -22,9 +22,22 @@ extension Engine {
             delegate = self
 
             shader = try! .init(device: device, resolution: drawableSize, format: .bgra8Unorm)
+
+            mesh = try! MTKMesh.useOnlyPositions(
+                of: try! MTKMesh.load(
+                    url: Bundle.main.url(
+                        forResource: "Spot",
+                        withExtension: "obj",
+                        subdirectory: "Farm/Spot"
+                    )!,
+                    with: device
+                ).first!,
+                with: device
+            )
         }
 
         var shader: Shader.Shader?
+        var mesh: MTKMesh?
     }
 }
 
@@ -38,7 +51,7 @@ extension Engine.View: MTKViewDelegate {
             let command = shader.commandQueue.makeCommandBuffer()!
 
             command.commit {
-                shader.accelerator.encode(to: command)
+                shader.accelerator.encode(mesh!, to: command)
             }
 
             command.waitUntilCompleted()
@@ -56,7 +69,7 @@ extension Engine.View: MTKViewDelegate {
                     source: shader.raytrace.target.texture
                 )
 
-                shader.debug.encode(to: command)
+                shader.debug.encode(mesh!, to: command)
 
                 command.present(currentDrawable!)
             }

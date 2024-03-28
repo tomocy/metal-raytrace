@@ -20,6 +20,8 @@
 		F5A7828A2BB2D3ED00415220 /* Shader+Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A782892BB2D3ED00415220 /* Shader+Shader.swift */; };
 		F5B35B502BB54EF500651A54 /* Shader+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B35B4F2BB54EF500651A54 /* Shader+Debug.swift */; };
 		F5B35B522BB54FEA00651A54 /* Shader+Debug.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5B35B512BB54FEA00651A54 /* Shader+Debug.metal */; };
+		F5B35B572BB5560200651A54 /* Farm in Resources */ = {isa = PBXBuildFile; fileRef = F5B35B562BB5560200651A54 /* Farm */; };
+		F5B35B5D2BB5660700651A54 /* Shader+Transform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B35B5C2BB5660700651A54 /* Shader+Transform.swift */; };
 		F5E4F7A72BB4615100B21B16 /* Shader+Accelerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */; };
 		F5E4F7AB2BB52E4900B21B16 /* Shader+SIMD.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7AA2BB52E4900B21B16 /* Shader+SIMD.swift */; };
 		F5E4F7AD2BB52EEC00B21B16 /* Shader+Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7AC2BB52EEC00B21B16 /* Shader+Mesh.swift */; };
@@ -42,6 +44,8 @@
 		F5A782892BB2D3ED00415220 /* Shader+Shader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Shader.swift"; sourceTree = "<group>"; };
 		F5B35B4F2BB54EF500651A54 /* Shader+Debug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Debug.swift"; sourceTree = "<group>"; };
 		F5B35B512BB54FEA00651A54 /* Shader+Debug.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shader+Debug.metal"; sourceTree = "<group>"; };
+		F5B35B562BB5560200651A54 /* Farm */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Farm; sourceTree = "<group>"; };
+		F5B35B5C2BB5660700651A54 /* Shader+Transform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Transform.swift"; sourceTree = "<group>"; };
 		F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Accelerator.swift"; sourceTree = "<group>"; };
 		F5E4F7AA2BB52E4900B21B16 /* Shader+SIMD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+SIMD.swift"; sourceTree = "<group>"; };
 		F5E4F7AC2BB52EEC00B21B16 /* Shader+Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Mesh.swift"; sourceTree = "<group>"; };
@@ -62,6 +66,7 @@
 		F5A782632BB2CC4D00415220 = {
 			isa = PBXGroup;
 			children = (
+				F5B35B532BB555A800651A54 /* Resources */,
 				F5A7826E2BB2CC4E00415220 /* Engine */,
 				F5A7826D2BB2CC4E00415220 /* Products */,
 				F5A782862BB2D27800415220 /* Shader */,
@@ -104,8 +109,17 @@
 				F53A738D2BB300CD003C899A /* Shader+Raytrace.swift */,
 				F5A782892BB2D3ED00415220 /* Shader+Shader.swift */,
 				F5E4F7AA2BB52E4900B21B16 /* Shader+SIMD.swift */,
+				F5B35B5C2BB5660700651A54 /* Shader+Transform.swift */,
 			);
 			path = Shader;
+			sourceTree = "<group>";
+		};
+		F5B35B532BB555A800651A54 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F5B35B562BB5560200651A54 /* Farm */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,6 +181,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5B35B572BB5560200651A54 /* Farm in Resources */,
 				F5A782742BB2CC5000415220 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -192,6 +207,7 @@
 				F5A782832BB2CDA700415220 /* Engine+Window.swift in Sources */,
 				F5B35B522BB54FEA00651A54 /* Shader+Debug.metal in Sources */,
 				F5E4F7AF2BB52FEB00B21B16 /* Shader+Array.swift in Sources */,
+				F5B35B5D2BB5660700651A54 /* Shader+Transform.swift in Sources */,
 				F5B35B502BB54EF500651A54 /* Shader+Debug.swift in Sources */,
 				F5A782812BB2CD2E00415220 /* Engine+App.swift in Sources */,
 			);

@@ -11,14 +11,14 @@ extension Shader {
 }
 
 extension Shader.Accelerator {
-    mutating func encode(to buffer: some MTLCommandBuffer) {
+    mutating func encode(_ mesh: MTKMesh, to buffer: some MTLCommandBuffer) {
         let encoder = buffer.makeAccelerationStructureCommandEncoder()!
         defer { encoder.endEncoding() }
 
         let desc = ({
             let desc = MTLPrimitiveAccelerationStructureDescriptor.init()
 
-            desc.geometryDescriptors = describe(with: encoder.device)
+            desc.geometryDescriptors = describe(mesh, with: encoder.device)
 
             return desc
         }) ()
@@ -37,20 +37,7 @@ extension Shader.Accelerator {
         )
     }
 
-    private func describe(with device: some MTLDevice) -> [MTLAccelerationStructureGeometryDescriptor] {
-        let mesh = try! MTKMesh.useOnlyPositions(
-            of: try! .init(
-                mesh: .init(
-                    planeWithExtent: .init(1, 1, 0),
-                    segments: .init(1, 1),
-                    geometryType: .triangles,
-                    allocator: MTKMeshBufferAllocator.init(device: device)
-                ),
-                device: device
-            ),
-            with: device
-        )
-
+    private func describe(_ mesh: MTKMesh, with device: some MTLDevice) -> [MTLAccelerationStructureGeometryDescriptor] {
         var descs: [MTLAccelerationStructureGeometryDescriptor] = []
 
         mesh.submeshes.forEach { submesh in
@@ -59,14 +46,16 @@ extension Shader.Accelerator {
             let desc = MTLAccelerationStructureTriangleGeometryDescriptor.init()
 
             do {
-                desc.vertexFormat = .float3
-                desc.vertexStride = MemoryLayout<SIMD3<Float>.Packed>.stride
-                desc.vertexBuffer = mesh.vertexBuffers.first!.buffer
+                // We assume that
+                // the vertices is laid out in MTKMesh.Vertex.OnlyPositions.
+                MTKMesh.Vertex.OnlyPositions.describe(to: desc)
+
+                desc.vertexBuffer = submesh.mesh!.vertexBuffers.first!.buffer
             }
             do {
-                desc.indexType = .uint16
-                desc.indexBuffer = mesh.submeshes.first!.indexBuffer.buffer
-                desc.triangleCount = mesh.submeshes.first!.indexCount / 3
+                desc.indexType = submesh.indexType
+                desc.indexBuffer = submesh.indexBuffer.buffer
+                desc.triangleCount = submesh.indexCount / 3
             }
 
             descs.append(desc)

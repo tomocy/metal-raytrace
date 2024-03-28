@@ -1,8 +1,24 @@
 // tomocy
 
+import Foundation
 import ModelIO
 import Metal
 import MetalKit
+
+extension MTKMesh {
+    static func load(url: URL, with device: some MTLDevice) throws -> [MTKMesh] {
+        let asset = MDLAsset.init(
+            url: url,
+            vertexDescriptor: Vertex.Default.describe(),
+            bufferAllocator: MTKMeshBufferAllocator.init(device: device)
+        )
+
+        let raws = asset.childObjects(of: MDLMesh.self) as! [MDLMesh]
+        return try raws.map {
+            try .init(mesh: $0, device: device)
+        }
+    }
+}
 
 extension MTKMesh {
     static func useOnlyPositions(of mesh: MTKMesh, with device: some MTLDevice) throws -> Self {
@@ -101,7 +117,51 @@ extension MTKMesh.Vertex {
     }
 }
 
-extension MTKMesh.Vertex.OnlyPositions {
+extension MTKMesh.Vertex {
+    static func describe(
+        to attribute: MDLVertexAttribute,
+        name: String,
+        format: MDLVertexFormat,
+        offset: Int,
+        bufferIndex: Int
+    ) -> Int {
+        attribute.name = name
+        attribute.format = format
+        attribute.offset = offset
+        attribute.bufferIndex = bufferIndex
+
+        switch format {
+        case .float2:
+            return MemoryLayout<SIMD2<Float>>.stride
+        case .float3:
+            return MemoryLayout<SIMD3<Float>.Packed>.stride
+        default:
+            return 0
+        }
+    }
+
+    static func describe(
+        to descriptor: MTLVertexAttributeDescriptor,
+        format: MTLVertexFormat,
+        offset: Int,
+        bufferIndex: Int
+    ) -> Int {
+        descriptor.format = format
+        descriptor.offset = offset
+        descriptor.bufferIndex = bufferIndex
+
+        switch format {
+        case .float2:
+            return MemoryLayout<SIMD2<Float>>.stride
+        case .float3:
+            return MemoryLayout<SIMD3<Float>.Packed>.stride
+        default:
+            return 0
+        }
+    }
+}
+
+extension MTKMesh.Vertex.Default {
     static func describe() -> MDLVertexDescriptor {
         let desc = MDLVertexDescriptor.init()
 
@@ -110,11 +170,29 @@ extension MTKMesh.Vertex.OnlyPositions {
         do {
             let attrs = desc.defaultAttributes!
 
-            attrs[0].name = MDLVertexAttributePosition
-            attrs[0].format = .float3
-            attrs[0].offset = stride
-            attrs[0].bufferIndex = 0
-            stride += MemoryLayout<SIMD3<Float>.Packed>.stride
+            stride += MTKMesh.Vertex.describe(
+                to: attrs[0],
+                name: MDLVertexAttributePosition,
+                format: .float3,
+                offset: stride,
+                bufferIndex: 0
+            )
+
+            stride += MTKMesh.Vertex.describe(
+                to: attrs[1],
+                name: MDLVertexAttributeNormal,
+                format: .float3,
+                offset: stride,
+                bufferIndex: 0
+            )
+
+            stride += MTKMesh.Vertex.describe(
+                to: attrs[2],
+                name: MDLVertexAttributeTextureCoordinate,
+                format: .float2,
+                offset: stride,
+                bufferIndex: 0
+            )
         }
 
         do {
@@ -125,5 +203,101 @@ extension MTKMesh.Vertex.OnlyPositions {
 
         return desc
     }
+
+    static func describe() -> MTLVertexDescriptor {
+        let desc = MTLVertexDescriptor.init()
+
+        var stride = 0
+
+        do {
+            let attrs = desc.attributes
+
+            stride += MTKMesh.Vertex.describe(
+                to: attrs[0],
+                format: .float3,
+                offset: stride,
+                bufferIndex: 0
+            )
+
+            stride += MTKMesh.Vertex.describe(
+                to: attrs[1],
+                format: .float3,
+                offset: stride,
+                bufferIndex: 0
+            )
+
+            stride += MTKMesh.Vertex.describe(
+                to: attrs[2],
+                format: .float2,
+                offset: stride,
+                bufferIndex: 0
+            )
+        }
+
+        do {
+            let layouts = desc.layouts
+
+            layouts[0].stride = stride
+        }
+
+        return desc
+    }
 }
 
+extension MTKMesh.Vertex.OnlyPositions {
+    static func describe() -> MDLVertexDescriptor {
+        let desc = MDLVertexDescriptor.init()
+
+        var stride = 0
+
+        do {
+            let attrs = desc.defaultAttributes!
+
+            stride += MTKMesh.Vertex.describe(
+                to: attrs[0],
+                name: MDLVertexAttributePosition,
+                format: .float3,
+                offset: stride,
+                bufferIndex: 0
+            )
+        }
+
+        do {
+            let layouts = desc.defaultLayouts!
+
+            layouts[0].stride = stride
+        }
+
+        return desc
+    }
+
+    static func describe() -> MTLVertexDescriptor {
+        let desc = MTLVertexDescriptor.init()
+
+        var stride = 0
+
+        do {
+            let attrs = desc.attributes
+
+            stride += MTKMesh.Vertex.describe(
+                to: attrs[0],
+                format: .float3,
+                offset: stride,
+                bufferIndex: 0
+            )
+        }
+
+        do {
+            let layouts = desc.layouts
+
+            layouts[0].stride = stride
+        }
+
+        return desc
+    }
+
+    static func describe(to descriptor: MTLAccelerationStructureTriangleGeometryDescriptor) {
+        descriptor.vertexFormat = .float3
+        descriptor.vertexStride = MemoryLayout<Self>.stride
+    }
+}

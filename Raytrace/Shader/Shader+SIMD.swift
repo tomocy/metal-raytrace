@@ -1,5 +1,6 @@
 // tomocy
 
+import simd
 import Metal
 
 extension SIMD3<Float> {
@@ -22,4 +23,8 @@ extension SIMD3<Float>.Packed {
             .init(elements: (other.x, other.y, other.z))
         )
     }
+}
+
+extension float4x4 {
+    static var identity: Self { .init(1) }
 }

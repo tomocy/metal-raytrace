@@ -38,7 +38,7 @@ extension Shader.Debug {
 }
 
 extension Shader.Debug {
-    func encode(to buffer: MTLCommandBuffer) {
+    func encode(_ mesh: MTKMesh, to buffer: MTLCommandBuffer) {
         let encoder = buffer.makeRenderCommandEncoder(
             descriptor: describe()
         )!
@@ -50,24 +50,28 @@ extension Shader.Debug {
         encoder.setDepthStencilState(pipelineStates.depthStencil)
 
         do {
-            let mesh = try! MTKMesh.useOnlyPositions(
-                of: try! MTKMesh.init(
-                    mesh: .init(
-                        planeWithExtent: .init(1, 1, 0),
-                        segments: .init(1, 1),
-                        geometryType: .triangles,
-                        allocator: MTKMeshBufferAllocator.init(device: encoder.device)
-                    ),
-                    device: encoder.device
-                ),
-                with: encoder.device
-            )
-
             mesh.vertexBuffers.forEach { buffer in
                 encoder.setVertexBuffer(
                     buffer.buffer,
-                    offset: buffer.offset, index: 0
+                    offset: buffer.offset,
+                    index: 0
                 )
+            }
+
+            let projection = Shader.Transform.identity
+            let view = Shader.Transform.translate(
+                .init(0, 0, 2)
+            )
+            let matrix = projection * view
+
+            withUnsafeBytes(of: matrix) { bytes in
+                let buffer = encoder.device.makeBuffer(
+                    bytes: bytes.baseAddress!,
+                    length: bytes.count,
+                    options: .storageModeShared
+                )
+
+                encoder.setVertexBuffer(buffer, offset: 0, index: 1)
             }
 
             mesh.submeshes.forEach { submesh in
@@ -89,9 +93,10 @@ extension Shader.Debug {
 
         attach.texture = target
 
-        attach.loadAction = .clear
-        attach.clearDepth = 1
-
+        do {
+            attach.loadAction = .clear
+            attach.clearDepth = 1
+        }
         attach.storeAction = .store
 
         return desc
@@ -113,51 +118,14 @@ extension Shader.Debug.PipelineStates {
 
         do {
             let lib = device.makeDefaultLibrary()!
+
             desc.vertexFunction = lib.makeFunction(name: "Debug::vertexMain")!
         }
 
-        desc.vertexDescriptor = describe()
+        desc.vertexDescriptor = MTKMesh.Vertex.OnlyPositions.describe()
 
         return try device.makeRenderPipelineState(descriptor: desc)
     }
-
-    static func describe() -> MTLVertexDescriptor {
-            let desc = MTLVertexDescriptor.init()
-
-            var stride = 0
-
-            // float3 position
-            stride += describe(
-                to: desc.attributes[0],
-                format: .float3,
-                offset: stride,
-                bufferIndex: 0
-            )
-
-            desc.layouts[0].stride = stride
-
-            return desc
-        }
-
-        static func describe(
-            to descriptor: MTLVertexAttributeDescriptor,
-            format: MTLVertexFormat,
-            offset: Int,
-            bufferIndex: Int
-        ) -> Int {
-            descriptor.format = format
-            descriptor.offset = offset
-            descriptor.bufferIndex = bufferIndex
-
-            switch format {
-            case .float2:
-                return MemoryLayout<SIMD2<Float>>.stride
-            case .float3:
-                return MemoryLayout<SIMD3<Float>.Packed>.stride
-            default:
-                return 0
-            }
-        }
 }
 
 extension Shader.Debug.PipelineStates {
