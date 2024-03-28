@@ -23,17 +23,14 @@ extension Engine {
 
             shader = try! .init(device: device, resolution: drawableSize, format: .bgra8Unorm)
 
-            mesh = try! MTKMesh.useOnlyPositions(
-                of: try! MTKMesh.load(
-                    url: Bundle.main.url(
-                        forResource: "Spot",
-                        withExtension: "obj",
-                        subdirectory: "Farm/Spot"
-                    )!,
-                    with: device
-                ).first!,
+            mesh = try! MTKMesh.load(
+                url: Bundle.main.url(
+                    forResource: "Spot",
+                    withExtension: "obj",
+                    subdirectory: "Farm/Spot"
+                )!,
                 with: device
-            )
+            ).first!.toNonInterleaved(with: device)
         }
 
         var shader: Shader.Shader?

@@ -9,7 +9,7 @@ extension MTKMesh {
     static func load(url: URL, with device: some MTLDevice) throws -> [MTKMesh] {
         let asset = MDLAsset.init(
             url: url,
-            vertexDescriptor: Vertex.Default.describe(),
+            vertexDescriptor: Vertex.Interleaved.describe(),
             bufferAllocator: MTKMeshBufferAllocator.init(device: device)
         )
 
@@ -21,32 +21,69 @@ extension MTKMesh {
 }
 
 extension MTKMesh {
-    static func useOnlyPositions(of mesh: MTKMesh, with device: some MTLDevice) throws -> Self {
-        // Support only Vertex.Default layout.
+    func toNonInterleaved(with device: some MTLDevice) throws -> Self {
+        // Assume that
+        // the given mesh uses interleaved layout.
+        assert(
+            vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Vertex.Interleaved>.stride
+        )
 
-        let sourceBuffer = mesh.vertexBuffers.first!.buffer
+        let sourceBuffer = vertexBuffers.first!.buffer
 
-        let count = sourceBuffer.length / mesh.vertexDescriptor.defaultLayouts!.first!.stride
+        let count = sourceBuffer.length / vertexDescriptor.defaultLayouts!.first!.stride
 
-        let allocator = MTKMeshBufferAllocator.init(device: device)
-        let vertices: [Vertex.OnlyPositions] = (
-            sourceBuffer.contents().toArray(count: count) as [Vertex.Default]
-        ).map {
-            .init(position: $0.position)
+        let vertices: (
+            positions: [SIMD3<Float>.Packed],
+            normals: [SIMD3<Float>.Packed],
+            textureCoordinates: [SIMD2<Float>]
+        ) = (
+            sourceBuffer.contents().toArray(count: count) as [Vertex.Interleaved]
+        ).reduce(
+            into: ([], [], [])
+        ) { result, v in
+            result.positions.append(v.position)
+            result.normals.append(v.normal)
+            result.textureCoordinates.append(v.textureCoordinate)
         }
-        let buffer = vertices.withUnsafeBytes { bytes in
-            allocator.newBuffer(
-                with: .init(bytes: bytes.baseAddress!, count: bytes.count),
-                type: .vertex
-            )
-        }
+
+        let buffers: (
+            positions: any MDLMeshBuffer,
+            normals: any MDLMeshBuffer,
+            textureCoordinates: any MDLMeshBuffer
+        ) = ({
+            let allocator = MTKMeshBufferAllocator.init(device: device)
+
+            let positions = vertices.positions.withUnsafeBytes { bytes in
+                allocator.newBuffer(
+                    with: .init(bytes: bytes.baseAddress!, count: bytes.count),
+                    type: .vertex
+                )
+            }
+
+            let normals = vertices.normals.withUnsafeBytes { bytes in
+                allocator.newBuffer(
+                    with: .init(bytes: bytes.baseAddress!, count: bytes.count),
+                    type: .vertex
+                )
+            }
+
+            let textureCoordinates = vertices.textureCoordinates.withUnsafeBytes { bytes in
+                allocator.newBuffer(
+                    with: .init(bytes: bytes.baseAddress!, count: bytes.count),
+                    type: .vertex
+                )
+            }
+
+            return (positions, normals, textureCoordinates)
+        }) ()
+
 
         return try .init(
             mesh: .init(
-                vertexBuffer: buffer,
+                vertexBuffers: [buffers.positions, buffers.normals, buffers.textureCoordinates],
                 vertexCount: count,
-                descriptor: Vertex.OnlyPositions.describe(),
-                submeshes: mesh.submeshes.map { .init($0) }
+                descriptor: Vertex.NonInterleaved.describe(),
+                submeshes: submeshes.map { .init($0) }
             ),
             device: device
         )
@@ -106,15 +143,13 @@ extension MTKMesh {
 }
 
 extension MTKMesh.Vertex {
-    struct Default {
+    struct Interleaved {
         var position: SIMD3<Float>.Packed
         var normal: SIMD3<Float>.Packed
         var textureCoordinate: SIMD2<Float>
     }
 
-    struct OnlyPositions {
-        var position: SIMD3<Float>.Packed
-    }
+    struct NonInterleaved {}
 }
 
 extension MTKMesh.Vertex {
@@ -161,7 +196,7 @@ extension MTKMesh.Vertex {
     }
 }
 
-extension MTKMesh.Vertex.Default {
+extension MTKMesh.Vertex.Interleaved {
     static func describe() -> MDLVertexDescriptor {
         let desc = MDLVertexDescriptor.init()
 
@@ -244,28 +279,45 @@ extension MTKMesh.Vertex.Default {
     }
 }
 
-extension MTKMesh.Vertex.OnlyPositions {
+extension MTKMesh.Vertex.NonInterleaved {
     static func describe() -> MDLVertexDescriptor {
         let desc = MDLVertexDescriptor.init()
 
-        var stride = 0
+        let attrs = desc.defaultAttributes!
+        let layouts = desc.defaultLayouts!
 
         do {
-            let attrs = desc.defaultAttributes!
-
-            stride += MTKMesh.Vertex.describe(
+            let stride = MTKMesh.Vertex.describe(
                 to: attrs[0],
                 name: MDLVertexAttributePosition,
                 format: .float3,
-                offset: stride,
+                offset: 0,
                 bufferIndex: 0
             )
-        }
-
-        do {
-            let layouts = desc.defaultLayouts!
 
             layouts[0].stride = stride
+        }
+        do {
+            let stride = MTKMesh.Vertex.describe(
+                to: attrs[1],
+                name: MDLVertexAttributeNormal,
+                format: .float3,
+                offset: 0,
+                bufferIndex: 1
+            )
+
+            layouts[1].stride = stride
+        }
+        do {
+            let stride = MTKMesh.Vertex.describe(
+                to: attrs[2],
+                name: MDLVertexAttributeTextureCoordinate,
+                format: .float2,
+                offset: 0,
+                bufferIndex: 2
+            )
+
+            layouts[2].stride = stride
         }
 
         return desc
@@ -274,30 +326,51 @@ extension MTKMesh.Vertex.OnlyPositions {
     static func describe() -> MTLVertexDescriptor {
         let desc = MTLVertexDescriptor.init()
 
-        var stride = 0
+        let attrs = desc.attributes
+        let layouts = desc.layouts
 
         do {
-            let attrs = desc.attributes
-
-            stride += MTKMesh.Vertex.describe(
+            let stride = MTKMesh.Vertex.describe(
                 to: attrs[0],
                 format: .float3,
-                offset: stride,
+                offset: 0,
                 bufferIndex: 0
             )
-        }
-
-        do {
-            let layouts = desc.layouts
 
             layouts[0].stride = stride
+        }
+        do {
+            let stride = MTKMesh.Vertex.describe(
+                to: attrs[1],
+                format: .float3,
+                offset: 0,
+                bufferIndex: 1
+            )
+
+            layouts[1].stride = stride
+        }
+        do {
+            let stride = MTKMesh.Vertex.describe(
+                to: attrs[2],
+                format: .float2,
+                offset: 0,
+                bufferIndex: 2
+            )
+
+            layouts[2].stride = stride
         }
 
         return desc
     }
+}
 
-    static func describe(to descriptor: MTLAccelerationStructureTriangleGeometryDescriptor) {
-        descriptor.vertexFormat = .float3
-        descriptor.vertexStride = MemoryLayout<Self>.stride
+extension MTLAttributeFormat {
+    init?(_ other: MDLVertexFormat) {
+        switch other {
+        case .float3:
+            self = .float3
+        default:
+            return nil
+        }
     }
 }

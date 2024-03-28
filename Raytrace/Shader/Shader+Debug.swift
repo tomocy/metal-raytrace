@@ -50,14 +50,18 @@ extension Shader.Debug {
         encoder.setDepthStencilState(pipelineStates.depthStencil)
 
         do {
-            mesh.vertexBuffers.forEach { buffer in
+            assert(mesh.vertexBuffers.count == 3)
+
+            mesh.vertexBuffers.enumerated().forEach { i, buffer in
                 encoder.setVertexBuffer(
                     buffer.buffer,
                     offset: buffer.offset,
-                    index: 0
+                    index: i
                 )
             }
+        }
 
+        do {
             let projection = Shader.Transform.orthogonal(
                 top: 1, bottom: -1,
                 left: -1, right: 1,
@@ -75,18 +79,18 @@ extension Shader.Debug {
                     options: .storageModeShared
                 )
 
-                encoder.setVertexBuffer(buffer, offset: 0, index: 1)
+                encoder.setVertexBuffer(buffer, offset: 0, index: 3)
             }
+        }
 
-            mesh.submeshes.forEach { submesh in
-                encoder.drawIndexedPrimitives(
-                    type: submesh.primitiveType,
-                    indexCount: submesh.indexCount,
-                    indexType: submesh.indexType,
-                    indexBuffer: submesh.indexBuffer.buffer,
-                    indexBufferOffset: submesh.indexBuffer.offset
-                )
-            }
+        mesh.submeshes.forEach { submesh in
+            encoder.drawIndexedPrimitives(
+                type: submesh.primitiveType,
+                indexCount: submesh.indexCount,
+                indexType: submesh.indexType,
+                indexBuffer: submesh.indexBuffer.buffer,
+                indexBufferOffset: submesh.indexBuffer.offset
+            )
         }
     }
 
@@ -126,7 +130,7 @@ extension Shader.Debug.PipelineStates {
             desc.vertexFunction = lib.makeFunction(name: "Debug::vertexMain")!
         }
 
-        desc.vertexDescriptor = MTKMesh.Vertex.OnlyPositions.describe()
+        desc.vertexDescriptor = MTKMesh.Vertex.NonInterleaved.describe()
 
         return try device.makeRenderPipelineState(descriptor: desc)
     }
