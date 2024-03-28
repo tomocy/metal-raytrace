@@ -1,6 +1,8 @@
 // tomocy
 
+import ModelIO
 import Metal
+import MetalKit
 
 extension Shader {
     struct Accelerator {
@@ -40,16 +42,16 @@ extension Shader.Accelerator {
 
         let desc = MTLAccelerationStructureTriangleGeometryDescriptor.init()
 
-        desc.triangleCount = 1
-        desc.vertexFormat = .float3
-        desc.vertexStride = MemoryLayout<Vertex>.stride
-
         do {
             let vertices: [Vertex] = [
-                .init(-0.3, -0.3, 0),
-                .init(0, 0.3, 0),
+                .init(-0.3, 0.3, 0),
+                .init(0.3, 0.3, 0),
                 .init(0.3, -0.3, 0),
+                .init(-0.3, -0.3, 0),
             ]
+
+            desc.vertexFormat = .float3
+            desc.vertexStride = MemoryLayout<Vertex>.stride
 
             vertices.withUnsafeBytes { bytes in
                 desc.vertexBuffer = device.makeBuffer(
@@ -58,7 +60,24 @@ extension Shader.Accelerator {
                     options: .storageModeShared
                 )
             }
+        }
 
+        do {
+            let indices: [UInt16] = [
+                0, 1, 2,
+                2, 3, 0,
+            ]
+
+            desc.triangleCount = indices.count / 3
+            desc.indexType = .uint16
+
+            indices.withUnsafeBytes { bytes in
+                desc.indexBuffer = device.makeBuffer(
+                    bytes: bytes.baseAddress!,
+                    length: bytes.count,
+                    options: .storageModeShared
+                )
+            }
         }
 
         return desc
