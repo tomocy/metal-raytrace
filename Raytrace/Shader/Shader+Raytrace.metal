@@ -1,5 +1,6 @@
 // tomocy
 
+#include "Shader+Primitive.h"
 #include <metal_stdlib>
 
 namespace Raytrace {
@@ -7,8 +8,6 @@ kernel void kernelMain(
     const uint2 id [[thread_position_in_grid]],
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
     const metal::raytracing::primitive_acceleration_structure accelerator [[buffer(0)]],
-    constant uint16_t* indices [[buffer(1)]],
-    constant float2* textureCoordinates [[buffer(2)]],
     const metal::texture2d<float> albedoTexture [[texture(1)]]
 )
 {
@@ -50,17 +49,11 @@ kernel void kernelMain(
         metal::mip_filter::none
     );
 
-    const auto primitiveID = intersection.primitive_id;
-    const auto index0 = indices[primitiveID * 3 + 0];
-    const auto index1 = indices[primitiveID * 3 + 1];
-    const auto index2 = indices[primitiveID * 3 + 2];
+    const auto primitive = *(const device Primitive::Triangle*)intersection.primitive_data;
     const auto centric = intersection.triangle_barycentric_coord;
-    const auto coordinate0 = textureCoordinates[index0];
-    const auto coordinate1 = textureCoordinates[index1];
-    const auto coordinate2 = textureCoordinates[index2];
-    auto coordinate = (1 - centric.x - centric.y) * coordinate0
-        + centric.x * coordinate1
-        + centric.y * coordinate2;
+    auto coordinate = (1 - centric.x - centric.y) * primitive.textureCoordinates[0]
+        + centric.x * primitive.textureCoordinates[1]
+        + centric.y * primitive.textureCoordinates[2];
     coordinate.y = 1 - coordinate.y;
 
     const auto color = albedoTexture.sample(sampler, coordinate);

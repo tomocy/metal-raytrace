@@ -44,7 +44,6 @@ extension Shader.Raytrace {
 
 extension Shader.Raytrace {
     func encode(
-        _ mesh: MTKMesh,
         to buffer: some MTLCommandBuffer,
         accelerator: some MTLAccelerationStructure,
         albedoTexture: some MTLTexture
@@ -57,9 +56,6 @@ extension Shader.Raytrace {
         encoder.setTexture(target.texture, index: 0)
         encoder.setAccelerationStructure(accelerator, bufferIndex: 0)
 
-        encoder.setBuffer(mesh.submeshes.first!.indexBuffer.buffer, offset: 0, index: 1)
-
-        encoder.setBuffer(mesh.vertexBuffers[2].buffer, offset: 0, index: 2)
         encoder.setTexture(albedoTexture, index: 1)
 
         do {

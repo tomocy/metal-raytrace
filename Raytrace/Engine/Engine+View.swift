@@ -23,20 +23,21 @@ extension Engine {
 
             shader = try! .init(device: device, resolution: drawableSize, format: .bgra8Unorm)
 
-            mesh = try! MTKMesh.init(
-                mesh: try! MDLMesh.load(
-                    url: Bundle.main.url(
-                        forResource: "Spot",
-                        withExtension: "obj",
-                        subdirectory: "Farm/Spot"
-                    )!,
-                    with: device
-                ).first!.toP_N_T(
-                    with: device,
-                    indexType: .uInt16
-                ),
-                device: device
-            )
+            do {
+                let raw = MDLMesh.init(
+                    try! MDLMesh.load(
+                        url: Bundle.main.url(
+                            forResource: "Spot",
+                            withExtension: "obj",
+                            subdirectory: "Farm/Spot"
+                        )!,
+                        with: device
+                    ).first!,
+                    indexType: .uint16
+                )
+
+                primitive = raw.toPrimitive(with: device)
+            }
 
             albedoTexture = try! MTKTextureLoader.init(device: device).newTexture(
                 URL: Bundle.main.url(forResource: "Spot", withExtension: "png", subdirectory: "Farm/Spot")!
@@ -44,7 +45,7 @@ extension Engine {
         }
 
         var shader: Shader.Shader?
-        var mesh: MTKMesh?
+        var primitive: Shader.Primitive?
         var albedoTexture: (any MTLTexture)?
     }
 }
@@ -59,7 +60,7 @@ extension Engine.View: MTKViewDelegate {
             let command = shader.commandQueue.makeCommandBuffer()!
 
             command.commit {
-                shader.accelerator.encode(mesh!, to: command)
+                shader.accelerator.encode(primitive!, to: command)
             }
 
             command.waitUntilCompleted()
@@ -70,7 +71,6 @@ extension Engine.View: MTKViewDelegate {
 
             command.commit {
                 shader.raytrace.encode(
-                    mesh!,
                     to: command,
                     accelerator: shader.accelerator.target!,
                     albedoTexture: albedoTexture!
@@ -82,7 +82,7 @@ extension Engine.View: MTKViewDelegate {
                     source: shader.raytrace.target.texture
                 )
 
-                shader.debug.encode(mesh!, to: command)
+                shader.debug.encode(primitive!, to: command)
 
                 command.present(currentDrawable!)
             }

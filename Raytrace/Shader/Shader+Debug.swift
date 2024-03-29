@@ -38,7 +38,7 @@ extension Shader.Debug {
 }
 
 extension Shader.Debug {
-    func encode(_ mesh: MTKMesh, to buffer: MTLCommandBuffer) {
+    func encode(_ primitive: Shader.Primitive, to buffer: MTLCommandBuffer) {
         let encoder = buffer.makeRenderCommandEncoder(
             descriptor: describe()
         )!
@@ -49,17 +49,11 @@ extension Shader.Debug {
         encoder.setRenderPipelineState(pipelineStates.render)
         encoder.setDepthStencilState(pipelineStates.depthStencil)
 
-        do {
-            assert(mesh.vertexBuffers.count == 3)
-
-            mesh.vertexBuffers.enumerated().forEach { i, buffer in
-                encoder.setVertexBuffer(
-                    buffer.buffer,
-                    offset: buffer.offset,
-                    index: i
-                )
-            }
-        }
+        encoder.setVertexBuffer(
+            primitive.positions.buffer,
+            offset: 0,
+            index: 0
+        )
 
         do {
             let projection = Shader.Transform.orthogonal(
@@ -72,24 +66,23 @@ extension Shader.Debug {
             )
             let matrix = projection * view
 
-            withUnsafeBytes(of: matrix) { bytes in
-                let buffer = encoder.device.makeBuffer(
+            let buffer = withUnsafeBytes(of: matrix) { bytes in
+                encoder.device.makeBuffer(
                     bytes: bytes.baseAddress!,
                     length: bytes.count,
                     options: .storageModeShared
                 )
-
-                encoder.setVertexBuffer(buffer, offset: 0, index: 3)
             }
+            encoder.setVertexBuffer(buffer, offset: 0, index: 1)
         }
 
-        mesh.submeshes.forEach { submesh in
+        primitive.pieces.forEach { piece in
             encoder.drawIndexedPrimitives(
-                type: submesh.primitiveType,
-                indexCount: submesh.indexCount,
-                indexType: submesh.indexType,
-                indexBuffer: submesh.indexBuffer.buffer,
-                indexBufferOffset: submesh.indexBuffer.offset
+                type: piece.type,
+                indexCount: piece.indices.count,
+                indexType: piece.indices.type,
+                indexBuffer: piece.indices.buffer,
+                indexBufferOffset: 0
             )
         }
     }
@@ -130,7 +123,7 @@ extension Shader.Debug.PipelineStates {
             desc.vertexFunction = lib.makeFunction(name: "Debug::vertexMain")!
         }
 
-        desc.vertexDescriptor = MDLMesh.Layout.P_N_T.describe()
+        desc.vertexDescriptor = MDLMesh.Layout.P.describe()
 
         return try device.makeRenderPipelineState(descriptor: desc)
     }

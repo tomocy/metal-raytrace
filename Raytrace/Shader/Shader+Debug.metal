@@ -6,8 +6,6 @@ namespace Debug {
 struct Vertex {
 public:
     float3 position [[attribute(0)]];
-    float3 normal [[attribute(1)]];
-    float3 textureCoordinate [[attribute(2)]];
 };
 
 struct Raster {
@@ -19,7 +17,7 @@ public:
 namespace Debug {
 vertex Raster vertexMain(
     const Vertex v [[stage_in]],
-    constant metal::float4x4& matrix [[buffer(3)]]
+    constant metal::float4x4& matrix [[buffer(1)]]
 )
 {
     return {

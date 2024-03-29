@@ -18,45 +18,107 @@ extension MDLMesh {
 }
 
 extension MDLMesh {
+    convenience init(_ other: MDLMesh, indexType: MDLIndexBitDepth) {
+        self.init(
+            vertexBuffers: other.vertexBuffers,
+            vertexCount: other.vertexCount,
+            descriptor: other.vertexDescriptor,
+            submeshes: other.defaultSubmeshes!.map { .init($0, indexType: indexType) }
+        )
+    }
+}
+
+extension MDLMesh {
     var defaultSubmeshes: [MDLSubmesh]? { submeshes as? [MDLSubmesh] }
 }
 
 extension MDLMesh {
     func toP_NT(with device: some MTLDevice, indexType: MDLIndexBitDepth) -> Self {
-        typealias Source = Layout.PNT
-        typealias Target = Layout.P_N_T
-
         assert(
-            vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Source>.stride
+            vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Layout.PNT>.stride
         )
 
         let vertices: [Layout.PNT] = vertexBuffers.first!.contents().toArray(count: vertexCount)
-        let buffers = Target.layOut(vertices, with: MTKMeshBufferAllocator.init(device: device))
+        let buffers = Layout.P_NT.layOut(vertices, with: MTKMeshBufferAllocator.init(device: device))
 
         return .init(
             vertexBuffers: buffers,
             vertexCount: vertexCount,
-            descriptor: Target.describe(),
+            descriptor: Layout.P_NT.describe(),
             submeshes: defaultSubmeshes!.map { .init($0, indexType: indexType) }
         )
     }
 
     func toP_N_T(with device: some MTLDevice, indexType: MDLIndexBitDepth) -> Self {
-        typealias Source = Layout.PNT
-        typealias Target = Layout.P_N_T
-
         assert(
-            vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Source>.stride
+            vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Layout.PNT>.stride
         )
 
-        let vertices: [Source] = vertexBuffers.first!.contents().toArray(count: vertexCount)
-        let buffers = Target.layOut(vertices, with: MTKMeshBufferAllocator.init(device: device))
+        let vertices: [Layout.PNT] = vertexBuffers.first!.contents().toArray(count: vertexCount)
+        let buffers = Layout.P_N_T.layOut(vertices, with: MTKMeshBufferAllocator.init(device: device))
 
         return .init(
             vertexBuffers: buffers,
             vertexCount: vertexCount,
-            descriptor: Target.describe(),
+            descriptor: Layout.P_N_T.describe(),
             submeshes: defaultSubmeshes!.map { .init($0, indexType: indexType) }
+        )
+    }
+}
+
+extension MDLMesh {
+    func toPrimitive(with device: some MTLDevice) -> Shader.Primitive {
+        assert(
+            vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Layout.PNT>.stride
+        )
+
+        let vertices: [Layout.PNT] = vertexBuffers.first!.contents().toArray(count: vertexCount)
+
+        let positions = Shader.Primitive.Positions.init(
+            buffer: vertices.map { $0.position }.toBuffer(with: device, options: .storageModeShared)!,
+            format: .float3,
+            stride: MemoryLayout<SIMD3<Float>.Packed>.stride
+        )
+
+        let pieces = defaultSubmeshes!.map { submesh in
+            assert(submesh.geometryType == .triangles)
+            assert(submesh.indexType == .uint16)
+
+            let indices: [UInt16] = submesh.indexBuffer.contents().toArray(count: submesh.indexCount)
+
+            var data: [Shader.Primitive.Triangle] = []
+            let primitiveCount = indices.count / 3
+            for primitiveI in 0..<primitiveCount {
+                var datum = Shader.Primitive.Datum.init(normals: [], textureCoordinates: [])
+
+                for vertexI in 0..<3 {
+                    let i = Int(indices[primitiveI * 3 + vertexI])
+                    let v = vertices[i]
+
+                    datum.normals.append(v.normal)
+                    datum.textureCoordinates.append(v.textureCoordinate)
+                }
+
+                data.append(.init(datum))
+            }
+
+            return Shader.Primitive.Piece.init(
+                type: .triangle,
+                indices: .init(
+                    buffer: indices.toBuffer(with: device, options: .storageModeShared)!,
+                    type: .uint16,
+                    count: indices.count
+                ),
+                data: .init(
+                    buffer: data.toBuffer(with: device, options: .storageModeShared)!,
+                    stride: MemoryLayout<Shader.Primitive.Triangle>.stride
+                )
+            )
+        }
+
+        return .init(
+            positions: positions,
+            pieces: pieces
         )
     }
 }
@@ -66,6 +128,16 @@ extension MDLMeshBuffer {
 }
 
 extension Array {
+    func toBuffer(with device: some MTLDevice, options: MTLResourceOptions) -> (any MTLBuffer)? {
+        return withUnsafeBytes { bytes in
+            device.makeBuffer(
+                bytes: bytes.baseAddress!,
+                length: bytes.count,
+                options: options
+            )
+        }
+    }
+
     func toBuffer(with allocator: some MDLMeshBufferAllocator, type: MDLMeshBufferType) -> any MDLMeshBuffer {
         return withUnsafeBytes { bytes in
             allocator.newBuffer(
@@ -154,6 +226,10 @@ extension MDLMesh {
             var textureCoordinate: SIMD2<Float>
         }
 
+        struct P {
+            var position: SIMD3<Float>.Packed
+        }
+
         enum P_NT {
             struct P {
                 var position: SIMD3<Float>.Packed
@@ -240,10 +316,11 @@ extension MDLMesh.Layout.PNT {
     static func describe() -> MDLVertexDescriptor {
         let desc = MDLVertexDescriptor.init()
 
-        var stride = 0
+        let attrs = desc.defaultAttributes!
+        let layouts = desc.defaultLayouts!
 
         do {
-            let attrs = desc.defaultAttributes!
+            var stride = 0
 
             stride += MDLMesh.Layout.describe(
                 to: attrs[0],
@@ -268,10 +345,6 @@ extension MDLMesh.Layout.PNT {
                 offset: stride,
                 bufferIndex: 0
             )
-        }
-
-        do {
-            let layouts = desc.defaultLayouts!
 
             layouts[0].stride = stride
         }
@@ -282,10 +355,11 @@ extension MDLMesh.Layout.PNT {
     static func describe() -> MTLVertexDescriptor {
         let desc = MTLVertexDescriptor.init()
 
-        var stride = 0
+        let attrs = desc.attributes
+        let layouts = desc.layouts
 
         do {
-            let attrs = desc.attributes
+            var stride = 0
 
             stride += MDLMesh.Layout.describe(
                 to: attrs[0],
@@ -307,10 +381,6 @@ extension MDLMesh.Layout.PNT {
                 offset: stride,
                 bufferIndex: 0
             )
-        }
-
-        do {
-            let layouts = desc.layouts
 
             layouts[0].stride = stride
         }
@@ -318,6 +388,65 @@ extension MDLMesh.Layout.PNT {
         return desc
     }
 }
+
+extension MDLMesh.Layout.P {
+    static func layOut(
+        _ vertices: [MDLMesh.Layout.PNT],
+        with allocator: some MDLMeshBufferAllocator
+    ) -> [some MDLMeshBuffer] {
+        return [
+            vertices.map({ $0.position }).toBuffer(with: allocator, type: .vertex)
+        ]
+    }
+}
+
+extension MDLMesh.Layout.P {
+    static func describe() -> MDLVertexDescriptor {
+        let desc = MDLVertexDescriptor.init()
+
+        let attrs = desc.defaultAttributes!
+        let layouts = desc.defaultLayouts!
+
+        do {
+            var stride = 0
+
+            stride += MDLMesh.Layout.describe(
+                to: attrs[0],
+                name: MDLVertexAttributePosition,
+                format: .float3,
+                offset: stride,
+                bufferIndex: 0
+            )
+
+            layouts[0].stride = stride
+        }
+
+        return desc
+    }
+
+    static func describe() -> MTLVertexDescriptor {
+        let desc = MTLVertexDescriptor.init()
+
+        let attrs = desc.attributes
+        let layouts = desc.layouts
+
+        do {
+            var stride = 0
+
+            stride += MDLMesh.Layout.describe(
+                to: attrs[0],
+                format: .float3,
+                offset: stride,
+                bufferIndex: 0
+            )
+
+            layouts[0].stride = stride
+        }
+
+        return desc
+    }
+}
+
 
 extension MDLMesh.Layout.P_NT {
     static func layOut(
@@ -330,6 +459,7 @@ extension MDLMesh.Layout.P_NT {
             result.p.append(
                 .init(position: v.position)
             )
+
             result.nt.append(
                 .init(
                     normal: v.normal,

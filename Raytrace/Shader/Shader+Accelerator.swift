@@ -11,14 +11,14 @@ extension Shader {
 }
 
 extension Shader.Accelerator {
-    mutating func encode(_ mesh: MTKMesh, to buffer: some MTLCommandBuffer) {
+    mutating func encode(_ primitive: Shader.Primitive, to buffer: some MTLCommandBuffer) {
         let encoder = buffer.makeAccelerationStructureCommandEncoder()!
         defer { encoder.endEncoding() }
 
         let desc = ({
             let desc = MTLPrimitiveAccelerationStructureDescriptor.init()
 
-            desc.geometryDescriptors = describe(mesh, with: encoder.device)
+            desc.geometryDescriptors = describe(primitive, with: encoder.device)
 
             return desc
         }) ()
@@ -37,35 +37,33 @@ extension Shader.Accelerator {
         )
     }
 
-    private func describe(_ mesh: MTKMesh, with device: some MTLDevice) -> [MTLAccelerationStructureGeometryDescriptor] {
+    private func describe(
+        _ primitive: Shader.Primitive,
+        with device: some MTLDevice
+    ) -> [MTLAccelerationStructureGeometryDescriptor] {
         var descs: [MTLAccelerationStructureGeometryDescriptor] = []
 
-        mesh.submeshes.forEach { submesh in
-            assert(submesh.primitiveType == .triangle)
+        primitive.pieces.forEach { piece in
+            assert(piece.type == .triangle)
 
             let desc = MTLAccelerationStructureTriangleGeometryDescriptor.init()
 
             do {
-                // We assume that
-                // the vertices is laid out in MDLMesh.Layout.P_N_T layout.
-
-                let attr = mesh.vertexDescriptor.defaultAttributes![0]
-                let layout = mesh.vertexDescriptor.defaultLayouts![0]
-
-                assert(
-                    attr.name == MDLVertexAttributePosition
-                    && attr.format == .float3
-                    && layout.stride == MemoryLayout<MDLMesh.Layout.P_N_T.P>.stride
-                )
-
-                desc.vertexFormat = .init(attr.format)!
-                desc.vertexStride = layout.stride
-                desc.vertexBuffer = submesh.mesh!.vertexBuffers.first!.buffer
+                desc.vertexBuffer = primitive.positions.buffer
+                desc.vertexFormat = primitive.positions.format
+                desc.vertexStride = primitive.positions.stride
             }
+
             do {
-                desc.indexType = submesh.indexType
-                desc.indexBuffer = submesh.indexBuffer.buffer
-                desc.triangleCount = submesh.indexCount / 3
+                desc.indexBuffer = piece.indices.buffer
+                desc.indexType = piece.indices.type
+                desc.triangleCount = piece.indices.count / 3
+            }
+
+            do {
+                desc.primitiveDataBuffer = piece.data.buffer
+                desc.primitiveDataStride = piece.data.stride
+                desc.primitiveDataElementSize = desc.primitiveDataStride
             }
 
             descs.append(desc)
@@ -74,4 +72,3 @@ extension Shader.Accelerator {
         return descs
     }
 }
-
