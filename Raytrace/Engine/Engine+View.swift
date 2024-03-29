@@ -23,14 +23,20 @@ extension Engine {
 
             shader = try! .init(device: device, resolution: drawableSize, format: .bgra8Unorm)
 
-            mesh = try! MTKMesh.load(
-                url: Bundle.main.url(
-                    forResource: "Spot",
-                    withExtension: "obj",
-                    subdirectory: "Farm/Spot"
-                )!,
-                with: device
-            ).first!.toNonInterleaved(with: device)
+            mesh = try! MTKMesh.init(
+                mesh: try! MDLMesh.load(
+                    url: Bundle.main.url(
+                        forResource: "Spot",
+                        withExtension: "obj",
+                        subdirectory: "Farm/Spot"
+                    )!,
+                    with: device
+                ).first!.toP_N_T(
+                    with: device,
+                    indexType: .uInt16
+                ),
+                device: device
+            )
 
             albedoTexture = try! MTKTextureLoader.init(device: device).newTexture(
                 URL: Bundle.main.url(forResource: "Spot", withExtension: "png", subdirectory: "Farm/Spot")!

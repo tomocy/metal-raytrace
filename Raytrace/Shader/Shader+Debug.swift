@@ -130,7 +130,7 @@ extension Shader.Debug.PipelineStates {
             desc.vertexFunction = lib.makeFunction(name: "Debug::vertexMain")!
         }
 
-        desc.vertexDescriptor = MTKMesh.Vertex.NonInterleaved.describe()
+        desc.vertexDescriptor = MDLMesh.Layout.P_N_T.describe()
 
         return try device.makeRenderPipelineState(descriptor: desc)
     }

@@ -47,8 +47,7 @@ extension Shader.Accelerator {
 
             do {
                 // We assume that
-                // the vertices is laid out in MTKMesh.Vertex.NonInterleaved layout
-                // inside the first vertex buffer of the mesh.
+                // the vertices is laid out in MDLMesh.Layout.P_N_T layout.
 
                 let attr = mesh.vertexDescriptor.defaultAttributes![0]
                 let layout = mesh.vertexDescriptor.defaultLayouts![0]
@@ -56,7 +55,7 @@ extension Shader.Accelerator {
                 assert(
                     attr.name == MDLVertexAttributePosition
                     && attr.format == .float3
-                    && layout.stride == MemoryLayout<SIMD3<Float>.Packed>.stride
+                    && layout.stride == MemoryLayout<MDLMesh.Layout.P_N_T.P>.stride
                 )
 
                 desc.vertexFormat = .init(attr.format)!
