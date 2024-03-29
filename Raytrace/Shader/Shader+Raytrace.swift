@@ -2,6 +2,7 @@
 
 import ModelIO
 import Metal
+import MetalKit
 
 extension Shader {
     struct Raytrace {
@@ -42,7 +43,12 @@ extension Shader.Raytrace {
 }
 
 extension Shader.Raytrace {
-    func encode(to buffer: some MTLCommandBuffer, accelerator: some MTLAccelerationStructure) {
+    func encode(
+        _ mesh: MTKMesh,
+        to buffer: some MTLCommandBuffer,
+        accelerator: some MTLAccelerationStructure,
+        albedoTexture: some MTLTexture
+    ) {
         let encoder = buffer.makeComputeCommandEncoder()!
         defer { encoder.endEncoding() }
 
@@ -50,6 +56,11 @@ extension Shader.Raytrace {
 
         encoder.setTexture(target.texture, index: 0)
         encoder.setAccelerationStructure(accelerator, bufferIndex: 0)
+
+        encoder.setBuffer(mesh.submeshes.first!.indexBuffer.buffer, offset: 0, index: 1)
+
+        encoder.setBuffer(mesh.vertexBuffers[2].buffer, offset: 0, index: 2)
+        encoder.setTexture(albedoTexture, index: 1)
 
         do {
             let threadsPerGroup = MTLSize.init(width: 8, height: 8, depth: 1)

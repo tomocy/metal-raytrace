@@ -83,7 +83,9 @@ extension MTKMesh {
                 vertexBuffers: [buffers.positions, buffers.normals, buffers.textureCoordinates],
                 vertexCount: count,
                 descriptor: Vertex.NonInterleaved.describe(),
-                submeshes: submeshes.map { .init($0) }
+                submeshes: submeshes.map {
+                    .init(.init($0), indexType: .uInt16)
+                }
             ),
             device: device
         )
@@ -96,6 +98,17 @@ extension MDLVertexDescriptor {
 }
 
 extension MDLSubmesh {
+    convenience init(_ other: MDLSubmesh, indexType: MDLIndexBitDepth) {
+        self.init(
+            name: other.name,
+            indexBuffer: other.indexBuffer(asIndexType: indexType),
+            indexCount: other.indexCount,
+            indexType: indexType,
+            geometryType: other.geometryType,
+            material: nil
+        )
+    }
+
     convenience init(_ other: MTKSubmesh) {
         self.init(
             name: other.name,

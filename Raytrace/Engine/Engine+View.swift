@@ -31,10 +31,15 @@ extension Engine {
                 )!,
                 with: device
             ).first!.toNonInterleaved(with: device)
+
+            albedoTexture = try! MTKTextureLoader.init(device: device).newTexture(
+                URL: Bundle.main.url(forResource: "Spot", withExtension: "png", subdirectory: "Farm/Spot")!
+            )
         }
 
         var shader: Shader.Shader?
         var mesh: MTKMesh?
+        var albedoTexture: (any MTLTexture)?
     }
 }
 
@@ -58,7 +63,12 @@ extension Engine.View: MTKViewDelegate {
             let command = shader.commandQueue.makeCommandBuffer()!
 
             command.commit {
-                shader.raytrace.encode(to: command, accelerator: shader.accelerator.target!)
+                shader.raytrace.encode(
+                    mesh!,
+                    to: command,
+                    accelerator: shader.accelerator.target!,
+                    albedoTexture: albedoTexture!
+                )
 
                 shader.echo.encode(
                     to: command,
