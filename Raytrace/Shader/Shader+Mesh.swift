@@ -22,67 +22,40 @@ extension MDLMesh {
 }
 
 extension MDLMesh {
-    func toP_N_T(with device: some MTLDevice, indexType: MDLIndexBitDepth) -> Self {
-        // Assume that
-        // the given mesh uses PNT layout.
+    func toP_NT(with device: some MTLDevice, indexType: MDLIndexBitDepth) -> Self {
+        typealias Source = Layout.PNT
+        typealias Target = Layout.P_N_T
+
         assert(
-            vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Layout.PNT>.stride
+            vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Source>.stride
         )
 
-        let sourceBuffer = vertexBuffers.first!
-
-        let count = sourceBuffer.length / vertexDescriptor.defaultLayouts!.first!.stride
-
-        let vertices: (
-            positions: [SIMD3<Float>.Packed],
-            normals: [SIMD3<Float>.Packed],
-            textureCoordinates: [SIMD2<Float>]
-        ) = (
-            sourceBuffer.contents().toArray(count: count) as [Layout.PNT]
-        ).reduce(
-            into: ([], [], [])
-        ) { result, v in
-            result.positions.append(v.position)
-            result.normals.append(v.normal)
-            result.textureCoordinates.append(v.textureCoordinate)
-        }
-
-        let buffers: (
-            positions: any MDLMeshBuffer,
-            normals: any MDLMeshBuffer,
-            textureCoordinates: any MDLMeshBuffer
-        ) = ({
-            let allocator = MTKMeshBufferAllocator.init(device: device)
-
-            let positions = vertices.positions.withUnsafeBytes { bytes in
-                allocator.newBuffer(
-                    with: .init(bytes: bytes.baseAddress!, count: bytes.count),
-                    type: .vertex
-                )
-            }
-
-            let normals = vertices.normals.withUnsafeBytes { bytes in
-                allocator.newBuffer(
-                    with: .init(bytes: bytes.baseAddress!, count: bytes.count),
-                    type: .vertex
-                )
-            }
-
-            let textureCoordinates = vertices.textureCoordinates.withUnsafeBytes { bytes in
-                allocator.newBuffer(
-                    with: .init(bytes: bytes.baseAddress!, count: bytes.count),
-                    type: .vertex
-                )
-            }
-
-            return (positions, normals, textureCoordinates)
-        }) ()
-
+        let vertices: [Layout.PNT] = vertexBuffers.first!.contents().toArray(count: vertexCount)
+        let buffers = Target.layOut(vertices, with: MTKMeshBufferAllocator.init(device: device))
 
         return .init(
-            vertexBuffers: [buffers.positions, buffers.normals, buffers.textureCoordinates],
-            vertexCount: count,
-            descriptor: Layout.P_N_T.describe(),
+            vertexBuffers: buffers,
+            vertexCount: vertexCount,
+            descriptor: Target.describe(),
+            submeshes: defaultSubmeshes!.map { .init($0, indexType: indexType) }
+        )
+    }
+
+    func toP_N_T(with device: some MTLDevice, indexType: MDLIndexBitDepth) -> Self {
+        typealias Source = Layout.PNT
+        typealias Target = Layout.P_N_T
+
+        assert(
+            vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Source>.stride
+        )
+
+        let vertices: [Source] = vertexBuffers.first!.contents().toArray(count: vertexCount)
+        let buffers = Target.layOut(vertices, with: MTKMeshBufferAllocator.init(device: device))
+
+        return .init(
+            vertexBuffers: buffers,
+            vertexCount: vertexCount,
+            descriptor: Target.describe(),
             submeshes: defaultSubmeshes!.map { .init($0, indexType: indexType) }
         )
     }
@@ -90,6 +63,17 @@ extension MDLMesh {
 
 extension MDLMeshBuffer {
     func contents() -> UnsafeMutableRawPointer { map().bytes }
+}
+
+extension Array {
+    func toBuffer(with allocator: some MDLMeshBufferAllocator, type: MDLMeshBufferType) -> any MDLMeshBuffer {
+        return withUnsafeBytes { bytes in
+            allocator.newBuffer(
+                with: .init(bytes: bytes.baseAddress!, count: bytes.count),
+                type: type
+            )
+        }
+    }
 }
 
 extension MDLSubmesh {
@@ -242,6 +226,17 @@ extension MDLMesh.Layout {
 }
 
 extension MDLMesh.Layout.PNT {
+    static func layOut(
+        _ vertices: [MDLMesh.Layout.PNT],
+        with allocator: some MDLMeshBufferAllocator
+    ) -> [some MDLMeshBuffer] {
+        return [
+            vertices.toBuffer(with: allocator, type: .vertex)
+        ]
+    }
+}
+
+extension MDLMesh.Layout.PNT {
     static func describe() -> MDLVertexDescriptor {
         let desc = MDLVertexDescriptor.init()
 
@@ -321,6 +316,32 @@ extension MDLMesh.Layout.PNT {
         }
 
         return desc
+    }
+}
+
+extension MDLMesh.Layout.P_NT {
+    static func layOut(
+        _ vertices: [MDLMesh.Layout.PNT],
+        with allocator: some MDLMeshBufferAllocator
+    ) -> [some MDLMeshBuffer] {
+        let (p, nt): (p: [P], nt: [NT]) = vertices.reduce(
+            into: ([], [])
+        ) { result, v in
+            result.p.append(
+                .init(position: v.position)
+            )
+            result.nt.append(
+                .init(
+                    normal: v.normal,
+                    textureCoordinate: v.textureCoordinate
+                )
+            )
+        }
+
+        return [
+            p.toBuffer(with: allocator, type: .vertex),
+            nt.toBuffer(with: allocator, type: .vertex),
+        ]
     }
 }
 
@@ -413,6 +434,32 @@ extension MDLMesh.Layout.P_NT {
     }
 }
 
+extension MDLMesh.Layout.P_N_T {
+    static func layOut(
+        _ vertices: [MDLMesh.Layout.PNT],
+        with allocator: some MDLMeshBufferAllocator
+    ) -> [some MDLMeshBuffer] {
+        let (p, n, t): (p: [P], n: [N], t: [T]) = vertices.reduce(
+            into: ([], [], [])
+        ) { result, v in
+            result.p.append(
+                .init(position: v.position)
+            )
+            result.n.append(
+                .init(normal: v.normal)
+            )
+            result.t.append(
+                .init(textureCoordinate: v.textureCoordinate)
+            )
+        }
+
+        return [
+            p.toBuffer(with: allocator, type: .vertex),
+            n.toBuffer(with: allocator, type: .vertex),
+            t.toBuffer(with: allocator, type: .vertex)
+        ]
+    }
+}
 
 extension MDLMesh.Layout.P_N_T {
     static func describe() -> MDLVertexDescriptor {
