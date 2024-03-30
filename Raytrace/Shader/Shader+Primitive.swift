@@ -6,6 +6,7 @@ extension Shader {
     struct Primitive {
         var positions: Positions
         var pieces: [Piece]
+        var instances: [Instance]
     }
 }
 
@@ -22,6 +23,12 @@ extension Shader.Primitive {
         var type: MTLPrimitiveType
         var indices: Indices
         var data: Data
+    }
+}
+
+extension Shader.Primitive {
+    struct Instance {
+        var transform: Shader.Transform
     }
 }
 

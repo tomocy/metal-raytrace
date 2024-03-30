@@ -67,7 +67,7 @@ extension MDLMesh {
 }
 
 extension MDLMesh {
-    func toPrimitive(with device: some MTLDevice) -> Shader.Primitive {
+    func toPrimitive(with device: some MTLDevice, instances: [Shader.Primitive.Instance]) -> Shader.Primitive {
         assert(
             vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Layout.PNT>.stride
         )
@@ -118,7 +118,8 @@ extension MDLMesh {
 
         return .init(
             positions: positions,
-            pieces: pieces
+            pieces: pieces,
+            instances: instances
         )
     }
 }

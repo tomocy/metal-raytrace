@@ -96,7 +96,7 @@ extension Shader.Accelerator {
 
 extension Shader.Accelerator.Instanced {
     mutating func encode(
-        _ instances: [Shader.Transform],
+        _ instances: [Shader.Primitive.Instance],
         of accelerator: some MTLAccelerationStructure,
         to buffer: some MTLCommandBuffer
     ) {
@@ -126,7 +126,7 @@ extension Shader.Accelerator.Instanced {
     }
 
     private func describe(
-        _ instances: [Shader.Transform],
+        _ instances: [Shader.Primitive.Instance],
         of accelerator: some MTLAccelerationStructure,
         with device: some MTLDevice
     ) -> MTLInstanceAccelerationStructureDescriptor {
@@ -145,15 +145,15 @@ extension Shader.Accelerator.Instanced {
     }
 
     private func describe(
-        _ instances: [Shader.Transform],
+        _ instances: [Shader.Primitive.Instance],
         of accelerator: UInt32
     ) -> [MTLAccelerationStructureInstanceDescriptor] {
-        return instances.map { transform in
+        return instances.map { instance in
             var desc = MTLAccelerationStructureInstanceDescriptor.init()
 
             desc.accelerationStructureIndex = accelerator
 
-            desc.transformationMatrix = .init(transform.resolve())
+            desc.transformationMatrix = .init(instance.transform.resolve())
 
             desc.mask = 0xff;
             desc.options = .opaque

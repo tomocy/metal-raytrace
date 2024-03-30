@@ -36,7 +36,21 @@ extension Engine {
                     indexType: .uint16
                 )
 
-                primitive = raw.toPrimitive(with: device)
+                primitive = raw.toPrimitive(
+                    with: device,
+                    instances: [
+                        .init(
+                            transform: .init(
+                                translate: .init(-0.5, 0, 0)
+                            )
+                        ),
+                        .init(
+                            transform: .init(
+                                translate: .init(0.5, 0, 0)
+                            )
+                        ),
+                    ]
+                )
             }
 
             albedoTexture = try! MTKTextureLoader.init(device: device).newTexture(
@@ -63,10 +77,7 @@ extension Engine.View: MTKViewDelegate {
                 shader.accelerator.primitive.encode(primitive!, to: command)
 
                 shader.accelerator.instanced.encode(
-                    [
-                        .init(translate: .init(-0.5, 0, 0)),
-                        .init(translate: .init(0.5, 0, 0)),
-                    ],
+                    primitive!.instances,
                     of: shader.accelerator.primitive.target!,
                     to: command
                 )
