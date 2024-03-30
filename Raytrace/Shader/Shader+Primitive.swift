@@ -6,6 +6,8 @@ extension Shader {
     struct Primitive {
         var positions: Positions
         var pieces: [Piece]
+        var accelerator: (any MTLAccelerationStructure)?
+
         var instances: [Instance]
     }
 }

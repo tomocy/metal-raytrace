@@ -23,9 +23,10 @@ extension Engine {
 
             shader = try! .init(device: device, resolution: drawableSize, format: .bgra8Unorm)
 
+            primitives = []
             do {
                 let raw = MDLMesh.init(
-                    try! MDLMesh.load(
+                    try! .load(
                         url: Bundle.main.url(
                             forResource: "Spot",
                             withExtension: "obj",
@@ -36,20 +37,46 @@ extension Engine {
                     indexType: .uint16
                 )
 
-                primitive = raw.toPrimitive(
-                    with: device,
-                    instances: [
-                        .init(
-                            transform: .init(
-                                translate: .init(-0.5, 0, 0)
-                            )
-                        ),
-                        .init(
-                            transform: .init(
-                                translate: .init(0.5, 0, 0)
-                            )
-                        ),
-                    ]
+                primitives!.append(
+                    raw.toPrimitive(
+                        with: device,
+                        instances: [
+                            .init(
+                                transform: .init(
+                                    translate: .init(-0.5, 0, 0)
+                                )
+                            ),
+                            .init(
+                                transform: .init(
+                                    translate: .init(0.5, 0, 0)
+                                )
+                            ),
+                        ]
+                    )
+                )
+            }
+            do {
+                let raw = MDLMesh.init(
+                    .init(
+                        planeWithExtent: .init(4, 0, 4),
+                        segments: .init(1, 1),
+                        geometryType: .triangles,
+                        allocator: MTKMeshBufferAllocator.init(device: device)
+                    ),
+                    indexType: .uint16
+                )
+
+                primitives!.append(
+                    raw.toPrimitive(
+                        with: device,
+                        instances: [
+                            .init(
+                                transform: .init(
+                                    translate: .init(0, 0, 0)
+                                )
+                            ),
+                        ]
+                    )
                 )
             }
 
@@ -59,7 +86,7 @@ extension Engine {
         }
 
         var shader: Shader.Shader?
-        var primitive: Shader.Primitive?
+        var primitives: [Shader.Primitive]?
         var albedoTexture: (any MTLTexture)?
     }
 }
@@ -74,13 +101,11 @@ extension Engine.View: MTKViewDelegate {
             let command = shader.commandQueue.makeCommandBuffer()!
 
             command.commit {
-                shader.accelerator.primitive.encode(primitive!, to: command)
+                for i in 0..<primitives!.count {
+                    shader.accelerator.primitive.encode(&primitives![i], to: command)
+                }
 
-                shader.accelerator.instanced.encode(
-                    primitive!.instances,
-                    of: shader.accelerator.primitive.target!,
-                    to: command
-                )
+                shader.accelerator.instanced.encode(primitives!, to: command)
             }
 
             command.waitUntilCompleted()
@@ -102,7 +127,7 @@ extension Engine.View: MTKViewDelegate {
                     source: shader.raytrace.target.texture
                 )
 
-                shader.debug.encode(primitive!, to: command)
+                shader.debug.encode(primitives!, to: command)
 
                 command.present(currentDrawable!)
             }

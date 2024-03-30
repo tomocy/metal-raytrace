@@ -12,26 +12,24 @@ extension Shader {
 }
 
 extension Shader.Accelerator {
-    struct Primitive {
-        var target: (any MTLAccelerationStructure)?
-    }
+    struct Primitive {}
 }
 
 extension Shader.Accelerator.Primitive {
-    mutating func encode(_ primitive: Shader.Primitive, to buffer: some MTLCommandBuffer) {
+    mutating func encode(_ primitive: inout Shader.Primitive, to buffer: some MTLCommandBuffer) {
         let encoder = buffer.makeAccelerationStructureCommandEncoder()!
         defer { encoder.endEncoding() }
 
         let desc: MTLPrimitiveAccelerationStructureDescriptor = describe(
-            primitive, 
+            primitive,
             with: encoder.device
         )
         let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
 
-        target = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
+        primitive.accelerator = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
 
         encoder.build(
-            accelerationStructure: target!,
+            accelerationStructure: primitive.accelerator!,
             descriptor: desc,
             scratchBuffer: encoder.device.makeBuffer(
                 length: sizes.buildScratchBufferSize,
@@ -96,18 +94,18 @@ extension Shader.Accelerator {
 
 extension Shader.Accelerator.Instanced {
     mutating func encode(
-        _ instances: [Shader.Primitive.Instance],
-        of accelerator: some MTLAccelerationStructure,
+        _ primitives: [Shader.Primitive],
         to buffer: some MTLCommandBuffer
     ) {
         let encoder = buffer.makeAccelerationStructureCommandEncoder()!
         defer { encoder.endEncoding() }
 
-        encoder.useResource(accelerator, usage: .read)
+        primitives.forEach { primitive in
+            encoder.useResource(primitive.accelerator!, usage: .read)
+        }
 
         let desc: MTLInstanceAccelerationStructureDescriptor = describe(
-            instances,
-            of: accelerator,
+            primitives,
             with: encoder.device
         )
         let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
@@ -126,18 +124,25 @@ extension Shader.Accelerator.Instanced {
     }
 
     private func describe(
-        _ instances: [Shader.Primitive.Instance],
-        of accelerator: some MTLAccelerationStructure,
+        _ primitives: [Shader.Primitive],
         with device: some MTLDevice
     ) -> MTLInstanceAccelerationStructureDescriptor {
         let desc = MTLInstanceAccelerationStructureDescriptor.init()
 
-        desc.instancedAccelerationStructures = [accelerator]
+        desc.instancedAccelerationStructures = primitives.map { $0.accelerator! }
 
-        desc.instanceDescriptorBuffer = describe(instances, of: 0).toBuffer(
-            with: device,
-            options: .storageModeShared
-        )
+        let instances = primitives.enumerated().reduce(
+            into: []
+        ) { result, primitive in
+            result.append(
+                contentsOf: describe(
+                    primitive.element.instances,
+                    of: .init(primitive.offset)
+                )
+            )
+        }
+
+        desc.instanceDescriptorBuffer = instances.toBuffer(with: device, options: .storageModeShared)
 
         desc.instanceCount = instances.count
 

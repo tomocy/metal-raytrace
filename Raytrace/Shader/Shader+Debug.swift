@@ -38,7 +38,7 @@ extension Shader.Debug {
 }
 
 extension Shader.Debug {
-    func encode(_ primitive: Shader.Primitive, to buffer: MTLCommandBuffer) {
+    func encode(_ primitives: [Shader.Primitive], to buffer: MTLCommandBuffer) {
         let encoder = buffer.makeRenderCommandEncoder(
             descriptor: describe()
         )!
@@ -49,41 +49,59 @@ extension Shader.Debug {
         encoder.setRenderPipelineState(pipelineStates.render)
         encoder.setDepthStencilState(pipelineStates.depthStencil)
 
-        encoder.setVertexBuffer(
-            primitive.positions.buffer,
-            offset: 0,
-            index: 0
-        )
+        primitives.forEach { primitive in
+            do {
+                let projection = Shader.Transform.orthogonal(
+                    top: 1, bottom: -1,
+                    left: -1, right: 1,
+                    near: 0, far: 10
+                )
+                let view = Shader.Transform.translate(
+                    .init(0, 0.5 * -1, -2 * -1)
+                )
+                let aspect = projection * view
 
-        do {
-            let projection = Shader.Transform.orthogonal(
-                top: 1, bottom: -1,
-                left: -1, right: 1,
-                near: 0, far: 10
-            )
-            let view = Shader.Transform.translate(
-                .init(0, 0, 2)
-            )
-            let matrix = projection * view
+                let buffer = withUnsafeBytes(of: aspect) { bytes in
+                    encoder.device.makeBuffer(
+                        bytes: bytes.baseAddress!,
+                        length: bytes.count,
+                        options: .storageModeShared
+                    )
+                }
 
-            let buffer = withUnsafeBytes(of: matrix) { bytes in
-                encoder.device.makeBuffer(
-                    bytes: bytes.baseAddress!,
-                    length: bytes.count,
-                    options: .storageModeShared
+                encoder.setVertexBuffer(buffer, offset: 0, index: 1)
+            }
+
+            do {
+                let instances = primitive.instances.map { $0.transform.resolve() }
+
+                let buffer = instances.withUnsafeBytes { bytes in
+                    encoder.device.makeBuffer(
+                        bytes: bytes.baseAddress!,
+                        length: bytes.count,
+                        options: .storageModeShared
+                    )
+                }
+
+                encoder.setVertexBuffer(buffer, offset: 0, index: 2)
+            }
+
+            encoder.setVertexBuffer(
+                primitive.positions.buffer,
+                offset: 0,
+                index: 0
+            )
+
+            primitive.pieces.forEach { piece in
+                encoder.drawIndexedPrimitives(
+                    type: piece.type,
+                    indexCount: piece.indices.count,
+                    indexType: piece.indices.type,
+                    indexBuffer: piece.indices.buffer,
+                    indexBufferOffset: 0,
+                    instanceCount: primitive.instances.count
                 )
             }
-            encoder.setVertexBuffer(buffer, offset: 0, index: 1)
-        }
-
-        primitive.pieces.forEach { piece in
-            encoder.drawIndexedPrimitives(
-                type: piece.type,
-                indexCount: piece.indices.count,
-                indexType: piece.indices.type,
-                indexBuffer: piece.indices.buffer,
-                indexBufferOffset: 0
-            )
         }
     }
 

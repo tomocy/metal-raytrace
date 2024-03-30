@@ -89,7 +89,10 @@ extension MDLMesh {
             var data: [Shader.Primitive.Triangle] = []
             let primitiveCount = indices.count / 3
             for primitiveI in 0..<primitiveCount {
-                var datum = Shader.Primitive.Datum.init(normals: [], textureCoordinates: [])
+                var datum = Shader.Primitive.Datum.init(
+                    normals: [],
+                    textureCoordinates: []
+                )
 
                 for vertexI in 0..<3 {
                     let i = Int(indices[primitiveI * 3 + vertexI])

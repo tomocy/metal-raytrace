@@ -17,11 +17,15 @@ public:
 namespace Debug {
 vertex Raster vertexMain(
     const Vertex v [[stage_in]],
-    constant metal::float4x4& matrix [[buffer(1)]]
+    constant metal::float4x4& aspect [[buffer(1)]],
+    constant metal::float4x4* instances [[buffer(2)]],
+    const uint16_t id [[instance_id]]
 )
 {
+    const auto transform = instances[id];
+
     return {
-        .position = matrix * float4(v.position, 1),
+        .position = aspect * transform * float4(v.position, 1),
     };
 }
 }
