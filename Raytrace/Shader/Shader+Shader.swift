@@ -9,7 +9,6 @@ extension Shader {
         var commandQueue: MTLCommandQueue
 
         var accelerator: Accelerator
-        var instancedAccelerator: Accelerator.Instanced
 
         var raytrace: Raytrace
         var echo: Echo
@@ -23,7 +22,6 @@ extension Shader.Shader {
         commandQueue = device.makeCommandQueue()!
 
         accelerator = .init()
-        instancedAccelerator = .init()
 
         raytrace = try .init(device: device, resolution: resolution, format: format)
         echo = try .init(device: device, format: format)

@@ -6,22 +6,26 @@ import MetalKit
 
 extension Shader {
     struct Accelerator {
-        var target: (any MTLAccelerationStructure)?
+        var primitive: Primitive = .init()
+        var instanced: Instanced = .init()
     }
 }
 
 extension Shader.Accelerator {
+    struct Primitive {
+        var target: (any MTLAccelerationStructure)?
+    }
+}
+
+extension Shader.Accelerator.Primitive {
     mutating func encode(_ primitive: Shader.Primitive, to buffer: some MTLCommandBuffer) {
         let encoder = buffer.makeAccelerationStructureCommandEncoder()!
         defer { encoder.endEncoding() }
 
-        let desc = ({
-            let desc = MTLPrimitiveAccelerationStructureDescriptor.init()
-
-            desc.geometryDescriptors = describe(primitive, with: encoder.device)
-
-            return desc
-        }) ()
+        let desc: MTLPrimitiveAccelerationStructureDescriptor = describe(
+            primitive, 
+            with: encoder.device
+        )
         let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
 
         target = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
@@ -35,6 +39,17 @@ extension Shader.Accelerator {
             )!,
             scratchBufferOffset: 0
         )
+    }
+
+    private func describe(
+        _ primitive: Shader.Primitive,
+        with device: some MTLDevice
+    ) -> MTLPrimitiveAccelerationStructureDescriptor {
+        let desc = MTLPrimitiveAccelerationStructureDescriptor.init()
+
+        desc.geometryDescriptors = describe(primitive, with: device)
+
+        return desc
     }
 
     private func describe(

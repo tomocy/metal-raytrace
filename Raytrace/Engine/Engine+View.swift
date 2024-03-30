@@ -60,14 +60,14 @@ extension Engine.View: MTKViewDelegate {
             let command = shader.commandQueue.makeCommandBuffer()!
 
             command.commit {
-                shader.accelerator.encode(primitive!, to: command)
+                shader.accelerator.primitive.encode(primitive!, to: command)
 
-                shader.instancedAccelerator.encode(
+                shader.accelerator.instanced.encode(
                     [
                         .init(translate: .init(-0.5, 0, 0)),
                         .init(translate: .init(0.5, 0, 0)),
                     ],
-                    of: shader.accelerator.target!,
+                    of: shader.accelerator.primitive.target!,
                     to: command
                 )
             }
@@ -81,7 +81,7 @@ extension Engine.View: MTKViewDelegate {
             command.commit {
                 shader.raytrace.encode(
                     to: command,
-                    accelerator: shader.instancedAccelerator.target!,
+                    accelerator: shader.accelerator.instanced.target!,
                     albedoTexture: albedoTexture!
                 )
 
