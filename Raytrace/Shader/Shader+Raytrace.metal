@@ -28,7 +28,7 @@ kernel void kernelMain(
     const auto inNDC = float2(inUV.x * 2 - 1, inUV.y * -2 + 1);
 
     raytracing::ray ray = {};
-    ray.origin = float3(0, 0, -2); // We know the camera position for now.
+    ray.origin = float3(0, 0.5, -2); // We know the camera position for now.
     ray.direction = metal::normalize(inNDC.x * right + inNDC.y * up + forward);
     ray.max_distance = INFINITY;
 
