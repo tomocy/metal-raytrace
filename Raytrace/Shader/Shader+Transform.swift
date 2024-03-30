@@ -3,7 +3,10 @@
 import simd
 
 extension Shader {
-    struct Transform {}
+    struct Transform {
+        var translate: SIMD3<Float> = .init(0, 0, 0)
+        var scale: SIMD3<Float> = .init(1, 1, 1)
+    }
 }
 
 extension Shader.Transform {
@@ -58,5 +61,12 @@ extension Shader.Transform {
                 .init(0, 0, 0, 1)
             ]
         )
+    }
+}
+
+extension Shader.Transform {
+    func resolve() -> float4x4 {
+        return Self.translate(translate)
+            * Self.scale(scale)
     }
 }

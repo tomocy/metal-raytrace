@@ -25,6 +25,23 @@ extension SIMD3<Float>.Packed {
     }
 }
 
+extension SIMD4 {
+    var xyz: SIMD3<Scalar> { .init(x, y, z) }
+}
+
+extension MTLPackedFloat4x3 {
+    init(_ other: float4x4) {
+        self.init(
+            columns: (
+                .init(other.columns.0.xyz),
+                .init(other.columns.1.xyz),
+                .init(other.columns.2.xyz),
+                .init(other.columns.3.xyz)
+            )
+        )
+    }
+}
+
 extension float4x4 {
     static var identity: Self { .init(1) }
 }

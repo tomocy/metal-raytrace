@@ -7,7 +7,7 @@ namespace Raytrace {
 kernel void kernelMain(
     const uint2 id [[thread_position_in_grid]],
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
-    const metal::raytracing::primitive_acceleration_structure accelerator [[buffer(0)]],
+    const metal::raytracing::instance_acceleration_structure accelerator [[buffer(0)]],
     const metal::texture2d<float> albedoTexture [[texture(1)]]
 )
 {
@@ -32,11 +32,12 @@ kernel void kernelMain(
     ray.direction = metal::normalize(inNDC.x * right + inNDC.y * up + forward);
     ray.max_distance = INFINITY;
 
-    using Intersector = typename raytracing::intersector<raytracing::triangle_data>;
+    using Intersector = typename raytracing::intersector<raytracing::instancing, raytracing::triangle_data>;
     const auto intersector = Intersector();
 
     using Intersection = typename Intersector::result_type;
-    const Intersection intersection = intersector.intersect(ray, accelerator);
+    const uint32_t mask = 0xff;
+    const Intersection intersection = intersector.intersect(ray, accelerator, mask);
 
     if (intersection.type == raytracing::intersection_type::none) {
         target.write(float4(0, 0, 0, 1), inScreen);

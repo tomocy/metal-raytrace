@@ -61,6 +61,15 @@ extension Engine.View: MTKViewDelegate {
 
             command.commit {
                 shader.accelerator.encode(primitive!, to: command)
+
+                shader.instancedAccelerator.encode(
+                    [
+                        .init(translate: .init(-0.5, 0, 0)),
+                        .init(translate: .init(0.5, 0, 0)),
+                    ],
+                    of: shader.accelerator.target!,
+                    to: command
+                )
             }
 
             command.waitUntilCompleted()
@@ -72,7 +81,7 @@ extension Engine.View: MTKViewDelegate {
             command.commit {
                 shader.raytrace.encode(
                     to: command,
-                    accelerator: shader.accelerator.target!,
+                    accelerator: shader.instancedAccelerator.target!,
                     albedoTexture: albedoTexture!
                 )
 

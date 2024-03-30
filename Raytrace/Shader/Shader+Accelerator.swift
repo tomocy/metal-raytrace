@@ -22,8 +22,8 @@ extension Shader.Accelerator {
 
             return desc
         }) ()
-
         let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
+
         target = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
 
         encoder.build(
@@ -70,5 +70,80 @@ extension Shader.Accelerator {
         }
 
         return descs
+    }
+}
+
+extension Shader.Accelerator {
+    struct Instanced {
+        var target: (any MTLAccelerationStructure)?
+    }
+}
+
+extension Shader.Accelerator.Instanced {
+    mutating func encode(
+        _ instances: [Shader.Transform],
+        of accelerator: some MTLAccelerationStructure,
+        to buffer: some MTLCommandBuffer
+    ) {
+        let encoder = buffer.makeAccelerationStructureCommandEncoder()!
+        defer { encoder.endEncoding() }
+
+        encoder.useResource(accelerator, usage: .read)
+
+        let desc: MTLInstanceAccelerationStructureDescriptor = describe(
+            instances,
+            of: accelerator,
+            with: encoder.device
+        )
+        let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
+
+        target = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
+
+        encoder.build(
+            accelerationStructure: target!,
+            descriptor: desc,
+            scratchBuffer: encoder.device.makeBuffer(
+                length: sizes.buildScratchBufferSize,
+                options: .storageModePrivate
+            )!,
+            scratchBufferOffset: 0
+        )
+    }
+
+    private func describe(
+        _ instances: [Shader.Transform],
+        of accelerator: some MTLAccelerationStructure,
+        with device: some MTLDevice
+    ) -> MTLInstanceAccelerationStructureDescriptor {
+        let desc = MTLInstanceAccelerationStructureDescriptor.init()
+
+        desc.instancedAccelerationStructures = [accelerator]
+
+        desc.instanceDescriptorBuffer = describe(instances, of: 0).toBuffer(
+            with: device,
+            options: .storageModeShared
+        )
+
+        desc.instanceCount = instances.count
+
+        return desc
+    }
+
+    private func describe(
+        _ instances: [Shader.Transform],
+        of accelerator: UInt32
+    ) -> [MTLAccelerationStructureInstanceDescriptor] {
+        return instances.map { transform in
+            var desc = MTLAccelerationStructureInstanceDescriptor.init()
+
+            desc.accelerationStructureIndex = accelerator
+
+            desc.transformationMatrix = .init(transform.resolve())
+
+            desc.mask = 0xff;
+            desc.options = .opaque
+
+            return desc
+        }
     }
 }
