@@ -44,7 +44,7 @@ extension Shader.Raytrace {
 
 extension Shader.Raytrace {
     func encode(
-        _ primitives: [Shader.Primitive],
+        _ meshes: [Shader.Mesh],
         to buffer: some MTLCommandBuffer,
         accelerator: some MTLAccelerationStructure
     ) {
@@ -56,15 +56,15 @@ extension Shader.Raytrace {
         encoder.setTexture(target.texture, index: 0)
         encoder.setAccelerationStructure(accelerator, bufferIndex: 0)
 
-        let threadsSizePerGroup = MTLSize.init(width: 8, height: 8, depth: 1)
-        let threadsGroupSize = MTLSize.init(
-            width: Int(target.resolution.width).align(by: threadsSizePerGroup.width) / threadsSizePerGroup.width,
-            height: Int(target.resolution.height).align(by: threadsSizePerGroup.height) / threadsSizePerGroup.height,
-            depth: threadsSizePerGroup.depth
-        )
+        do {
+            let threadsSizePerGroup = MTLSize.init(width: 8, height: 8, depth: 1)
+            let threadsGroupSize = MTLSize.init(
+                width: Int(target.resolution.width).align(by: threadsSizePerGroup.width) / threadsSizePerGroup.width,
+                height: Int(target.resolution.height).align(by: threadsSizePerGroup.height) / threadsSizePerGroup.height,
+                depth: threadsSizePerGroup.depth
+            )
 
-        primitives.forEach { primitive in
-            primitive.pieces.forEach { piece in
+            meshes.flatMap({ $0.pieces }).forEach { piece in
                 encoder.setTexture(piece.material?.albedo, index: 1)
 
                 encoder.dispatchThreadgroups(

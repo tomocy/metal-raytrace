@@ -16,20 +16,20 @@ extension Shader.Accelerator {
 }
 
 extension Shader.Accelerator.Primitive {
-    mutating func encode(_ primitive: inout Shader.Primitive, to buffer: some MTLCommandBuffer) {
+    mutating func encode(_ mesh: inout Shader.Mesh, to buffer: some MTLCommandBuffer) {
         let encoder = buffer.makeAccelerationStructureCommandEncoder()!
         defer { encoder.endEncoding() }
 
         let desc: MTLPrimitiveAccelerationStructureDescriptor = describe(
-            primitive,
+            mesh,
             with: encoder.device
         )
         let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
 
-        primitive.accelerator = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
+        mesh.accelerator = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
 
         encoder.build(
-            accelerationStructure: primitive.accelerator!,
+            accelerationStructure: mesh.accelerator!,
             descriptor: desc,
             scratchBuffer: encoder.device.makeBuffer(
                 length: sizes.buildScratchBufferSize,
@@ -40,31 +40,31 @@ extension Shader.Accelerator.Primitive {
     }
 
     private func describe(
-        _ primitive: Shader.Primitive,
+        _ mesh: Shader.Mesh,
         with device: some MTLDevice
     ) -> MTLPrimitiveAccelerationStructureDescriptor {
         let desc = MTLPrimitiveAccelerationStructureDescriptor.init()
 
-        desc.geometryDescriptors = describe(primitive, with: device)
+        desc.geometryDescriptors = describe(mesh, with: device)
 
         return desc
     }
 
     private func describe(
-        _ primitive: Shader.Primitive,
+        _ mesh: Shader.Mesh,
         with device: some MTLDevice
     ) -> [MTLAccelerationStructureGeometryDescriptor] {
         var descs: [MTLAccelerationStructureGeometryDescriptor] = []
 
-        primitive.pieces.forEach { piece in
+        mesh.pieces.forEach { piece in
             assert(piece.type == .triangle)
 
             let desc = MTLAccelerationStructureTriangleGeometryDescriptor.init()
 
             do {
-                desc.vertexBuffer = primitive.positions.buffer
-                desc.vertexFormat = primitive.positions.format
-                desc.vertexStride = primitive.positions.stride
+                desc.vertexBuffer = mesh.positions.buffer
+                desc.vertexFormat = mesh.positions.format
+                desc.vertexStride = mesh.positions.stride
             }
 
             do {
@@ -94,18 +94,18 @@ extension Shader.Accelerator {
 
 extension Shader.Accelerator.Instanced {
     mutating func encode(
-        _ primitives: [Shader.Primitive],
+        _ meshes: [Shader.Mesh],
         to buffer: some MTLCommandBuffer
     ) {
         let encoder = buffer.makeAccelerationStructureCommandEncoder()!
         defer { encoder.endEncoding() }
 
-        primitives.forEach { primitive in
+        meshes.forEach { primitive in
             encoder.useResource(primitive.accelerator!, usage: .read)
         }
 
         let desc: MTLInstanceAccelerationStructureDescriptor = describe(
-            primitives,
+            meshes,
             with: encoder.device
         )
         let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
@@ -124,20 +124,20 @@ extension Shader.Accelerator.Instanced {
     }
 
     private func describe(
-        _ primitives: [Shader.Primitive],
+        _ meshes: [Shader.Mesh],
         with device: some MTLDevice
     ) -> MTLInstanceAccelerationStructureDescriptor {
         let desc = MTLInstanceAccelerationStructureDescriptor.init()
 
-        desc.instancedAccelerationStructures = primitives.map { $0.accelerator! }
+        desc.instancedAccelerationStructures = meshes.map { $0.accelerator! }
 
-        let instances = primitives.enumerated().reduce(
+        let instances = meshes.enumerated().reduce(
             into: []
-        ) { result, primitive in
+        ) { result, mesh in
             result.append(
                 contentsOf: describe(
-                    primitive.element.instances,
-                    of: .init(primitive.offset)
+                    mesh.element.instances,
+                    of: .init(mesh.offset)
                 )
             )
         }
@@ -150,7 +150,7 @@ extension Shader.Accelerator.Instanced {
     }
 
     private func describe(
-        _ instances: [Shader.Primitive.Instance],
+        _ instances: [Shader.Mesh.Instance],
         of accelerator: UInt32
     ) -> [MTLAccelerationStructureInstanceDescriptor] {
         return instances.map { instance in

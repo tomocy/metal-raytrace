@@ -23,7 +23,7 @@ extension Engine {
 
             shader = try! .init(device: device, resolution: drawableSize, format: .bgra8Unorm)
 
-            primitives = []
+            meshes = []
             do {
                 let raw = MDLMesh.init(
                     try! .load(
@@ -36,7 +36,7 @@ extension Engine {
                     ).first!,
                     indexType: .uint16
                 )
-                var primitive = raw.toPrimitive(
+                let mesh = raw.toMesh(
                     with: device,
                     instances: [
                         .init(
@@ -51,13 +51,8 @@ extension Engine {
                         ),
                     ]
                 )
-                primitive.pieces[0].material = .init(
-                    albedo: try! MTKTextureLoader.init(device: device).newTexture(
-                        URL: Bundle.main.url(forResource: "Spot", withExtension: "png", subdirectory: "Farm/Spot")!
-                    )
-                )
 
-                primitives!.append(primitive)
+                meshes!.append(mesh)
             }
             do {
                 let raw = MDLMesh.init(
@@ -69,7 +64,7 @@ extension Engine {
                     ),
                     indexType: .uint16
                 )
-                var primitive = raw.toPrimitive(
+                var mesh = raw.toMesh(
                     with: device,
                     instances: [
                         .init(
@@ -79,18 +74,18 @@ extension Engine {
                         ),
                     ]
                 )
-                primitive.pieces[0].material = .init(
+                mesh.pieces[0].material = .init(
                     albedo: try! MTKTextureLoader.init(device: device).newTexture(
                         URL: Bundle.main.url(forResource: "Ground", withExtension: "png", subdirectory: "Farm/Ground")!
                     )
                 )
 
-                primitives!.append(primitive)
+                meshes!.append(mesh)
             }
         }
 
         var shader: Shader.Shader?
-        var primitives: [Shader.Primitive]?
+        var meshes: [Shader.Mesh]?
     }
 }
 
@@ -104,11 +99,11 @@ extension Engine.View: MTKViewDelegate {
             let command = shader.commandQueue.makeCommandBuffer()!
 
             command.commit {
-                for i in 0..<primitives!.count {
-                    shader.accelerator.primitive.encode(&primitives![i], to: command)
+                for i in 0..<meshes!.count {
+                    shader.accelerator.primitive.encode(&meshes![i], to: command)
                 }
 
-                shader.accelerator.instanced.encode(primitives!, to: command)
+                shader.accelerator.instanced.encode(meshes!, to: command)
             }
 
             command.waitUntilCompleted()
@@ -119,7 +114,7 @@ extension Engine.View: MTKViewDelegate {
 
             command.commit {
                 shader.raytrace.encode(
-                    primitives!,
+                    meshes!,
                     to: command,
                     accelerator: shader.accelerator.instanced.target!
                 )
@@ -130,7 +125,7 @@ extension Engine.View: MTKViewDelegate {
                     source: shader.raytrace.target.texture
                 )
 
-                shader.debug.encode(primitives!, to: command)
+                shader.debug.encode(meshes!, to: command)
 
                 command.present(currentDrawable!)
             }

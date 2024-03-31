@@ -38,7 +38,7 @@ extension Shader.Debug {
 }
 
 extension Shader.Debug {
-    func encode(_ primitives: [Shader.Primitive], to buffer: MTLCommandBuffer) {
+    func encode(_ meshes: [Shader.Mesh], to buffer: MTLCommandBuffer) {
         let encoder = buffer.makeRenderCommandEncoder(
             descriptor: describe()
         )!
@@ -49,7 +49,7 @@ extension Shader.Debug {
         encoder.setRenderPipelineState(pipelineStates.render)
         encoder.setDepthStencilState(pipelineStates.depthStencil)
 
-        primitives.forEach { primitive in
+        meshes.forEach { mesh in
             do {
                 let projection = Shader.Transform.orthogonal(
                     top: 1, bottom: -1,
@@ -73,7 +73,7 @@ extension Shader.Debug {
             }
 
             do {
-                let instances = primitive.instances.map { $0.transform.resolve() }
+                let instances = mesh.instances.map { $0.transform.resolve() }
 
                 let buffer = instances.withUnsafeBytes { bytes in
                     encoder.device.makeBuffer(
@@ -87,19 +87,19 @@ extension Shader.Debug {
             }
 
             encoder.setVertexBuffer(
-                primitive.positions.buffer,
+                mesh.positions.buffer,
                 offset: 0,
                 index: 0
             )
 
-            primitive.pieces.forEach { piece in
+            mesh.pieces.forEach { piece in
                 encoder.drawIndexedPrimitives(
                     type: piece.type,
                     indexCount: piece.indices.count,
                     indexType: piece.indices.type,
                     indexBuffer: piece.indices.buffer,
                     indexBufferOffset: 0,
-                    instanceCount: primitive.instances.count
+                    instanceCount: mesh.instances.count
                 )
             }
         }

@@ -5,6 +5,47 @@ import ModelIO
 import Metal
 import MetalKit
 
+extension Shader {
+    struct Mesh {
+        var positions: Positions
+        var pieces: [Piece]
+        var accelerator: (any MTLAccelerationStructure)?
+
+        var instances: [Instance]
+    }
+}
+
+extension Shader.Mesh {
+    struct Positions {
+        var buffer: any MTLBuffer
+        var format: MTLAttributeFormat
+        var stride: Int
+    }
+}
+
+extension Shader.Mesh {
+    struct Piece {
+        var type: MTLPrimitiveType
+        var indices: Indices
+        var data: Shader.Primitive.Data
+        var material: Shader.Material?
+    }
+}
+
+extension Shader.Mesh {
+    struct Instance {
+        var transform: Shader.Transform
+    }
+}
+
+extension Shader.Mesh {
+    struct Indices {
+        var buffer: any MTLBuffer
+        var type: MTLIndexType
+        var count: Int
+    }
+}
+
 extension MDLMesh {
     static func load(url: URL, with device: some MTLDevice) throws -> [MDLMesh] {
         let asset = MDLAsset.init(
@@ -12,6 +53,8 @@ extension MDLMesh {
             vertexDescriptor: Self.Layout.PNT.describe(),
             bufferAllocator: MTKMeshBufferAllocator.init(device: device)
         )
+
+        asset.loadTextures()
 
         return asset.childObjects(of: Self.self) as! [Self]
     }
@@ -67,14 +110,14 @@ extension MDLMesh {
 }
 
 extension MDLMesh {
-    func toPrimitive(with device: some MTLDevice, instances: [Shader.Primitive.Instance]) -> Shader.Primitive {
+    func toMesh(with device: some MTLDevice, instances: [Shader.Mesh.Instance]) -> Shader.Mesh {
         assert(
             vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Layout.PNT>.stride
         )
 
         let vertices: [Layout.PNT] = vertexBuffers.first!.contents().toArray(count: vertexCount)
 
-        let positions = Shader.Primitive.Positions.init(
+        let positions = Shader.Mesh.Positions.init(
             buffer: vertices.map { $0.position }.toBuffer(with: device, options: .storageModeShared)!,
             format: .float3,
             stride: MemoryLayout<SIMD3<Float>.Packed>.stride
@@ -105,7 +148,7 @@ extension MDLMesh {
                 data.append(.init(datum))
             }
 
-            return Shader.Primitive.Piece.init(
+            return Shader.Mesh.Piece.init(
                 type: .triangle,
                 indices: .init(
                     buffer: indices.toBuffer(with: device, options: .storageModeShared)!,
@@ -160,7 +203,7 @@ extension MDLSubmesh {
             indexCount: other.indexCount,
             indexType: indexType,
             geometryType: other.geometryType,
-            material: nil
+            material: other.material
         )
     }
 
