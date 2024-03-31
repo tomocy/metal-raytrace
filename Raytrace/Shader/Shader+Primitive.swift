@@ -25,6 +25,7 @@ extension Shader.Primitive {
         var type: MTLPrimitiveType
         var indices: Indices
         var data: Data
+        var material: Shader.Material?
     }
 }
 

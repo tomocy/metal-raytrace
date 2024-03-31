@@ -36,24 +36,28 @@ extension Engine {
                     ).first!,
                     indexType: .uint16
                 )
-
-                primitives!.append(
-                    raw.toPrimitive(
-                        with: device,
-                        instances: [
-                            .init(
-                                transform: .init(
-                                    translate: .init(-0.5, 0, 0)
-                                )
-                            ),
-                            .init(
-                                transform: .init(
-                                    translate: .init(0.5, 0, 0)
-                                )
-                            ),
-                        ]
+                var primitive = raw.toPrimitive(
+                    with: device,
+                    instances: [
+                        .init(
+                            transform: .init(
+                                translate: .init(-0.5, 0, 0)
+                            )
+                        ),
+                        .init(
+                            transform: .init(
+                                translate: .init(0.5, 0, 0)
+                            )
+                        ),
+                    ]
+                )
+                primitive.pieces[0].material = .init(
+                    albedo: try! MTKTextureLoader.init(device: device).newTexture(
+                        URL: Bundle.main.url(forResource: "Spot", withExtension: "png", subdirectory: "Farm/Spot")!
                     )
                 )
+
+                primitives!.append(primitive)
             }
             do {
                 let raw = MDLMesh.init(
@@ -65,29 +69,28 @@ extension Engine {
                     ),
                     indexType: .uint16
                 )
-
-                primitives!.append(
-                    raw.toPrimitive(
-                        with: device,
-                        instances: [
-                            .init(
-                                transform: .init(
-                                    translate: .init(0, 0, 0)
-                                )
-                            ),
-                        ]
+                var primitive = raw.toPrimitive(
+                    with: device,
+                    instances: [
+                        .init(
+                            transform: .init(
+                                translate: .init(0, 0, 0)
+                            )
+                        ),
+                    ]
+                )
+                primitive.pieces[0].material = .init(
+                    albedo: try! MTKTextureLoader.init(device: device).newTexture(
+                        URL: Bundle.main.url(forResource: "Ground", withExtension: "png", subdirectory: "Farm/Ground")!
                     )
                 )
-            }
 
-            albedoTexture = try! MTKTextureLoader.init(device: device).newTexture(
-                URL: Bundle.main.url(forResource: "Spot", withExtension: "png", subdirectory: "Farm/Spot")!
-            )
+                primitives!.append(primitive)
+            }
         }
 
         var shader: Shader.Shader?
         var primitives: [Shader.Primitive]?
-        var albedoTexture: (any MTLTexture)?
     }
 }
 
@@ -116,9 +119,9 @@ extension Engine.View: MTKViewDelegate {
 
             command.commit {
                 shader.raytrace.encode(
+                    primitives!,
                     to: command,
-                    accelerator: shader.accelerator.instanced.target!,
-                    albedoTexture: albedoTexture!
+                    accelerator: shader.accelerator.instanced.target!
                 )
 
                 shader.echo.encode(
