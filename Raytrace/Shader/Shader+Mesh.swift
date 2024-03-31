@@ -110,7 +110,7 @@ extension MDLMesh {
 }
 
 extension MDLMesh {
-    func toMesh(with device: some MTLDevice, instances: [Shader.Mesh.Instance]) -> Shader.Mesh {
+    func toMesh(with device: some MTLDevice, instances: [Shader.Mesh.Instance]) throws -> Shader.Mesh {
         assert(
             vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Layout.PNT>.stride
         )
@@ -123,7 +123,7 @@ extension MDLMesh {
             stride: MemoryLayout<SIMD3<Float>.Packed>.stride
         )
 
-        let pieces = defaultSubmeshes!.map { submesh in
+        let pieces = try defaultSubmeshes!.map { submesh in
             assert(submesh.geometryType == .triangles)
             assert(submesh.indexType == .uint16)
 
@@ -158,7 +158,8 @@ extension MDLMesh {
                 data: .init(
                     buffer: data.toBuffer(with: device, options: .storageModeShared)!,
                     stride: MemoryLayout<Shader.Primitive.Triangle>.stride
-                )
+                ),
+                material: try .init(submesh.material, device: device)
             )
         }
 

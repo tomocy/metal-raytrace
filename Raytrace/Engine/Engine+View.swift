@@ -36,7 +36,7 @@ extension Engine {
                     ).first!,
                     indexType: .uint16
                 )
-                let mesh = raw.toMesh(
+                let mesh = try! raw.toMesh(
                     with: device,
                     instances: [
                         .init(
@@ -64,7 +64,7 @@ extension Engine {
                     ),
                     indexType: .uint16
                 )
-                var mesh = raw.toMesh(
+                var mesh = try! raw.toMesh(
                     with: device,
                     instances: [
                         .init(
