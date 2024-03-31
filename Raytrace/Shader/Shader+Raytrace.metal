@@ -1,5 +1,6 @@
 // tomocy
 
+#include "Shader+Mesh.h"
 #include "Shader+Primitive.h"
 #include <metal_stdlib>
 
@@ -8,7 +9,7 @@ kernel void kernelMain(
     const uint2 id [[thread_position_in_grid]],
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(0)]],
-    const metal::texture2d<float> albedoTexture [[texture(1)]]
+    constant Mesh* meshes [[buffer(1)]]
 )
 {
     namespace raytracing = metal::raytracing;
@@ -57,7 +58,10 @@ kernel void kernelMain(
         + centric.y * primitive.textureCoordinates[2];
     coordinate.y = 1 - coordinate.y;
 
-    const auto color = albedoTexture.sample(sampler, coordinate);
+    const auto mesh = meshes[primitive.meshID];
+    const auto piece = mesh.pieces[primitive.pieceID];
+
+    const auto color = piece.material.albedo.sample(sampler, coordinate);
     target.write(color, inScreen);
 }
 }

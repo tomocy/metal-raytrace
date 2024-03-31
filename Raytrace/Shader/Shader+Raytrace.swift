@@ -8,6 +8,7 @@ extension Shader {
     struct Raytrace {
         var target: Target
         var pipelineStates: PipelineStates
+        var argumentEncoders: ArgumentEncoders
     }
 }
 
@@ -17,6 +18,10 @@ extension Shader.Raytrace {
 
         pipelineStates = .init(
             compute: try PipelineStates.make(with: device)
+        )
+
+        argumentEncoders = .init(
+            meshes: ArgumentEncoders.makeMeshes(with: device)
         )
     }
 }
@@ -57,6 +62,19 @@ extension Shader.Raytrace {
         encoder.setAccelerationStructure(accelerator, bufferIndex: 0)
 
         do {
+            let buffer = build(
+                with: .init(
+                    compute: encoder,
+                    argument: argumentEncoders.meshes
+                ),
+                for: meshes
+            )
+            buffer.label = "Meshes"
+
+            encoder.setBuffer(buffer, offset: 0, index: 1)
+        }
+
+        do {
             let threadsSizePerGroup = MTLSize.init(width: 8, height: 8, depth: 1)
             let threadsGroupSize = MTLSize.init(
                 width: Int(target.resolution.width).align(by: threadsSizePerGroup.width) / threadsSizePerGroup.width,
@@ -64,15 +82,63 @@ extension Shader.Raytrace {
                 depth: threadsSizePerGroup.depth
             )
 
-            meshes.flatMap({ $0.pieces }).forEach { piece in
-                encoder.setTexture(piece.material?.albedo, index: 1)
+            encoder.dispatchThreadgroups(
+                threadsGroupSize,
+                threadsPerThreadgroup: threadsSizePerGroup
+            )
+        }
+    }
 
-                encoder.dispatchThreadgroups(
-                    threadsGroupSize,
-                    threadsPerThreadgroup: threadsSizePerGroup
+    private func build(with encoder: BuildArgumentEncoder, for meshes: [Shader.Mesh]) -> some MTLBuffer {
+        let buffer = encoder.compute.device.makeBuffer(
+            length: encoder.argument.encodedLength * meshes.count
+        )!
+
+        encoder.compute.useResource(buffer, usage: .read)
+
+        meshes.enumerated().forEach { i, mesh in
+            encoder.argument.setArgumentBuffer(
+                buffer,
+                offset: encoder.argument.encodedLength * i
+            )
+
+            do {
+                let buffer = build(
+                    with: .init(
+                        compute: encoder.compute,
+                        argument: encoder.argument.makeArgumentEncoderForBuffer(atIndex: 0)!
+                    ),
+                    for: mesh.pieces
                 )
+                buffer.label = "Pieces"
+
+                encoder.argument.setBuffer(buffer, offset: 0, index: 0)
             }
         }
+
+        return buffer
+    }
+
+    private func build(with encoder: BuildArgumentEncoder, for pieces: [Shader.Mesh.Piece]) -> some MTLBuffer {
+        let buffer = encoder.compute.device.makeBuffer(
+            length: encoder.argument.encodedLength * pieces.count
+        )!
+
+        encoder.compute.useResource(buffer, usage: .read)
+
+        pieces.enumerated().forEach { i, piece in
+            encoder.argument.setArgumentBuffer(
+                buffer,
+                offset: encoder.argument.encodedLength * i
+            )
+
+            if let texture = piece.material?.albedo {
+                encoder.compute.useResource(texture, usage: .read)
+                encoder.argument.setTexture(texture, index: 0)
+            }
+        }
+
+        return buffer
     }
 }
 
@@ -96,5 +162,27 @@ extension Shader.Raytrace.PipelineStates {
         return try device.makeComputePipelineState(
             function: lib.makeFunction(name: "Raytrace::kernelMain")!
         )
+    }
+}
+
+extension Shader.Raytrace {
+    struct ArgumentEncoders {
+        var meshes: any MTLArgumentEncoder
+    }
+}
+
+extension Shader.Raytrace.ArgumentEncoders {
+    static func makeMeshes(with device: some MTLDevice) -> MTLArgumentEncoder {
+        let lib = device.makeDefaultLibrary()!
+        let fn = lib.makeFunction(name: "Raytrace::kernelMain")!
+
+        return fn.makeArgumentEncoder(bufferIndex: 1)
+    }
+}
+
+extension Shader.Raytrace {
+    struct BuildArgumentEncoder {
+        var compute: any MTLComputeCommandEncoder
+        var argument: any MTLArgumentEncoder
     }
 }

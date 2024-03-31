@@ -38,6 +38,7 @@ extension Engine {
                 )
                 let mesh = try! raw.toMesh(
                     with: device,
+                    id: 0,
                     instances: [
                         .init(
                             transform: .init(
@@ -66,6 +67,7 @@ extension Engine {
                 )
                 var mesh = try! raw.toMesh(
                     with: device,
+                    id: 1,
                     instances: [
                         .init(
                             transform: .init(

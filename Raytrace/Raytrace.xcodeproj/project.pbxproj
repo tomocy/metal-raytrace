@@ -31,6 +31,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F53486B92BB98DE300EB7E03 /* Shader+Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Mesh.h"; sourceTree = "<group>"; };
+		F53486BA2BB98E8400EB7E03 /* Shader+Material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Material.h"; sourceTree = "<group>"; };
 		F53A73892BB2F829003C899A /* Shader+Echo.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shader+Echo.metal"; sourceTree = "<group>"; };
 		F53A738B2BB2FC45003C899A /* Shader+Echo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Echo.swift"; sourceTree = "<group>"; };
 		F53A738D2BB300CD003C899A /* Shader+Raytrace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Raytrace.swift"; sourceTree = "<group>"; };
@@ -108,8 +110,10 @@
 				F5B35B4F2BB54EF500651A54 /* Shader+Debug.swift */,
 				F53A73892BB2F829003C899A /* Shader+Echo.metal */,
 				F53A738B2BB2FC45003C899A /* Shader+Echo.swift */,
+				F53486BA2BB98E8400EB7E03 /* Shader+Material.h */,
 				F57A1B432BB938F800F20794 /* Shader+Material.swift */,
 				F53A73932BB30967003C899A /* Shader+Math.swift */,
+				F53486B92BB98DE300EB7E03 /* Shader+Mesh.h */,
 				F5E4F7AC2BB52EEC00B21B16 /* Shader+Mesh.swift */,
 				F57A828E2BB71BDB007224CF /* Shader+Primitive.h */,
 				F57A828C2BB71111007224CF /* Shader+Primitive.swift */,
