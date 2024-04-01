@@ -1,5 +1,6 @@
 // tomocy
 
+#include "Shader+Math.h"
 #include "Shader+Mesh.h"
 #include "Shader+Primitive.h"
 #include <metal_stdlib>
@@ -56,15 +57,18 @@ kernel void kernelMain(
         );
 
         const auto primitive = *(const device Primitive::Triangle*)intersection.primitive_data;
-        const auto centric = intersection.triangle_barycentric_coord;
-        auto coordinate = (1 - centric.x - centric.y) * primitive.textureCoordinates[0]
-            + centric.x * primitive.textureCoordinates[1]
-            + centric.y * primitive.textureCoordinates[2];
-        coordinate.y = 1 - coordinate.y;
 
         const auto instance = instances[intersection.instance_id];
         const auto mesh = meshes[instance.meshID];
         const auto piece = mesh.pieces[intersection.geometry_id];
+
+        auto coordinate = interpolate(
+            primitive.textureCoordinates[0],
+            primitive.textureCoordinates[1],
+            primitive.textureCoordinates[2],
+            intersection.triangle_barycentric_coord
+        );
+        coordinate.y = 1 - coordinate.y;
 
         color = piece.material.albedo.sample(sampler, coordinate);
     }

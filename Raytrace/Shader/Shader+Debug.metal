@@ -22,10 +22,10 @@ vertex Raster vertexMain(
     const uint16_t id [[instance_id]]
 )
 {
-    const auto transform = instances[id];
+    // const auto transform = instances[id];
 
     return {
-        .position = aspect * transform * float4(v.position, 1),
+        .position = aspect/* * transform */ * float4(v.position, 1),
     };
 }
 }
