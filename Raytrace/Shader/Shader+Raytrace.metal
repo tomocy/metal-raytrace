@@ -48,7 +48,31 @@ float4 trace(
         metal::mip_filter::none
     );
 
-    return piece.material.albedo.sample(sampler, primitive.textureCoordinate);
+    auto color = float4(1);
+
+    color *= piece.material.albedo.sample(sampler, primitive.textureCoordinate);
+
+    {
+        // We know the directional light for now.
+        const struct {
+            float3 direction;
+            float3 intensity;
+        } directionalLight = {
+            .direction = metal::normalize(float3(-1, -1, 1)),
+            .intensity = float3(1, 1, 1),
+        };
+
+        const auto diffuse = metal::saturate(
+            metal::dot(
+                -directionalLight.direction,
+                primitive.normal
+            )
+        );
+
+        color *= float4(diffuse * directionalLight.intensity, 1);
+    }
+
+    return color;
 }
 
 kernel void kernelMain(
