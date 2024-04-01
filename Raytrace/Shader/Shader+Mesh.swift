@@ -110,7 +110,7 @@ extension MDLMesh {
 }
 
 extension MDLMesh {
-    func toMesh(with device: some MTLDevice, id: UInt16, instances: [Shader.Mesh.Instance]) throws -> Shader.Mesh {
+    func toMesh(with device: some MTLDevice, instances: [Shader.Mesh.Instance]) throws -> Shader.Mesh {
         assert(
             vertexDescriptor.defaultLayouts![0].stride == MemoryLayout<Layout.PNT>.stride
         )
@@ -133,8 +133,6 @@ extension MDLMesh {
             let primitiveCount = indices.count / 3
             for primitiveI in 0..<primitiveCount {
                 var datum = Shader.Primitive.Datum.init(
-                    meshID: id,
-                    pieceID: .init(i),
                     normals: [],
                     textureCoordinates: []
                 )

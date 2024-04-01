@@ -38,7 +38,6 @@ extension Engine {
                 )
                 let mesh = try! raw.toMesh(
                     with: device,
-                    id: 0,
                     instances: [
                         .init(
                             transform: .init(
@@ -67,7 +66,6 @@ extension Engine {
                 )
                 var mesh = try! raw.toMesh(
                     with: device,
-                    id: 1,
                     instances: [
                         .init(
                             transform: .init(
@@ -118,7 +116,8 @@ extension Engine.View: MTKViewDelegate {
                 shader.raytrace.encode(
                     meshes!,
                     to: command,
-                    accelerator: shader.accelerator.instanced.target!
+                    accelerator: shader.accelerator.instanced.target!,
+                    instances: shader.accelerator.instanced.instances!
                 )
 
                 shader.echo.encode(

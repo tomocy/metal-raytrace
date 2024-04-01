@@ -89,6 +89,7 @@ extension Shader.Accelerator.Primitive {
 extension Shader.Accelerator {
     struct Instanced {
         var target: (any MTLAccelerationStructure)?
+        var instances: [Shader.Primitive.Instance]?
     }
 }
 
@@ -111,6 +112,18 @@ extension Shader.Accelerator.Instanced {
         let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
 
         target = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
+
+        do {
+            instances = []
+
+            meshes.enumerated().forEach { i, mesh in
+                mesh.instances.forEach { instance in
+                    instances!.append(
+                        .init(meshID: .init(i))
+                    )
+                }
+            }
+        }
 
         encoder.build(
             accelerationStructure: target!,

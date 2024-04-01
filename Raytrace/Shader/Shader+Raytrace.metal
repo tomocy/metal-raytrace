@@ -9,7 +9,8 @@ kernel void kernelMain(
     const uint2 id [[thread_position_in_grid]],
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(0)]],
-    constant Mesh* meshes [[buffer(1)]]
+    constant Primitive::Instance* instances [[buffer(1)]],
+    constant Mesh* meshes [[buffer(2)]]
 )
 {
     namespace raytracing = metal::raytracing;
@@ -58,8 +59,9 @@ kernel void kernelMain(
         + centric.y * primitive.textureCoordinates[2];
     coordinate.y = 1 - coordinate.y;
 
-    const auto mesh = meshes[primitive.meshID];
-    const auto piece = mesh.pieces[primitive.pieceID];
+    const auto instance = instances[intersection.instance_id];
+    const auto mesh = meshes[instance.meshID];
+    const auto piece = mesh.pieces[intersection.geometry_id];
 
     const auto color = piece.material.albedo.sample(sampler, coordinate);
     target.write(color, inScreen);

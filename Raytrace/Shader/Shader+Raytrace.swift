@@ -51,7 +51,8 @@ extension Shader.Raytrace {
     func encode(
         _ meshes: [Shader.Mesh],
         to buffer: some MTLCommandBuffer,
-        accelerator: some MTLAccelerationStructure
+        accelerator: some MTLAccelerationStructure,
+        instances: [Shader.Primitive.Instance]
     ) {
         let encoder = buffer.makeComputeCommandEncoder()!
         defer { encoder.endEncoding() }
@@ -59,7 +60,18 @@ extension Shader.Raytrace {
         encoder.setComputePipelineState(pipelineStates.compute)
 
         encoder.setTexture(target.texture, index: 0)
+
         encoder.setAccelerationStructure(accelerator, bufferIndex: 0)
+
+        do {
+            let buffer = instances.toBuffer(
+                with: encoder.device,
+                options: .storageModeShared
+            )!
+            buffer.label = "Instances"
+
+            encoder.setBuffer(buffer, offset: 0, index: 1)
+        }
 
         do {
             let buffer = build(
@@ -71,7 +83,7 @@ extension Shader.Raytrace {
             )
             buffer.label = "Meshes"
 
-            encoder.setBuffer(buffer, offset: 0, index: 1)
+            encoder.setBuffer(buffer, offset: 0, index: 2)
         }
 
         do {
@@ -176,7 +188,7 @@ extension Shader.Raytrace.ArgumentEncoders {
         let lib = device.makeDefaultLibrary()!
         let fn = lib.makeFunction(name: "Raytrace::kernelMain")!
 
-        return fn.makeArgumentEncoder(bufferIndex: 1)
+        return fn.makeArgumentEncoder(bufferIndex: 2)
     }
 }
 

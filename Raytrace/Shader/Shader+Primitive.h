@@ -3,10 +3,13 @@
 #pragma once
 
 namespace Primitive {
-struct Triangle {
+struct Instance {
 public:
     uint16_t meshID;
-    uint16_t pieceID;
+};
+
+struct Triangle {
+public:
     packed_float3 normals[3];
     float2 textureCoordinates[3];
 };
