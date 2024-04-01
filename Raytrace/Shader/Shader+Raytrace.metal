@@ -6,6 +6,16 @@
 #include <metal_stdlib>
 
 namespace Raytrace {
+float4 skyFor(const float3 direction) {
+    constexpr auto deep = float4(0, 0.5, 0.95, 1);
+    constexpr auto shallow = float4(0.25, 0.5, 0.9, 1);
+
+    const auto alpha = direction.y * 0.5 + 0.5;
+
+    return interpolate(shallow, deep, alpha);
+}
+
+
 kernel void kernelMain(
     const uint2 id [[thread_position_in_grid]],
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
@@ -52,7 +62,7 @@ kernel void kernelMain(
         const auto intersection = intersector.intersect(ray, accelerator, mask);
 
         if (intersection.type == raytracing::intersection_type::none) {
-            color = float4(0, 0.5, 0.95, 1);
+            color = skyFor(ray.direction);
             break;
         }
 
