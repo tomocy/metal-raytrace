@@ -6,7 +6,8 @@
 #include <metal_stdlib>
 
 namespace Raytrace {
-float4 skyFor(const float3 direction) {
+float4 skyFor(const float3 direction)
+{
     constexpr auto deep = float4(0, 0.5, 0.95, 1);
     constexpr auto shallow = float4(0.25, 0.5, 0.9, 1);
 
@@ -20,7 +21,8 @@ float4 trace(
     const metal::raytracing::instance_acceleration_structure accelerator,
     constant Primitive::Instance* instances,
     constant Mesh* meshes
-) {
+)
+{
     namespace raytracing = metal::raytracing;
 
     using Intersector = typename raytracing::intersector<raytracing::instancing, raytracing::triangle_data>;
@@ -86,25 +88,37 @@ kernel void kernelMain(
     namespace raytracing = metal::raytracing;
 
     // We know size of the target texture for now.
-    const float width = 1600;
-    const float height = 1200;
+    const struct {
+        float width;
+        float height;
+    } size = {
+        .width = 1600,
+        .height = 1200,
+    };
 
     // We know the camera for now.
-    const auto cameraUp = float3(0, 1, 0);
-    const auto cameraForward = float3(0, 0, 1);
-    const auto cameraRight = float3(1, 0, 0);
-    const auto cameraPosition = float3(0, 0.5, -2);
+    const struct {
+        float3 up;
+        float3 forward;
+        float3 right;
+        float3 position;
+    } camera = {
+        .up = float3(0, 1, 0),
+        .forward = float3(0, 0, 1),
+        .right = float3(1, 0, 0),
+        .position = float3(0, 0.5, -2),
+    };
 
     // Map Screen (0...width, 0...height) to UV (0...1, 0...1),
     // then UV to NDC (-1...1, 1...-1).
     const auto inScreen = id;
-    const auto inUV = float2(inScreen) / float2(width, height);
+    const auto inUV = float2(inScreen) / float2(size.width, size.height);
     const auto inNDC = float2(inUV.x * 2 - 1, inUV.y * -2 + 1);
 
-    raytracing::ray ray = {};
-    ray.origin = cameraPosition;
-    ray.direction = metal::normalize(inNDC.x * cameraRight + inNDC.y * cameraUp + cameraForward);
-    ray.max_distance = INFINITY;
+    const auto ray = raytracing::ray(
+        camera.position,
+        metal::normalize(inNDC.x * camera.right + inNDC.y * camera.up + camera.forward)
+    );
 
     const auto color = trace(ray, accelerator, instances, meshes);
 
