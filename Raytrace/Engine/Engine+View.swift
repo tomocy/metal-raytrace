@@ -21,7 +21,8 @@ extension Engine {
 
             delegate = self
 
-            shader = try! .init(device: device, resolution: drawableSize, format: .bgra8Unorm)
+            colorPixelFormat = .rgba8Unorm_srgb
+            shader = try! .init(device: device, resolution: drawableSize, format: colorPixelFormat)
 
             meshes = []
             do {

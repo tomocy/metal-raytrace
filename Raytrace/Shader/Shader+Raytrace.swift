@@ -13,8 +13,8 @@ extension Shader {
 }
 
 extension Shader.Raytrace {
-    init(device: some MTLDevice, resolution: CGSize, format: MTLPixelFormat) throws {
-        target = Self.makeTarget(with: device, resolution: resolution, format: format)!
+    init(device: some MTLDevice, resolution: CGSize) throws {
+        target = Self.make(with: device, resolution: resolution)!
 
         pipelineStates = .init(
             compute: try PipelineStates.make(with: device)
@@ -27,13 +27,12 @@ extension Shader.Raytrace {
 }
 
 extension Shader.Raytrace {
-    static func makeTarget(
+    static func make(
         with device: some MTLDevice,
-        resolution: CGSize,
-        format: MTLPixelFormat
+        resolution: CGSize
     ) -> Target? {
         let desc = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: format,
+            pixelFormat: .bgra8Unorm,
             width: .init(resolution.width), height: .init(resolution.height),
             mipmapped: false
         )

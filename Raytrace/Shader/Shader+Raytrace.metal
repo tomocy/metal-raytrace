@@ -35,35 +35,40 @@ kernel void kernelMain(
     ray.max_distance = INFINITY;
 
     using Intersector = typename raytracing::intersector<raytracing::instancing, raytracing::triangle_data>;
-    const auto intersector = Intersector();
-
     using Intersection = typename Intersector::result_type;
-    const uint32_t mask = 0xff;
-    const Intersection intersection = intersector.intersect(ray, accelerator, mask);
 
-    if (intersection.type == raytracing::intersection_type::none) {
-        target.write(float4(0, 0, 0, 1), inScreen);
-        return;
+    const auto intersector = Intersector();
+    float4 color = float4(0, 0, 0, 1);
+
+    for (int i = 0; i < 1; i++) {
+        const uint32_t mask = 0xff;
+        const Intersection intersection = intersector.intersect(ray, accelerator, mask);
+
+        if (intersection.type == raytracing::intersection_type::none) {
+            color = float4(0, 0.5, 0.95, 1);
+            break;
+        }
+
+        constexpr auto sampler = metal::sampler(
+            metal::min_filter::nearest,
+            metal::mag_filter::nearest,
+            metal::mip_filter::none
+        );
+
+        const auto primitive = *(const device Primitive::Triangle*)intersection.primitive_data;
+        const auto centric = intersection.triangle_barycentric_coord;
+        auto coordinate = (1 - centric.x - centric.y) * primitive.textureCoordinates[0]
+            + centric.x * primitive.textureCoordinates[1]
+            + centric.y * primitive.textureCoordinates[2];
+        coordinate.y = 1 - coordinate.y;
+
+        const auto instance = instances[intersection.instance_id];
+        const auto mesh = meshes[instance.meshID];
+        const auto piece = mesh.pieces[intersection.geometry_id];
+
+        color = piece.material.albedo.sample(sampler, coordinate);
     }
 
-    constexpr auto sampler = metal::sampler(
-        metal::min_filter::nearest,
-        metal::mag_filter::nearest,
-        metal::mip_filter::none
-    );
-
-    const auto primitive = *(const device Primitive::Triangle*)intersection.primitive_data;
-    const auto centric = intersection.triangle_barycentric_coord;
-    auto coordinate = (1 - centric.x - centric.y) * primitive.textureCoordinates[0]
-        + centric.x * primitive.textureCoordinates[1]
-        + centric.y * primitive.textureCoordinates[2];
-    coordinate.y = 1 - coordinate.y;
-
-    const auto instance = instances[intersection.instance_id];
-    const auto mesh = meshes[instance.meshID];
-    const auto piece = mesh.pieces[intersection.geometry_id];
-
-    const auto color = piece.material.albedo.sample(sampler, coordinate);
     target.write(color, inScreen);
 }
 }
