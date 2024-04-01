@@ -35,7 +35,10 @@ float4 trace(
 
     float4 color = {};
 
-    const auto primitive = *(const device Primitive::Triangle*)intersection.primitive_data;
+    const auto primitive = Primitive::Primitive::from(
+        *(const device Primitive::Triangle*)intersection.primitive_data,
+        intersection.triangle_barycentric_coord
+    );
 
     {
         const auto instance = instances[intersection.instance_id];
@@ -48,29 +51,12 @@ float4 trace(
             metal::mip_filter::none
         );
 
-        auto textureCoordinate = interpolate(
-            primitive.textureCoordinates[0],
-            primitive.textureCoordinates[1],
-            primitive.textureCoordinates[2],
-            intersection.triangle_barycentric_coord
-        );
-        textureCoordinate.y = 1 - textureCoordinate.y;
-
-        color = piece.material.albedo.sample(sampler, textureCoordinate);
+        color = piece.material.albedo.sample(sampler, primitive.textureCoordinate);
     }
-
-    const auto normal = metal::normalize(
-        interpolate(
-            primitive.normals[0],
-            primitive.normals[1],
-            primitive.normals[2],
-            intersection.triangle_barycentric_coord
-        )
-    );
 
     raytracing::ray nextRay = {};
     nextRay.origin = ray.origin + ray.direction * intersection.distance;
-    nextRay.direction = normal;
+    nextRay.direction = primitive.normal;
     nextRay.min_distance = 1e-3;
     nextRay.max_distance = ray.max_distance;
 

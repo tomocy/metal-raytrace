@@ -1,5 +1,7 @@
 // tomocy
 
+#pragma once
+
 template <typename T>
 T interpolate(
     const T a, // origin
