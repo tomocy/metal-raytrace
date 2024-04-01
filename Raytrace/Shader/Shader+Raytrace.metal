@@ -33,34 +33,22 @@ float4 trace(
         return skyFor(ray.direction);
     }
 
-    float4 color = {};
-
     const auto primitive = Primitive::Primitive::from(
         *(const device Primitive::Triangle*)intersection.primitive_data,
         intersection.triangle_barycentric_coord
     );
 
-    {
-        const auto instance = instances[intersection.instance_id];
-        const auto mesh = meshes[instance.meshID];
-        const auto piece = mesh.pieces[intersection.geometry_id];
+    const auto instance = instances[intersection.instance_id];
+    const auto mesh = meshes[instance.meshID];
+    const auto piece = mesh.pieces[intersection.geometry_id];
 
-        constexpr auto sampler = metal::sampler(
-            metal::min_filter::nearest,
-            metal::mag_filter::nearest,
-            metal::mip_filter::none
-        );
+    constexpr auto sampler = metal::sampler(
+        metal::min_filter::nearest,
+        metal::mag_filter::nearest,
+        metal::mip_filter::none
+    );
 
-        color = piece.material.albedo.sample(sampler, primitive.textureCoordinate);
-    }
-
-    raytracing::ray nextRay = {};
-    nextRay.origin = ray.origin + ray.direction * intersection.distance;
-    nextRay.direction = primitive.normal;
-    nextRay.min_distance = 1e-3;
-    nextRay.max_distance = ray.max_distance;
-
-    return color * trace(nextRay, accelerator, instances, meshes);
+    return piece.material.albedo.sample(sampler, primitive.textureCoordinate);
 }
 
 kernel void kernelMain(
