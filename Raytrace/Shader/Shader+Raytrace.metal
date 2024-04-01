@@ -20,9 +20,16 @@ kernel void kernelMain(
     const float width = 1600;
     const float height = 1200;
 
-    const auto up = float3(0, 1, 0);
-    const auto forward = float3(0, 0, 1);
-    const auto right = float3(1, 0, 0);
+    // We know the camera for now.
+    const auto cameraUp = float3(0, 1, 0);
+    const auto cameraForward = float3(0, 0, 1);
+    const auto cameraRight = float3(1, 0, 0);
+    const auto cameraPosition = float3(0, 0.5, -2);
+
+    // We know the lights for now.
+    const auto ambientLightIntensity = 0.1;
+    const auto directionalLightDirection = metal::normalize(float3(-1, -1, 1));
+    const auto directionalLightIntensity = 1;
 
     // Map Screen (0...width, 0...height) to UV (0...1, 0...1),
     // then UV to NDC (-1...1, 1...-1).
@@ -31,19 +38,18 @@ kernel void kernelMain(
     const auto inNDC = float2(inUV.x * 2 - 1, inUV.y * -2 + 1);
 
     raytracing::ray ray = {};
-    ray.origin = float3(0, 0.5, -2); // We know the camera position for now.
-    ray.direction = metal::normalize(inNDC.x * right + inNDC.y * up + forward);
+    ray.origin = cameraPosition;
+    ray.direction = metal::normalize(inNDC.x * cameraRight + inNDC.y * cameraUp + cameraForward);
     ray.max_distance = INFINITY;
 
     using Intersector = typename raytracing::intersector<raytracing::instancing, raytracing::triangle_data>;
-    using Intersection = typename Intersector::result_type;
-
     const auto intersector = Intersector();
+
     float4 color = float4(0, 0, 0, 1);
 
-    for (int i = 0; i < 1; i++) {
+    do {
         const uint32_t mask = 0xff;
-        const Intersection intersection = intersector.intersect(ray, accelerator, mask);
+        const auto intersection = intersector.intersect(ray, accelerator, mask);
 
         if (intersection.type == raytracing::intersection_type::none) {
             color = float4(0, 0.5, 0.95, 1);
@@ -62,16 +68,39 @@ kernel void kernelMain(
         const auto mesh = meshes[instance.meshID];
         const auto piece = mesh.pieces[intersection.geometry_id];
 
-        auto coordinate = interpolate(
+        const auto normal = metal::normalize(
+            interpolate(
+                primitive.normals[0],
+                primitive.normals[1],
+                primitive.normals[2],
+                intersection.triangle_barycentric_coord
+            )
+        );
+        auto textureCoordinate = interpolate(
             primitive.textureCoordinates[0],
             primitive.textureCoordinates[1],
             primitive.textureCoordinates[2],
             intersection.triangle_barycentric_coord
         );
-        coordinate.y = 1 - coordinate.y;
+        textureCoordinate.y = 1 - textureCoordinate.y;
 
-        color = piece.material.albedo.sample(sampler, coordinate);
-    }
+        const auto albedo = piece.material.albedo.sample(sampler, textureCoordinate);
+
+        float3 rgb = {};
+
+        {
+            rgb += albedo.rgb * ambientLightIntensity;
+        }
+        {
+            const auto howDiffuse = metal::saturate(
+                metal::dot(-directionalLightDirection, normal)
+            );
+
+            rgb += albedo.rgb * directionalLightIntensity * howDiffuse;
+        }
+
+        color = float4(rgb * albedo.a, albedo.a);
+    } while (0);
 
     target.write(color, inScreen);
 }
