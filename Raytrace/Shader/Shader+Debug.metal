@@ -25,7 +25,7 @@ vertex Raster vertexMain(
     // const auto transform = instances[id];
 
     return {
-        .position = aspect/* * transform */ * float4(v.position, 1),
+        .position = aspect /* * transform */ * float4(v.position, 1),
     };
 }
 }

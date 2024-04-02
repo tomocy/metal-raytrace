@@ -1,9 +1,12 @@
 // tomocy
 
 #include "Shader+Frame.h"
+#include "Shader+Geometry.h"
 #include "Shader+Math.h"
 #include "Shader+Mesh.h"
 #include "Shader+Primitive.h"
+#include "Shader+Random.h"
+#include "Shader+Sample.h"
 #include <metal_stdlib>
 
 namespace Raytrace {
@@ -14,7 +17,7 @@ public:
 }
 
 namespace Raytrace {
-float4 skyFor(const float3 direction)
+float4 skyColorFor(const float3 direction)
 {
     constexpr auto deep = float4(0, 0.5, 0.95, 1);
     constexpr auto shallow = float4(0.25, 0.5, 0.9, 1);
@@ -25,13 +28,20 @@ float4 skyFor(const float3 direction)
 }
 
 float4 trace(
+    constant Context& context,
+    const uint32_t seed,
     const metal::raytracing::ray ray,
     const metal::raytracing::instance_acceleration_structure accelerator,
     constant Primitive::Instance* instances,
-    constant Mesh* meshes
+    constant Mesh* meshes,
+    const uint32_t bounceCount
 )
 {
     namespace raytracing = metal::raytracing;
+
+    if (bounceCount >= 3) {
+        return float4(float3(0), 1);
+    }
 
     using Intersector = typename raytracing::intersector<raytracing::instancing, raytracing::triangle_data>;
     const auto intersector = Intersector();
@@ -40,29 +50,10 @@ float4 trace(
     const auto intersection = intersector.intersect(ray, accelerator, mask);
 
     if (intersection.type == raytracing::intersection_type::none) {
-        return skyFor(ray.direction);
-    }
+        if (bounceCount == 0) {
+            return skyColorFor(ray.direction);
+        }
 
-    const auto primitive = Primitive::Primitive::from(
-        *(const device Primitive::Triangle*)intersection.primitive_data,
-        intersection.triangle_barycentric_coord
-    );
-
-    const auto instance = instances[intersection.instance_id];
-    const auto mesh = meshes[instance.meshID];
-    const auto piece = mesh.pieces[intersection.geometry_id];
-
-    constexpr auto sampler = metal::sampler(
-        metal::min_filter::nearest,
-        metal::mag_filter::nearest,
-        metal::mip_filter::none
-    );
-
-    auto color = float4(1);
-
-    color *= piece.material.albedo.sample(sampler, primitive.textureCoordinate);
-
-    {
         // We know the directional light for now.
         const struct {
             float3 direction;
@@ -72,14 +63,59 @@ float4 trace(
             .intensity = float3(1, 1, 1),
         };
 
-        const auto diffuse = metal::saturate(
+        const auto reflection = metal::saturate(
             metal::dot(
                 -directionalLight.direction,
-                primitive.normal
+                ray.direction
             )
         );
 
-        color *= float4(diffuse * directionalLight.intensity, 1);
+        return float4(reflection * directionalLight.intensity, 1);
+    }
+
+    const auto primitive = Primitive::Primitive::from(
+        *(const device Primitive::Triangle*)intersection.primitive_data,
+        intersection.triangle_barycentric_coord
+    );
+
+    auto color = float4(1);
+
+    // Simulate diffuse.
+    {
+        {
+            const auto instance = instances[intersection.instance_id];
+            const auto mesh = meshes[instance.meshID];
+            const auto piece = mesh.pieces[intersection.geometry_id];
+
+            constexpr auto sampler = metal::sampler(
+                metal::min_filter::nearest,
+                metal::mag_filter::nearest,
+                metal::mip_filter::none
+            );
+
+            color *= piece.material.albedo.sample(sampler, primitive.textureCoordinate);
+        }
+
+        {
+            const auto random = float2(
+                Random::Halton::generate(2 + bounceCount * 5 + 3, seed + context.frame.id),
+                Random::Halton::generate(2 + bounceCount * 5 + 4, seed + context.frame.id)
+            );
+
+            const float3 direction = Geometry::alignAsUp(
+                Sample::CosineWeightedHemisphere::sample(random),
+                primitive.normal
+            );
+
+            const auto nextRay = raytracing::ray(
+                ray.origin + ray.direction * intersection.distance,
+                direction,
+                1e-3, // To avoid an intersection with the same primitive again.
+                ray.max_distance
+            );
+
+            color *= trace(context, seed, nextRay, accelerator, instances, meshes, bounceCount + 1);
+        }
     }
 
     return color;
@@ -119,6 +155,8 @@ kernel void kernelMain(
         .position = float3(0, 0.5, -2),
     };
 
+    const auto seed = seeds.read(id).r;
+
     // Map Screen (0...width, 0...height) to UV (0...1, 0...1),
     // then UV to NDC (-1...1, 1...-1).
     const auto inScreen = id;
@@ -130,7 +168,15 @@ kernel void kernelMain(
         metal::normalize(inNDC.x * camera.right + inNDC.y * camera.up + camera.forward)
     );
 
-    const auto color = trace(ray, accelerator, instances, meshes);
+    const auto color = trace(
+        context,
+        seed,
+        ray,
+        accelerator,
+        instances,
+        meshes,
+        0
+    );
 
     target.write(color, inScreen);
 }

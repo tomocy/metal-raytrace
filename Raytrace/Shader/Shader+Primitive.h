@@ -14,7 +14,8 @@ public:
 
 struct Primitive {
 public:
-    static Primitive from(const Triangle triangle, const float2 position) {
+    static Primitive from(const Triangle triangle, const float2 position)
+    {
         Primitive primitive = {};
 
         {
