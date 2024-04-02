@@ -6,16 +6,16 @@ import MetalKit
 
 extension Shader {
     struct Raytrace {
-        var target: Target
         var pipelineStates: PipelineStates
         var argumentEncoders: ArgumentEncoders
+
+        var target: Target
+        var seeds: any MTLTexture
     }
 }
 
 extension Shader.Raytrace {
     init(device: some MTLDevice, resolution: CGSize) throws {
-        target = Self.make(with: device, resolution: resolution)!
-
         pipelineStates = .init(
             compute: try PipelineStates.make(with: device)
         )
@@ -23,6 +23,9 @@ extension Shader.Raytrace {
         argumentEncoders = .init(
             meshes: ArgumentEncoders.makeMeshes(with: device)
         )
+
+        target = Self.make(with: device, resolution: resolution)!
+        seeds = Self.makeSeeds(with: device, resolution: resolution)!
     }
 }
 
@@ -47,6 +50,44 @@ extension Shader.Raytrace {
 }
 
 extension Shader.Raytrace {
+    static func makeSeeds(
+        with device: some MTLDevice,
+        resolution: CGSize
+    ) -> (any MTLTexture)? {
+        let desc = MTLTextureDescriptor.texture2DDescriptor(
+            pixelFormat: .r32Uint,
+            width: .init(resolution.width), height: .init(resolution.height),
+            mipmapped: false
+        )
+
+        desc.storageMode = .managed
+        desc.usage = [.shaderRead, .shaderWrite]
+
+        guard let texture = device.makeTexture(descriptor: desc) else { return nil }
+
+        let count = desc.width * desc.height
+
+        var seeds: [UInt32] = []
+        seeds.reserveCapacity(count)
+
+        for _ in 0..<count {
+            seeds.append(.random(in: 0...UInt32.max))
+        }
+
+        seeds.withUnsafeBytes { bytes in
+            texture.replace(
+                region: MTLRegionMake2D(0, 0, desc.width, desc.height),
+                mipmapLevel: 0,
+                withBytes: bytes.baseAddress!,
+                bytesPerRow: MemoryLayout<UInt32>.stride * desc.width
+            )
+        }
+
+        return texture
+    }
+}
+
+extension Shader.Raytrace {
     func encode(
         _ meshes: [Shader.Mesh],
         to buffer: some MTLCommandBuffer,
@@ -60,6 +101,7 @@ extension Shader.Raytrace {
         encoder.setComputePipelineState(pipelineStates.compute)
 
         encoder.setTexture(target.texture, index: 0)
+        encoder.setTexture(seeds, index: 1)
 
         do {
             let context = Context.init(frame: frame)

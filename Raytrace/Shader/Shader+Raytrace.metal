@@ -88,6 +88,7 @@ float4 trace(
 kernel void kernelMain(
     const uint2 id [[thread_position_in_grid]],
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
+    const metal::texture2d<uint32_t> seeds [[texture(1)]],
     constant Context& context [[buffer(0)]],
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(1)]],
     constant Primitive::Instance* instances [[buffer(2)]],
