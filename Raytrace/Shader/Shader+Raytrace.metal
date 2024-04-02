@@ -1,9 +1,17 @@
 // tomocy
 
+#include "Shader+Frame.h"
 #include "Shader+Math.h"
 #include "Shader+Mesh.h"
 #include "Shader+Primitive.h"
 #include <metal_stdlib>
+
+namespace Raytrace {
+struct Context {
+public:
+    Frame frame;
+};
+}
 
 namespace Raytrace {
 float4 skyFor(const float3 direction)
@@ -80,9 +88,10 @@ float4 trace(
 kernel void kernelMain(
     const uint2 id [[thread_position_in_grid]],
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
-    const metal::raytracing::instance_acceleration_structure accelerator [[buffer(0)]],
-    constant Primitive::Instance* instances [[buffer(1)]],
-    constant Mesh* meshes [[buffer(2)]]
+    constant Context& context [[buffer(0)]],
+    const metal::raytracing::instance_acceleration_structure accelerator [[buffer(1)]],
+    constant Primitive::Instance* instances [[buffer(2)]],
+    constant Mesh* meshes [[buffer(3)]]
 )
 {
     namespace raytracing = metal::raytracing;

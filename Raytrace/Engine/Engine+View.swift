@@ -83,10 +83,14 @@ extension Engine {
 
                 meshes!.append(mesh)
             }
+
+            renderFrame = .init(id: 0)
         }
 
         var shader: Shader.Shader?
         var meshes: [Shader.Mesh]?
+
+        var renderFrame: Shader.Frame?
     }
 }
 
@@ -117,6 +121,7 @@ extension Engine.View: MTKViewDelegate {
                 shader.raytrace.encode(
                     meshes!,
                     to: command,
+                    frame: renderFrame!,
                     accelerator: shader.accelerator.instanced.target!,
                     instances: shader.accelerator.instanced.instances!
                 )
@@ -132,5 +137,7 @@ extension Engine.View: MTKViewDelegate {
                 command.present(currentDrawable!)
             }
         }
+
+        renderFrame!.id += 1
     }
 }

@@ -50,6 +50,7 @@ extension Shader.Raytrace {
     func encode(
         _ meshes: [Shader.Mesh],
         to buffer: some MTLCommandBuffer,
+        frame: Shader.Frame,
         accelerator: some MTLAccelerationStructure,
         instances: [Shader.Primitive.Instance]
     ) {
@@ -60,7 +61,20 @@ extension Shader.Raytrace {
 
         encoder.setTexture(target.texture, index: 0)
 
-        encoder.setAccelerationStructure(accelerator, bufferIndex: 0)
+        do {
+            let context = Context.init(frame: frame)
+            let buffer = withUnsafeBytes(of: context) { bytes in
+                encoder.device.makeBuffer(
+                    bytes: bytes.baseAddress!,
+                    length: bytes.count,
+                    options: .storageModeShared
+                )
+            }
+
+            encoder.setBuffer(buffer, offset: 0, index: 0)
+        }
+
+        encoder.setAccelerationStructure(accelerator, bufferIndex: 1)
 
         do {
             let buffer = instances.toBuffer(
@@ -69,7 +83,7 @@ extension Shader.Raytrace {
             )!
             buffer.label = "Instances"
 
-            encoder.setBuffer(buffer, offset: 0, index: 1)
+            encoder.setBuffer(buffer, offset: 0, index: 2)
         }
 
         do {
@@ -82,7 +96,7 @@ extension Shader.Raytrace {
             )
             buffer.label = "Meshes"
 
-            encoder.setBuffer(buffer, offset: 0, index: 2)
+            encoder.setBuffer(buffer, offset: 0, index: 3)
         }
 
         do {
@@ -187,7 +201,7 @@ extension Shader.Raytrace.ArgumentEncoders {
         let lib = device.makeDefaultLibrary()!
         let fn = lib.makeFunction(name: "Raytrace::kernelMain")!
 
-        return fn.makeArgumentEncoder(bufferIndex: 2)
+        return fn.makeArgumentEncoder(bufferIndex: 3)
     }
 }
 
@@ -195,5 +209,11 @@ extension Shader.Raytrace {
     struct BuildArgumentEncoder {
         var compute: any MTLComputeCommandEncoder
         var argument: any MTLArgumentEncoder
+    }
+}
+
+extension Shader.Raytrace {
+    struct Context {
+        var frame: Shader.Frame
     }
 }
