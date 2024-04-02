@@ -144,14 +144,14 @@ kernel void kernelMain(
 
     // We know the camera for now.
     const struct {
-        float3 up;
         float3 forward;
         float3 right;
+        float3 up;
         float3 position;
     } camera = {
-        .up = float3(0, 1, 0),
         .forward = float3(0, 0, 1),
         .right = float3(1, 0, 0),
+        .up = float3(0, 1, 0),
         .position = float3(0, 0.5, -2),
     };
 
@@ -165,7 +165,9 @@ kernel void kernelMain(
 
     const auto ray = raytracing::ray(
         camera.position,
-        metal::normalize(inNDC.x * camera.right + inNDC.y * camera.up + camera.forward)
+        metal::normalize(
+            Geometry::alignAs(float3(inNDC, 1), camera.forward, camera.right, camera.up)
+        )
     );
 
     const auto color = trace(
