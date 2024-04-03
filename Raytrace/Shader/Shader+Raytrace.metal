@@ -4,6 +4,7 @@
 #include "Shader+Geometry.h"
 #include "Shader+Math.h"
 #include "Shader+Mesh.h"
+#include "Shader+PBR.h"
 #include "Shader+Primitive.h"
 #include "Shader+Random.h"
 #include "Shader+Sample.h"
@@ -17,17 +18,18 @@ public:
 }
 
 namespace Raytrace {
-float4 skyColorFor(const float3 direction)
+float3 skyColorFor(const float3 direction)
 {
-    constexpr auto deep = float4(0, 0.5, 0.95, 1);
-    constexpr auto shallow = float4(0.25, 0.5, 0.9, 1);
+    constexpr auto deep = float3(0, 0.5, 0.95);
+    constexpr auto shallow = float3(0.25, 0.5, 0.9);
 
     const auto alpha = direction.y * 0.5 + 0.5;
 
     return interpolate(shallow, deep, alpha);
 }
 
-float4 trace(
+// Returns the Light = Emissive + Reflection.
+float3 trace(
     constant Context& context,
     const uint32_t seed,
     const metal::raytracing::ray ray,
@@ -39,9 +41,19 @@ float4 trace(
 {
     namespace raytracing = metal::raytracing;
 
+    // If rays hit nothing, there is no emissive nor reflection.
     if (bounceCount >= 3) {
-        return float4(float3(0), 1);
+        return { 0 };
     }
+
+    // We know the directional light for now.
+    const struct {
+        float3 direction;
+        float3 intensity;
+    } directionalLight = {
+        .direction = metal::normalize(float3(-1, -1, 1)),
+        .intensity = float3(1, 1, 1),
+    };
 
     using Intersector = typename raytracing::intersector<raytracing::instancing, raytracing::triangle_data>;
     const auto intersector = Intersector();
@@ -54,23 +66,10 @@ float4 trace(
             return skyColorFor(ray.direction);
         }
 
-        // We know the directional light for now.
-        const struct {
-            float3 direction;
-            float3 intensity;
-        } directionalLight = {
-            .direction = metal::normalize(float3(-1, -1, 1)),
-            .intensity = float3(1, 1, 1),
+        return {
+            // Multiply PI to un-normalize this intensity.
+            directionalLight.intensity * M_PI_F,
         };
-
-        const auto reflection = metal::saturate(
-            metal::dot(
-                -directionalLight.direction,
-                ray.direction
-            )
-        );
-
-        return float4(reflection * directionalLight.intensity, 1);
     }
 
     const auto primitive = Primitive::Primitive::from(
@@ -78,23 +77,24 @@ float4 trace(
         intersection.triangle_barycentric_coord
     );
 
-    auto color = float4(1);
+    auto color = float3(1);
 
-    // Simulate diffuse.
+    const auto instance = instances[intersection.instance_id];
+    const auto mesh = meshes[instance.meshID];
+    const auto piece = mesh.pieces[intersection.geometry_id];
+
+    const auto albedo = piece.material.albedoAt(primitive.textureCoordinate);
+
+    const auto dotNL = metal::saturate(
+        metal::dot(
+            primitive.normal,
+            -directionalLight.direction
+        )
+    );
+
     {
-        {
-            const auto instance = instances[intersection.instance_id];
-            const auto mesh = meshes[instance.meshID];
-            const auto piece = mesh.pieces[intersection.geometry_id];
-
-            constexpr auto sampler = metal::sampler(
-                metal::min_filter::nearest,
-                metal::mag_filter::nearest,
-                metal::mip_filter::none
-            );
-
-            color *= piece.material.albedo.sample(sampler, primitive.textureCoordinate);
-        }
+        const auto diffuse = PBR::Lambertian::compute(albedo.rgb);
+        color *= diffuse * dotNL;
 
         {
             const auto random = float2(
@@ -107,14 +107,14 @@ float4 trace(
                 primitive.normal
             );
 
-            const auto nextRay = raytracing::ray(
+            const auto incidentRay = raytracing::ray(
                 ray.origin + ray.direction * intersection.distance,
                 direction,
                 1e-3, // To avoid an intersection with the same primitive again.
                 ray.max_distance
             );
 
-            color *= trace(context, seed, nextRay, accelerator, instances, meshes, bounceCount + 1);
+            color *= trace(context, seed, incidentRay, accelerator, instances, meshes, bounceCount + 1);
         }
     }
 
@@ -180,6 +180,6 @@ kernel void kernelMain(
         0
     );
 
-    target.write(color, inScreen);
+    target.write(float4(color, 1), inScreen);
 }
 }

@@ -43,6 +43,7 @@
 		F552BDE22BBC35C200734E33 /* Shader+Sample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Sample.h"; sourceTree = "<group>"; };
 		F552BDE32BBC38E600734E33 /* Shader+Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Geometry.h"; sourceTree = "<group>"; };
 		F552BDE42BBC3BCC00734E33 /* Shader+Random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Random.h"; sourceTree = "<group>"; };
+		F552BDE52BBD98FC00734E33 /* Shader+PBR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+PBR.h"; sourceTree = "<group>"; };
 		F57A1B432BB938F800F20794 /* Shader+Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Material.swift"; sourceTree = "<group>"; };
 		F57A828C2BB71111007224CF /* Shader+Primitive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Primitive.swift"; sourceTree = "<group>"; };
 		F57A828E2BB71BDB007224CF /* Shader+Primitive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Primitive.h"; sourceTree = "<group>"; };
@@ -119,17 +120,18 @@
 				F53A738B2BB2FC45003C899A /* Shader+Echo.swift */,
 				F595494F2BBBFCC7001BC8E1 /* Shader+Frame.h */,
 				F552BDE02BBBFD3A00734E33 /* Shader+Frame.swift */,
+				F552BDE32BBC38E600734E33 /* Shader+Geometry.h */,
 				F53486BA2BB98E8400EB7E03 /* Shader+Material.h */,
 				F57A1B432BB938F800F20794 /* Shader+Material.swift */,
 				F5E17BE12BBA907600A3FD29 /* Shader+Math.h */,
-				F552BDE42BBC3BCC00734E33 /* Shader+Random.h */,
 				F53A73932BB30967003C899A /* Shader+Math.swift */,
 				F53486B92BB98DE300EB7E03 /* Shader+Mesh.h */,
 				F5E4F7AC2BB52EEC00B21B16 /* Shader+Mesh.swift */,
+				F552BDE52BBD98FC00734E33 /* Shader+PBR.h */,
 				F57A828E2BB71BDB007224CF /* Shader+Primitive.h */,
 				F57A828C2BB71111007224CF /* Shader+Primitive.swift */,
+				F552BDE42BBC3BCC00734E33 /* Shader+Random.h */,
 				F53A738F2BB3015C003C899A /* Shader+Raytrace.metal */,
-				F552BDE32BBC38E600734E33 /* Shader+Geometry.h */,
 				F53A738D2BB300CD003C899A /* Shader+Raytrace.swift */,
 				F552BDE22BBC35C200734E33 /* Shader+Sample.h */,
 				F5A782892BB2D3ED00415220 /* Shader+Shader.swift */,
