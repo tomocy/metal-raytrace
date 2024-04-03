@@ -63,7 +63,7 @@ float3 trace(
 
     if (intersection.type == raytracing::intersection_type::none) {
         if (bounceCount == 0) {
-            return skyColorFor(ray.direction);
+            return skyColorFor(ray.direction) * M_PI_F;
         }
 
         return {

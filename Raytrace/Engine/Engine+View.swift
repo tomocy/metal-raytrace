@@ -76,8 +76,9 @@ extension Engine {
                     ]
                 )
                 mesh.pieces[0].material = .init(
-                    albedo: try! MTKTextureLoader.init(device: device).newTexture(
-                        URL: Bundle.main.url(forResource: "Ground", withExtension: "png", subdirectory: "Farm/Ground")!
+                    albedo: try! Shader.Texture.load(
+                        from: Bundle.main.url(forResource: "Ground", withExtension: "png", subdirectory: "Farm/Ground")!,
+                        with: device
                     )
                 )
 
