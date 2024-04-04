@@ -45,6 +45,8 @@ extension Shader.Raytrace {
 
         guard let texture = device.makeTexture(descriptor: desc) else { return nil }
 
+        texture.label = "Target"
+
         return .init(resolution: resolution, texture: texture)
     }
 }
@@ -64,6 +66,8 @@ extension Shader.Raytrace {
         desc.usage = [.shaderRead, .shaderWrite]
 
         guard let texture = device.makeTexture(descriptor: desc) else { return nil }
+
+        texture.label = "Seeds"
 
         let count = desc.width * desc.height
 
@@ -119,7 +123,7 @@ extension Shader.Raytrace {
         do {
             let buffer = Shader.Metal.bufferBuildable(instances).build(
                 with: encoder.device,
-                label: "Instances",
+                label: "Instances?Count=\(instances.count)",
                 options: .storageModeShared
             )!
 
@@ -133,7 +137,7 @@ extension Shader.Raytrace {
                     argument: argumentEncoders.meshes
                 ),
                 for: meshes,
-                label: "Meshes"
+                label: "Meshes?Count=\(meshes.count)"
             )!
 
             encoder.setBuffer(buffer, offset: 0, index: 3)
@@ -176,7 +180,8 @@ extension Shader.Raytrace {
                         argument: encoder.argument.makeArgumentEncoderForBuffer(atIndex: 0)!
                     ),
                     for: mesh.pieces,
-                    label: "Pieces"
+                    of: i,
+                    label: "Pieces?Mesh=\(i)&Count=\(mesh.pieces.count)"
                 )
 
                 encoder.argument.setBuffer(buffer, offset: 0, index: 0)
@@ -186,7 +191,11 @@ extension Shader.Raytrace {
         return buffer
     }
 
-    private func build(with encoder: BuildArgumentEncoder, for pieces: [Shader.Mesh.Piece], label: String) -> (any MTLBuffer)? {
+    private func build(
+        with encoder: BuildArgumentEncoder,
+        for pieces: [Shader.Mesh.Piece], of meshID: Int,
+        label: String
+    ) -> (any MTLBuffer)? {
         guard let buffer = encoder.compute.device.makeBuffer(
             length: encoder.argument.encodedLength * pieces.count
         ) else { return nil }
@@ -202,11 +211,15 @@ extension Shader.Raytrace {
             )
 
             if let texture = piece.material?.albedo {
+                texture.label = "Albedo?Mesh=\(meshID)&Piece=\(i)"
+
                 encoder.compute.useResource(texture, usage: .read)
                 encoder.argument.setTexture(texture, index: 0)
             }
 
             if let texture = piece.material?.metalness {
+                texture.label = "Metalness?Mesh=\(meshID)&Piece=\(i)"
+
                 encoder.compute.useResource(texture, usage: .read)
                 encoder.argument.setTexture(texture, index: 1)
             }
