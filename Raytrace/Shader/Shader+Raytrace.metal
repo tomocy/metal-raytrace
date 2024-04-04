@@ -29,14 +29,13 @@ float3 skyColorFor(const float3 direction)
     return interpolate(shallow, deep, alpha);
 }
 
-// Returns the Light = Emissive + Reflection.
 float3 trace(
+    const metal::raytracing::ray ray,
     constant Context& context,
     const uint32_t seed,
-    const metal::raytracing::ray ray,
     const Intersector intersector,
-    constant Primitive::Instance* instances,
-    constant Mesh* meshes,
+    constant Primitive::Instance* const instances,
+    constant Mesh* const meshes,
     const uint32_t bounceCount
 )
 {
@@ -65,24 +64,21 @@ float3 trace(
     const Primitive primitive = intersection.to();
     const Mesh::Piece piece = *intersection.findIn(instances, meshes);
 
-    if (piece.material.isMetalicAt(primitive.textureCoordinate)) {
-        return 0;
-    }
-
-    const auto albedo = piece.material.albedoAt(primitive.textureCoordinate);
-
     const auto dotNL = metal::saturate(
-        metal::dot(
-            primitive.normal,
-            -directionalLight.direction
-        )
+        metal::dot(primitive.normal, -directionalLight.direction)
     );
 
-    auto color = float3(1) * dotNL;
+    float3 color = dotNL;
 
-    {
-        const auto diffuse = PBR::Lambertian::compute(albedo.rgb);
-        color *= diffuse;
+    if (piece.material.isMetalicAt(primitive.textureCoordinate)) {
+        color *= 0;
+    } else {
+        {
+            const auto albedo = piece.material.albedoAt(primitive.textureCoordinate);
+            const auto diffuse = PBR::Lambertian::compute(albedo.rgb);
+
+            color *= diffuse;
+        }
 
         {
             const auto random = float2(
@@ -102,9 +98,7 @@ float3 trace(
                 ray.max_distance
             );
 
-            const auto incidentColor = trace(context, seed, incidentRay, intersector, instances, meshes, bounceCount + 1);
-
-            color *= incidentColor;
+            color *= trace(incidentRay, context, seed, intersector, instances, meshes, bounceCount + 1);
         }
     }
 
@@ -117,8 +111,8 @@ kernel void kernelMain(
     const metal::texture2d<uint32_t> seeds [[texture(1)]],
     constant Context& context [[buffer(0)]],
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(1)]],
-    constant Primitive::Instance* instances [[buffer(2)]],
-    constant Mesh* meshes [[buffer(3)]]
+    constant Primitive::Instance* const instances [[buffer(2)]],
+    constant Mesh* const meshes [[buffer(3)]]
 )
 {
     namespace raytracing = metal::raytracing;
@@ -163,9 +157,9 @@ kernel void kernelMain(
     const auto intersector = Intersector(accelerator);
 
     const auto color = trace(
+        ray,
         context,
         seed,
-        ray,
         intersector,
         instances,
         meshes,
