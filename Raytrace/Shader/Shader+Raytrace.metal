@@ -48,8 +48,20 @@ public:
         float3 color = dotNL;
 
         if (piece.material.isMetalicAt(primitive.textureCoordinate)) {
-            color *= 0;
+            // Specular
+
+            // It causes "Compiler encountered an internal error" for some reason.
+            /* {
+                const auto incidentRay = raytracing::ray(
+                    intersection.positionWith(ray),
+                    metal::reflect(-ray.direction, primitive.normal)
+                );
+
+                color *= trace(incidentRay, bounceCount + 1);
+            } */
         } else {
+            // Diffuse
+
             {
                 const auto albedo = piece.material.albedoAt(primitive.textureCoordinate);
                 const auto diffuse = PBR::Lambertian::compute(albedo.rgb);
