@@ -4,6 +4,7 @@
 #include "Shader+Geometry.h"
 #include "Shader+Math.h"
 #include "Shader+Mesh.h"
+#include "Shader+Intersection.h"
 #include "Shader+PBR.h"
 #include "Shader+Primitive.h"
 #include "Shader+Random.h"
@@ -20,8 +21,8 @@ public:
 namespace Raytrace {
 float3 skyColorFor(const float3 direction)
 {
-    constexpr auto deep = float3(0, 0.5, 0.95);
-    constexpr auto shallow = float3(0.25, 0.5, 0.9);
+    constexpr auto shallow = float3(0.8, 0.8, 0.975);
+    constexpr auto deep = float3(0.5, 0.7, 0.9);
 
     const auto alpha = direction.y * 0.5 + 0.5;
 
@@ -33,7 +34,7 @@ float3 trace(
     constant Context& context,
     const uint32_t seed,
     const metal::raytracing::ray ray,
-    const metal::raytracing::instance_acceleration_structure accelerator,
+    const Intersector intersector,
     constant Primitive::Instance* instances,
     constant Mesh* meshes,
     const uint32_t bounceCount
@@ -43,7 +44,7 @@ float3 trace(
 
     // If rays hit nothing, there is no emissive nor reflection.
     if (bounceCount >= 3) {
-        return { 0 };
+        return 0;
     }
 
     // We know the directional light for now.
@@ -52,39 +53,20 @@ float3 trace(
         float3 intensity;
     } directionalLight = {
         .direction = metal::normalize(float3(-1, -1, 1)),
-        .intensity = float3(1, 1, 1),
+        .intensity = float3(1) * M_PI_F,
     };
 
-    using Intersector = typename raytracing::intersector<raytracing::instancing, raytracing::triangle_data>;
-    const auto intersector = Intersector();
+    const auto intersection = intersector.intersectAlong(ray, 0xff);
 
-    const uint32_t mask = 0xff;
-    const auto intersection = intersector.intersect(ray, accelerator, mask);
-
-    if (intersection.type == raytracing::intersection_type::none) {
-        if (bounceCount == 0) {
-            return skyColorFor(ray.direction) * M_PI_F;
-        }
-
-        return {
-            // Multiply PI to un-normalize this intensity.
-            directionalLight.intensity * M_PI_F,
-        };
+    if (!intersection.has()) {
+        return skyColorFor(ray.direction) * directionalLight.intensity;
     }
 
-    const auto primitive = Primitive::Primitive::from(
-        *(const device Primitive::Triangle*)intersection.primitive_data,
-        intersection.triangle_barycentric_coord
-    );
-
-    auto color = float3(1);
-
-    const auto instance = instances[intersection.instance_id];
-    const auto mesh = meshes[instance.meshID];
-    const auto piece = mesh.pieces[intersection.geometry_id];
+    const Primitive::Primitive primitive = intersection.to();
+    const Mesh::Piece piece = *intersection.findIn(instances, meshes);
 
     if (piece.material.isMetalicAt(primitive.textureCoordinate)) {
-        return { 0 };
+        return 0;
     }
 
     const auto albedo = piece.material.albedoAt(primitive.textureCoordinate);
@@ -96,9 +78,11 @@ float3 trace(
         )
     );
 
+    auto color = float3(1) * dotNL;
+
     {
         const auto diffuse = PBR::Lambertian::compute(albedo.rgb);
-        color *= diffuse * dotNL;
+        color *= diffuse;
 
         {
             const auto random = float2(
@@ -112,13 +96,15 @@ float3 trace(
             );
 
             const auto incidentRay = raytracing::ray(
-                ray.origin + ray.direction * intersection.distance,
+                intersection.positionWith(ray),
                 direction,
                 1e-3, // To avoid an intersection with the same primitive again.
                 ray.max_distance
             );
 
-            color *= trace(context, seed, incidentRay, accelerator, instances, meshes, bounceCount + 1);
+            const auto incidentColor = trace(context, seed, incidentRay, intersector, instances, meshes, bounceCount + 1);
+
+            color *= incidentColor;
         }
     }
 
@@ -174,11 +160,13 @@ kernel void kernelMain(
         )
     );
 
+    const auto intersector = Intersector(accelerator);
+
     const auto color = trace(
         context,
         seed,
         ray,
-        accelerator,
+        intersector,
         instances,
         meshes,
         0
