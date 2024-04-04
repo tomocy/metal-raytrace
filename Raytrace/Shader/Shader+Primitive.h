@@ -5,14 +5,20 @@
 #include "Shader+Math.h"
 #include <metal_stdlib>
 
-namespace Primitive {
-struct Triangle {
-public:
-    packed_float3 normals[3];
-    float2 textureCoordinates[3];
-};
-
 struct Primitive {
+public:
+    struct Triangle {
+    public:
+        packed_float3 normals[3];
+        float2 textureCoordinates[3];
+    };
+
+public:
+    struct Instance {
+    public:
+        uint16_t meshID;
+    };
+
 public:
     static Primitive from(const Triangle triangle, const float2 position)
     {
@@ -47,9 +53,3 @@ public:
     packed_float3 normal;
     float2 textureCoordinate;
 };
-
-struct Instance {
-public:
-    uint16_t meshID;
-};
-}

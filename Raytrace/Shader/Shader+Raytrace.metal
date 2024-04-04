@@ -62,7 +62,7 @@ float3 trace(
         return skyColorFor(ray.direction) * directionalLight.intensity;
     }
 
-    const Primitive::Primitive primitive = intersection.to();
+    const Primitive primitive = intersection.to();
     const Mesh::Piece piece = *intersection.findIn(instances, meshes);
 
     if (piece.material.isMetalicAt(primitive.textureCoordinate)) {

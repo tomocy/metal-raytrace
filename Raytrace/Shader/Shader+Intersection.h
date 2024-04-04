@@ -30,9 +30,9 @@ public:
     }
 
 public:
-    Primitive::Primitive to() const
+    Primitive to() const
     {
-        return Primitive::Primitive::from(
+        return Primitive::from(
             *(const device Primitive::Triangle*)raw.primitive_data,
             raw.triangle_barycentric_coord
         );
