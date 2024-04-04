@@ -101,20 +101,21 @@ extension Shader.Raytrace {
         encoder.setComputePipelineState(pipelineStates.compute)
 
         encoder.setTexture(target.texture, index: 0)
-        encoder.setTexture(seeds, index: 1)
 
         do {
-            let context = Context.init(frame: frame)
-            let buffer = withUnsafeBytes(of: context) { bytes in
+            let buffer = withUnsafeBytes(of: frame) { bytes in
                 encoder.device.makeBuffer(
                     bytes: bytes.baseAddress!,
                     length: bytes.count,
                     options: .storageModeShared
                 )
-            }
+            }!
+            buffer.label = "Frame"
 
             encoder.setBuffer(buffer, offset: 0, index: 0)
         }
+
+        encoder.setTexture(seeds, index: 1)
 
         encoder.setAccelerationStructure(accelerator, bufferIndex: 1)
 
@@ -256,11 +257,5 @@ extension Shader.Raytrace {
     struct BuildArgumentEncoder {
         var compute: any MTLComputeCommandEncoder
         var argument: any MTLArgumentEncoder
-    }
-}
-
-extension Shader.Raytrace {
-    struct Context {
-        var frame: Shader.Frame
     }
 }
