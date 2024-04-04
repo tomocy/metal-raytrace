@@ -2,9 +2,9 @@
 
 #include "Shader+Frame.h"
 #include "Shader+Geometry.h"
+#include "Shader+Intersection.h"
 #include "Shader+Math.h"
 #include "Shader+Mesh.h"
-#include "Shader+Intersection.h"
 #include "Shader+PBR.h"
 #include "Shader+Primitive.h"
 #include "Shader+Random.h"
@@ -23,53 +23,68 @@ public:
             return 0;
         }
 
-        // We know the directional light for now.
-        const struct {
-            float3 direction;
-            float3 intensity;
-        } directionalLight = {
-            .direction = metal::normalize(float3(-1, -1, 1)),
-            .intensity = float3(1) * M_PI_F,
-        };
-
         const auto intersection = intersector.intersectAlong(ray, 0xff);
 
         if (!intersection.has()) {
-            return backgroundColorFor(ray.direction) * directionalLight.intensity;
+            auto color = backgroundColorFor(ray.direction);
+
+            // Adhoc way to make the sky look blue.
+            if (bounceCount == 0) {
+                color /= directionalLight.color;
+            }
+
+            return color;
         }
 
         const Primitive primitive = intersection.to();
         const Mesh::Piece piece = *intersection.findIn(instances, meshes);
 
-        const auto dotNL = metal::saturate(
-            metal::dot(primitive.normal, -directionalLight.direction)
+        struct {
+            float3 normal;
+            float3 light;
+            float3 view;
+            float3 halfway;
+        } dirs = {
+            .normal = primitive.normal,
+            .light = -directionalLight.direction,
+            .view = metal::normalize(view.position - intersection.positionWith(ray)),
+        };
+        dirs.halfway = metal::normalize(dirs.light + dirs.view);
+
+        const auto dotNL = metal::clamp(
+            metal::dot(dirs.normal, dirs.light),
+            1e-3, 1.0
         );
 
-        float3 color = dotNL;
+        const auto metalness = piece.material.metalnessAt(primitive.textureCoordinate);
 
-        if (piece.material.isMetalicAt(primitive.textureCoordinate)) {
-            // Specular
+        struct {
+            float4 raw;
+            float3 diffuse;
+            float3 specular;
+        } albedo = {
+            .raw = piece.material.albedoAt(primitive.textureCoordinate)
+        };
+        albedo.diffuse = metal::mix(0, albedo.raw.rgb, 1 - metalness);
+        albedo.specular = metal::mix(0.04, albedo.raw.rgb, metalness);
 
-            // It causes "Compiler encountered an internal error" for some reason.
-            /* {
-                const auto incidentRay = raytracing::ray(
-                    intersection.positionWith(ray),
-                    metal::reflect(-ray.direction, primitive.normal)
-                );
+        const auto fresnel = PBR::CookTorrance::F::compute(albedo.specular, dirs.view, dirs.halfway);
 
-                color *= trace(incidentRay, bounceCount + 1);
-            } */
-        } else {
-            // Diffuse
+        float3 color = 0;
+
+        // Diffuse
+        {
+            float3 contribution = 1;
 
             {
-                const auto albedo = piece.material.albedoAt(primitive.textureCoordinate);
-                const auto diffuse = PBR::Lambertian::compute(albedo.rgb);
-
-                color *= diffuse;
+                const auto diffuse = PBR::Lambertian::compute(albedo.diffuse);
+                contribution *= (1 - fresnel) * diffuse;
             }
 
             {
+                // We are supposed to trace a ray here, but the compiler reports a strange error for some reason.
+                // This requires us to use the background color directly.
+
                 const auto random = float2(
                     Random::Halton::generate(2 + bounceCount * 5 + 3, seed + frame.id),
                     Random::Halton::generate(2 + bounceCount * 5 + 4, seed + frame.id)
@@ -80,15 +95,37 @@ public:
                     primitive.normal
                 );
 
-                const auto incidentRay = raytracing::ray(
-                    intersection.positionWith(ray),
-                    direction,
-                    1e-3, // To avoid an intersection with the same primitive again.
-                    ray.max_distance
+                contribution *= backgroundColorFor(direction) * dotNL;
+            }
+
+            color += contribution;
+        }
+
+        // Specular
+        {
+            float3 contribution = 1;
+
+            {
+                const auto roughness = 0.5;
+
+                const auto distribution = PBR::CookTorrance::D::compute(roughness, dirs.normal, dirs.halfway);
+                const auto occulusion = PBR::CookTorrance::G::compute(roughness, dirs.normal, dirs.light, dirs.view);
+
+                const auto specular = PBR::CookTorrance::compute(
+                    distribution, occulusion, fresnel,
+                    dirs.normal, dirs.light, dirs.view
                 );
 
-                color *= trace(incidentRay, bounceCount + 1);
+                contribution *= specular;
             }
+
+            {
+                const auto direction = metal::reflect(-ray.direction, dirs.normal);
+
+                contribution *= backgroundColorFor(direction) * dotNL;
+            }
+
+            color += contribution;
         }
 
         return color;
@@ -99,12 +136,12 @@ public:
 
     float3 skyColorFor(const float3 direction) const
     {
-        constexpr auto shallow = float3(0.8, 0.8, 0.975);
-        constexpr auto deep = float3(0.5, 0.7, 0.9);
+        constexpr auto shallow = float3(1);
+        constexpr auto deep = float3(0.5, 0.7, 1);
 
         const auto alpha = direction.y * 0.5 + 0.5;
 
-        return interpolate(shallow, deep, alpha);
+        return metal::mix(shallow, deep, alpha) * directionalLight.color;
     }
 
 public:
@@ -115,6 +152,15 @@ public:
 
     constant Primitive::Instance* instances;
     constant Mesh* meshes;
+
+    struct {
+        float3 direction;
+        float3 color;
+    } directionalLight;
+
+    struct {
+        float3 position;
+    } view;
 };
 }
 
@@ -167,6 +213,13 @@ kernel void kernelMain(
         .intersector = Intersector(accelerator),
         .instances = instances,
         .meshes = meshes,
+        .directionalLight = {
+            .direction = metal::normalize(float3(-1, -1, 1)),
+            .color = float3(1) * M_PI_F,
+        },
+        .view = {
+            .position = camera.position,
+        },
     };
 
     const auto ray = raytracing::ray(

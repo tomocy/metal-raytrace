@@ -26,7 +26,7 @@ public:
 
         {
             primitive.normal = metal::normalize(
-                interpolate(
+                mix(
                     triangle.normals[0],
                     triangle.normals[1],
                     triangle.normals[2],
@@ -36,7 +36,7 @@ public:
         }
 
         {
-            primitive.textureCoordinate = interpolate(
+            primitive.textureCoordinate = mix(
                 triangle.textureCoordinates[0],
                 triangle.textureCoordinates[1],
                 triangle.textureCoordinates[2],

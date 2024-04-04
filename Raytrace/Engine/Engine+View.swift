@@ -38,31 +38,51 @@ extension Engine {
                     indexType: .uint16
                 )
 
-                var mesh = try! raw.toMesh(
-                    with: device,
-                    instances: [
-                        .init(
-                            transform: .init(
-                                translate: .init(-0.5, 0, 0)
-                            )
-                        ),
-                        .init(
-                            transform: .init(
-                                translate: .init(0.5, 0, 0)
-                            )
-                        ),
-                    ]
-                )
-                mesh.pieces[0].material = .init(
-                    albedo: mesh.pieces[0].material?.albedo,
-                    metalness: try! Shader.Texture.fill(
-                        .init(red: 0, green: 0, blue: 0, alpha: 0),
-                        with: device
+                do {
+                    var mesh = try! raw.toMesh(
+                        with: device,
+                        instances: [
+                            .init(
+                                transform: .init(
+                                    translate: .init(-0.5, 0, 0)
+                                )
+                            ),
+                        ]
                     )
-                )
+                    mesh.pieces[0].material = .init(
+                        albedo: mesh.pieces[0].material?.albedo,
+                        metalness: try! Shader.Texture.fill(
+                            .init(red: 1, green: 0, blue: 0, alpha: 0),
+                            with: device
+                        )
+                    )
 
-                meshes!.append(mesh)
+                    meshes!.append(mesh)
+                }
+
+                do {
+                    var mesh = try! raw.toMesh(
+                        with: device,
+                        instances: [
+                            .init(
+                                transform: .init(
+                                    translate: .init(0.5, 0, 0)
+                                )
+                            ),
+                        ]
+                    )
+                    mesh.pieces[0].material = .init(
+                        albedo: mesh.pieces[0].material?.albedo,
+                        metalness: try! Shader.Texture.fill(
+                            .init(red: 0, green: 0, blue: 0, alpha: 0),
+                            with: device
+                        )
+                    )
+
+                    meshes!.append(mesh)
+                }
             }
+
             do {
                 let raw = MDLMesh.init(
                     .init(
@@ -90,7 +110,7 @@ extension Engine {
                         with: device
                     ),
                     metalness: try! Shader.Texture.fill(
-                        .init(red: 1, green: 0, blue: 0, alpha: 0),
+                        .init(red: 0, green: 0, blue: 0, alpha: 0),
                         with: device
                     )
                 )

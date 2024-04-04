@@ -21,11 +21,15 @@ public:
 public:
     bool isMetalicAt(const float2 coordinate) const
     {
+        return metalnessAt(coordinate) == 1;
+    }
+
+    float metalnessAt(const float2 coordinate) const {
         constexpr auto sampler = metal::sampler(
             metal::filter::linear
         );
 
-        return metalness.sample(sampler, coordinate).r == 1;
+        return metalness.sample(sampler, coordinate).r;
     }
 
 public:

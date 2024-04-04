@@ -3,22 +3,12 @@
 #pragma once
 
 template <typename T>
-T interpolate(
-    const T a, // origin
-    const T b,
-    const float position
+T mix(
+    const T origin, // origin
+    const T x,
+    const T y,
+    const float2 alpha
 )
 {
-    return (1 - position) * a + position * b;
-}
-
-template <typename T>
-T interpolate(
-    const T a, // origin
-    const T b,
-    const T c,
-    const float2 position
-)
-{
-    return (1 - position.x - position.y) * a + position.x * b + position.y * c;
+    return (1 - alpha.x - alpha.y) * origin + alpha.x * x + alpha.y * y;
 }
