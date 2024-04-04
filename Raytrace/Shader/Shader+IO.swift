@@ -12,7 +12,7 @@ extension Shader.IO {
 
 extension Shader.IO {
     static func writable<T>(_ target: T) -> some Shader.IO.Writable {
-        return Shader.IO.DefaultWritable.init(value: target)
+        return DefaultWritable.init(value: target)
     }
 
     static func writable(_ target: some Shader.IO.Writable) -> some Shader.IO.Writable {

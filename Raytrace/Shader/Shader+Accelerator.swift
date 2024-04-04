@@ -155,7 +155,10 @@ extension Shader.Accelerator.Instanced {
             )
         }
 
-        desc.instanceDescriptorBuffer = instances.toBuffer(with: device, options: .storageModeShared)
+        desc.instanceDescriptorBuffer = Shader.Metal.bufferBuildable(instances).build(
+            with: device,
+            options: .storageModeShared
+        )
 
         desc.instanceCount = instances.count
 

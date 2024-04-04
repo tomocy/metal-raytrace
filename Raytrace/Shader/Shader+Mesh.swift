@@ -118,7 +118,10 @@ extension MDLMesh {
         let vertices: [Layout.PNT] = vertexBuffers.first!.contents().toArray(count: vertexCount)
 
         let positions = Shader.Mesh.Positions.init(
-            buffer: vertices.map { $0.position }.toBuffer(with: device, options: .storageModeShared)!,
+            buffer: Shader.Metal.bufferBuildable(vertices.map { $0.position }).build(
+                with: device,
+                options: .storageModeShared
+            )!,
             format: .float3,
             stride: MemoryLayout<SIMD3<Float>.Packed>.stride
         )
@@ -151,12 +154,18 @@ extension MDLMesh {
             return Shader.Mesh.Piece.init(
                 type: .triangle,
                 indices: .init(
-                    buffer: indices.toBuffer(with: device, options: .storageModeShared)!,
+                    buffer: Shader.Metal.bufferBuildable(indices).build(
+                        with: device,
+                        options: .storageModeShared
+                    )!,
                     type: .uint16,
                     count: indices.count
                 ),
                 data: .init(
-                    buffer: data.toBuffer(with: device, options: .storageModeShared)!,
+                    buffer: Shader.Metal.bufferBuildable(data).build(
+                        with: device,
+                        options: .storageModeShared
+                    )!,
                     stride: MemoryLayout<Shader.Primitive.Triangle>.stride
                 ),
                 material: try .init(submesh.material, device: device)
@@ -176,16 +185,6 @@ extension MDLMeshBuffer {
 }
 
 extension Array {
-    func toBuffer(with device: some MTLDevice, options: MTLResourceOptions) -> (any MTLBuffer)? {
-        return withUnsafeBytes { bytes in
-            device.makeBuffer(
-                bytes: bytes.baseAddress!,
-                length: bytes.count,
-                options: options
-            )
-        }
-    }
-
     func toBuffer(with allocator: some MDLMeshBufferAllocator, type: MDLMeshBufferType) -> any MDLMeshBuffer {
         return withUnsafeBytes { bytes in
             allocator.newBuffer(

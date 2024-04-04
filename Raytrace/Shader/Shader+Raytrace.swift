@@ -103,14 +103,11 @@ extension Shader.Raytrace {
         encoder.setTexture(target.texture, index: 0)
 
         do {
-            let buffer = withUnsafeBytes(of: frame) { bytes in
-                encoder.device.makeBuffer(
-                    bytes: bytes.baseAddress!,
-                    length: bytes.count,
-                    options: .storageModeShared
-                )
-            }!
-            buffer.label = "Frame"
+            let buffer = Shader.Metal.bufferBuildable(frame).build(
+                with: encoder.device,
+                label: "Frame",
+                options: .storageModeShared
+            )!
 
             encoder.setBuffer(buffer, offset: 0, index: 0)
         }
@@ -120,11 +117,11 @@ extension Shader.Raytrace {
         encoder.setAccelerationStructure(accelerator, bufferIndex: 1)
 
         do {
-            let buffer = instances.toBuffer(
+            let buffer = Shader.Metal.bufferBuildable(instances).build(
                 with: encoder.device,
+                label: "Instances",
                 options: .storageModeShared
             )!
-            buffer.label = "Instances"
 
             encoder.setBuffer(buffer, offset: 0, index: 2)
         }
@@ -135,9 +132,9 @@ extension Shader.Raytrace {
                     compute: encoder,
                     argument: argumentEncoders.meshes
                 ),
-                for: meshes
-            )
-            buffer.label = "Meshes"
+                for: meshes,
+                label: "Meshes"
+            )!
 
             encoder.setBuffer(buffer, offset: 0, index: 3)
         }
@@ -157,10 +154,12 @@ extension Shader.Raytrace {
         }
     }
 
-    private func build(with encoder: BuildArgumentEncoder, for meshes: [Shader.Mesh]) -> some MTLBuffer {
-        let buffer = encoder.compute.device.makeBuffer(
+    private func build(with encoder: BuildArgumentEncoder, for meshes: [Shader.Mesh], label: String) -> (any MTLBuffer)? {
+        guard let buffer = encoder.compute.device.makeBuffer(
             length: encoder.argument.encodedLength * meshes.count
-        )!
+        ) else { return nil }
+
+        buffer.label = label
 
         encoder.compute.useResource(buffer, usage: .read)
 
@@ -176,9 +175,9 @@ extension Shader.Raytrace {
                         compute: encoder.compute,
                         argument: encoder.argument.makeArgumentEncoderForBuffer(atIndex: 0)!
                     ),
-                    for: mesh.pieces
+                    for: mesh.pieces,
+                    label: "Pieces"
                 )
-                buffer.label = "Pieces"
 
                 encoder.argument.setBuffer(buffer, offset: 0, index: 0)
             }
@@ -187,10 +186,12 @@ extension Shader.Raytrace {
         return buffer
     }
 
-    private func build(with encoder: BuildArgumentEncoder, for pieces: [Shader.Mesh.Piece]) -> some MTLBuffer {
-        let buffer = encoder.compute.device.makeBuffer(
+    private func build(with encoder: BuildArgumentEncoder, for pieces: [Shader.Mesh.Piece], label: String) -> (any MTLBuffer)? {
+        guard let buffer = encoder.compute.device.makeBuffer(
             length: encoder.argument.encodedLength * pieces.count
-        )!
+        ) else { return nil }
+
+        buffer.label = label
 
         encoder.compute.useResource(buffer, usage: .read)
 

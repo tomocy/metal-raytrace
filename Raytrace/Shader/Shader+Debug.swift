@@ -61,13 +61,10 @@ extension Shader.Debug {
                 )
                 let aspect = projection * view
 
-                let buffer = withUnsafeBytes(of: aspect) { bytes in
-                    encoder.device.makeBuffer(
-                        bytes: bytes.baseAddress!,
-                        length: bytes.count,
-                        options: .storageModeShared
-                    )
-                }
+                let buffer = Shader.Metal.bufferBuildable(aspect).build(
+                    with: encoder.device,
+                    options: .storageModeShared
+                )
 
                 encoder.setVertexBuffer(buffer, offset: 0, index: 1)
             }
@@ -75,13 +72,10 @@ extension Shader.Debug {
             do {
                 let instances = mesh.instances.map { $0.transform.resolve() }
 
-                let buffer = instances.withUnsafeBytes { bytes in
-                    encoder.device.makeBuffer(
-                        bytes: bytes.baseAddress!,
-                        length: bytes.count,
-                        options: .storageModeShared
-                    )
-                }
+                let buffer = Shader.Metal.bufferBuildable(instances).build(
+                    with: encoder.device,
+                    options: .storageModeShared
+                )
 
                 encoder.setVertexBuffer(buffer, offset: 0, index: 2)
             }

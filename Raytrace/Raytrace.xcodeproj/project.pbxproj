@@ -29,6 +29,7 @@
 		F5B35B5D2BB5660700651A54 /* Shader+Transform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B35B5C2BB5660700651A54 /* Shader+Transform.swift */; };
 		F5CF69632BBE9E8000CEF5B0 /* Shader+IO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CF69622BBE9E8000CEF5B0 /* Shader+IO.swift */; };
 		F5CF69652BBE9EB100CEF5B0 /* Shader+Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CF69642BBE9EB100CEF5B0 /* Shader+Memory.swift */; };
+		F5CF69672BBE9FD000CEF5B0 /* Shader+Metal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CF69662BBE9FD000CEF5B0 /* Shader+Metal.swift */; };
 		F5E4F7A72BB4615100B21B16 /* Shader+Accelerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */; };
 		F5E4F7AB2BB52E4900B21B16 /* Shader+SIMD.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7AA2BB52E4900B21B16 /* Shader+SIMD.swift */; };
 		F5E4F7AD2BB52EEC00B21B16 /* Shader+Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5E4F7AC2BB52EEC00B21B16 /* Shader+Mesh.swift */; };
@@ -69,6 +70,7 @@
 		F5CF69602BBE803B00CEF5B0 /* Shader+Intersection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Intersection.h"; sourceTree = "<group>"; };
 		F5CF69622BBE9E8000CEF5B0 /* Shader+IO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+IO.swift"; sourceTree = "<group>"; };
 		F5CF69642BBE9EB100CEF5B0 /* Shader+Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Memory.swift"; sourceTree = "<group>"; };
+		F5CF69662BBE9FD000CEF5B0 /* Shader+Metal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Metal.swift"; sourceTree = "<group>"; };
 		F5E17BE12BBA907600A3FD29 /* Shader+Math.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Math.h"; sourceTree = "<group>"; };
 		F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Accelerator.swift"; sourceTree = "<group>"; };
 		F5E4F7AA2BB52E4900B21B16 /* Shader+SIMD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+SIMD.swift"; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				F5CF69642BBE9EB100CEF5B0 /* Shader+Memory.swift */,
 				F53486B92BB98DE300EB7E03 /* Shader+Mesh.h */,
 				F5E4F7AC2BB52EEC00B21B16 /* Shader+Mesh.swift */,
+				F5CF69662BBE9FD000CEF5B0 /* Shader+Metal.swift */,
 				F552BDE52BBD98FC00734E33 /* Shader+PBR.h */,
 				F57A828E2BB71BDB007224CF /* Shader+Primitive.h */,
 				F57A828C2BB71111007224CF /* Shader+Primitive.swift */,
@@ -245,6 +248,7 @@
 				F5A7828A2BB2D3ED00415220 /* Shader+Shader.swift in Sources */,
 				F57A828D2BB71111007224CF /* Shader+Primitive.swift in Sources */,
 				F552BDE72BBDB50100734E33 /* Shader+Texture.swift in Sources */,
+				F5CF69672BBE9FD000CEF5B0 /* Shader+Metal.swift in Sources */,
 				F5E4F7A72BB4615100B21B16 /* Shader+Accelerator.swift in Sources */,
 				F5E4F7AD2BB52EEC00B21B16 /* Shader+Mesh.swift in Sources */,
 				F552BDE12BBBFD3A00734E33 /* Shader+Frame.swift in Sources */,

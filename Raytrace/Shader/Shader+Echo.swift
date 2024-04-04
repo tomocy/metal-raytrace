@@ -37,13 +37,12 @@ extension Shader.Echo {
             .init(-1, -1),
         ]
 
-        vertices.withUnsafeBytes { bytes in
-            let buffer = encoder.device.makeBuffer(
-                bytes: bytes.baseAddress!,
-                length: bytes.count,
+        do {
+            let buffer = Shader.Metal.bufferBuildable(vertices).build(
+                with: encoder.device,
+                label: "Vertices",
                 options: .storageModeShared
             )!
-            buffer.label = "Vertices"
 
             encoder.setVertexBuffer(buffer, offset: 0, index: 0)
         }
@@ -53,13 +52,12 @@ extension Shader.Echo {
             2, 3, 0,
         ]
 
-        indices.withUnsafeBytes { bytes in
-            let buffer = encoder.device.makeBuffer(
-                bytes: bytes.baseAddress!,
-                length: bytes.count,
+        do {
+            let buffer = Shader.Metal.bufferBuildable(indices).build(
+                with: encoder.device,
+                label: "Indices",
                 options: .storageModeShared
             )!
-            buffer.label = "Indices"
 
             encoder.drawIndexedPrimitives(
                 type: .triangle,
