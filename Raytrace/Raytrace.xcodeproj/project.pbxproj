@@ -14,6 +14,7 @@
 		F53A73942BB30967003C899A /* Shader+Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53A73932BB30967003C899A /* Shader+Math.swift */; };
 		F552BDE12BBBFD3A00734E33 /* Shader+Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F552BDE02BBBFD3A00734E33 /* Shader+Frame.swift */; };
 		F552BDE72BBDB50100734E33 /* Shader+Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F552BDE62BBDB50100734E33 /* Shader+Texture.swift */; };
+		F552BDE92BBE5F9300734E33 /* Shader+CG.swift in Sources */ = {isa = PBXBuildFile; fileRef = F552BDE82BBE5F9300734E33 /* Shader+CG.swift */; };
 		F57A1B442BB938F800F20794 /* Shader+Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57A1B432BB938F800F20794 /* Shader+Material.swift */; };
 		F57A828D2BB71111007224CF /* Shader+Primitive.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57A828C2BB71111007224CF /* Shader+Primitive.swift */; };
 		F5A782742BB2CC5000415220 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5A782732BB2CC5000415220 /* Assets.xcassets */; };
@@ -46,6 +47,7 @@
 		F552BDE42BBC3BCC00734E33 /* Shader+Random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Random.h"; sourceTree = "<group>"; };
 		F552BDE52BBD98FC00734E33 /* Shader+PBR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+PBR.h"; sourceTree = "<group>"; };
 		F552BDE62BBDB50100734E33 /* Shader+Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Texture.swift"; sourceTree = "<group>"; };
+		F552BDE82BBE5F9300734E33 /* Shader+CG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+CG.swift"; sourceTree = "<group>"; };
 		F57A1B432BB938F800F20794 /* Shader+Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Material.swift"; sourceTree = "<group>"; };
 		F57A828C2BB71111007224CF /* Shader+Primitive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Primitive.swift"; sourceTree = "<group>"; };
 		F57A828E2BB71BDB007224CF /* Shader+Primitive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Primitive.h"; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 			children = (
 				F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */,
 				F5E4F7AE2BB52FEB00B21B16 /* Shader+Array.swift */,
+				F552BDE82BBE5F9300734E33 /* Shader+CG.swift */,
 				F5B35B512BB54FEA00651A54 /* Shader+Debug.metal */,
 				F5B35B4F2BB54EF500651A54 /* Shader+Debug.swift */,
 				F53A73892BB2F829003C899A /* Shader+Echo.metal */,
@@ -243,6 +246,7 @@
 				F5E4F7AF2BB52FEB00B21B16 /* Shader+Array.swift in Sources */,
 				F5B35B5D2BB5660700651A54 /* Shader+Transform.swift in Sources */,
 				F5B35B502BB54EF500651A54 /* Shader+Debug.swift in Sources */,
+				F552BDE92BBE5F9300734E33 /* Shader+CG.swift in Sources */,
 				F5A782812BB2CD2E00415220 /* Engine+App.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

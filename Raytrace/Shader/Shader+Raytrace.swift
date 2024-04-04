@@ -203,6 +203,11 @@ extension Shader.Raytrace {
                 encoder.compute.useResource(texture, usage: .read)
                 encoder.argument.setTexture(texture, index: 0)
             }
+
+            if let texture = piece.material?.metalness {
+                encoder.compute.useResource(texture, usage: .read)
+                encoder.argument.setTexture(texture, index: 1)
+            }
         }
 
         return buffer

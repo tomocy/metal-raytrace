@@ -7,6 +7,7 @@ import MetalKit
 extension Shader {
     struct Material {
         var albedo: (any MTLTexture)?
+        var metalness: (any MTLTexture)?
     }
 }
 

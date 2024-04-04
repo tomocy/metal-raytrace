@@ -83,6 +83,10 @@ float3 trace(
     const auto mesh = meshes[instance.meshID];
     const auto piece = mesh.pieces[intersection.geometry_id];
 
+    if (piece.material.isMetalicAt(primitive.textureCoordinate)) {
+        return { 0 };
+    }
+
     const auto albedo = piece.material.albedoAt(primitive.textureCoordinate);
 
     const auto dotNL = metal::saturate(

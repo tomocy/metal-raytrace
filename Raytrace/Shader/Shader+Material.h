@@ -17,4 +17,17 @@ public:
 
 public:
     metal::texture2d<float> albedo;
+
+public:
+    bool isMetalicAt(const float2 coordinate) const
+    {
+        constexpr auto sampler = metal::sampler(
+            metal::filter::linear
+        );
+
+        return metalness.sample(sampler, coordinate).r == 1;
+    }
+
+public:
+    metal::texture2d<float> metalness;
 };

@@ -37,7 +37,8 @@ extension Engine {
                     ).first!,
                     indexType: .uint16
                 )
-                let mesh = try! raw.toMesh(
+
+                var mesh = try! raw.toMesh(
                     with: device,
                     instances: [
                         .init(
@@ -52,6 +53,13 @@ extension Engine {
                         ),
                     ]
                 )
+                mesh.pieces[0].material = .init(
+                    albedo: mesh.pieces[0].material?.albedo,
+                    metalness: try! Shader.Texture.fill(
+                        .init(red: 0, green: 0, blue: 0, alpha: 0),
+                        with: device
+                    )
+                )
 
                 meshes!.append(mesh)
             }
@@ -65,6 +73,7 @@ extension Engine {
                     ),
                     indexType: .uint16
                 )
+
                 var mesh = try! raw.toMesh(
                     with: device,
                     instances: [
@@ -78,6 +87,10 @@ extension Engine {
                 mesh.pieces[0].material = .init(
                     albedo: try! Shader.Texture.load(
                         from: Bundle.main.url(forResource: "Ground", withExtension: "png", subdirectory: "Farm/Ground")!,
+                        with: device
+                    ),
+                    metalness: try! Shader.Texture.fill(
+                        .init(red: 1, green: 0, blue: 0, alpha: 0),
                         with: device
                     )
                 )
