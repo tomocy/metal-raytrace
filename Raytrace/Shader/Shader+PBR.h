@@ -44,8 +44,7 @@ public:
 
         static float schlick(const float roughness, const float3 normal, const float3 v)
         {
-            const auto alpha = metal::pow(roughness, 2);
-            const auto k = metal::pow(alpha + 1, 2) / 8.0;
+            const auto k = metal::pow(roughness + 1, 2) / 8.0;
 
             const auto dotNV = metal::clamp(
                 metal::dot(normal, v),
