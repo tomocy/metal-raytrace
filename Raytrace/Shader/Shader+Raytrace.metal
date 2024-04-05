@@ -57,15 +57,8 @@ private:
         const auto intersection = intersector.intersectAlong(ray, 0xff);
 
         if (!intersection.has()) {
-            auto color = backgroundColorFor(ray.direction);
-
-            // Adhoc way to make the sky look blue.
-            if (bounceCount == 0) {
-                color /= directionalLight.color;
-            }
-
             return {
-                .color = color,
+                .color = directionalLight.color,
                 .hasIncident = false,
             };
         }
@@ -156,19 +149,6 @@ private:
         }
 
         return result;
-    }
-
-public:
-    float3 backgroundColorFor(const float3 direction) const { return skyColorFor(direction); }
-
-    float3 skyColorFor(const float3 direction) const
-    {
-        constexpr auto shallow = float3(1);
-        constexpr auto deep = float3(0.5, 0.7, 1);
-
-        const auto alpha = direction.y * 0.5 + 0.5;
-
-        return metal::mix(shallow, deep, alpha) * directionalLight.color;
     }
 
 public:
