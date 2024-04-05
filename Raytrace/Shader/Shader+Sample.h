@@ -7,19 +7,19 @@
 namespace Sample {
 struct CosineWeightedHemisphere {
 public:
-    static float3 sample(const float2 seed)
+    static float3 sample(const float2 uv)
     {
         struct SinCos {
             float sin;
             float cos;
         };
 
-        struct SinCos phi = {};
-        phi.sin = metal::sincos(2.0f * M_PI_F * seed.x, phi.cos);
-
         struct SinCos theta = {};
-        theta.cos = metal::sqrt(seed.y);
-        theta.sin = metal::sqrt(1.0f - theta.cos * theta.cos);
+        theta.cos = metal::sqrt(uv.y);
+        theta.sin = metal::sqrt(1.0 - theta.cos * theta.cos);
+
+        struct SinCos phi = {};
+        phi.sin = metal::sincos(2.0 * M_PI_F * uv.x, phi.cos);
 
         return { theta.sin * phi.cos, theta.cos, theta.sin * phi.sin };
     }

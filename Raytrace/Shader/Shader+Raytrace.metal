@@ -26,7 +26,7 @@ public:
 
             color *= result.color;
 
-            if (!result.continues) {
+            if (!result.hasIncident) {
                 break;
             }
 
@@ -41,7 +41,7 @@ private:
     public:
         float3 color;
 
-        bool continues;
+        bool hasIncident;
         metal::raytracing::ray incidentRay;
     };
 
@@ -50,7 +50,7 @@ private:
         if (bounceCount >= maxBounceCount) {
             return {
                 .color = 1,
-                .continues = false,
+                .hasIncident = false,
             };
         }
 
@@ -66,7 +66,7 @@ private:
 
             return {
                 .color = color,
-                .continues = false,
+                .hasIncident = false,
             };
         }
 
@@ -134,16 +134,16 @@ private:
         }
 
         {
-            result.continues = true;
+            result.hasIncident = true;
 
             result.incidentRay.origin = intersectionPosition;
-            result.incidentRay.min_distance = 1e-4;
+            result.incidentRay.min_distance = 1e-3;
             result.incidentRay.max_distance = INFINITY;
 
             if (metalness == 0) {
                 const auto random = float2(
-                    Random::Halton::generate(2 + bounceCount * 5 + 3, seed + frame.id),
-                    Random::Halton::generate(2 + bounceCount * 5 + 4, seed + frame.id)
+                    Random::Halton::generate(bounceCount * 5 + 5, seed + frame.id),
+                    Random::Halton::generate(bounceCount * 5 + 6, seed + frame.id)
                 );
 
                 result.incidentRay.direction = Geometry::alignAsUp(
