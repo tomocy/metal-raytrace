@@ -217,8 +217,8 @@ extension Shader.Raytrace {
                 encoder.argument.setTexture(texture, index: 0)
             }
 
-            if let texture = piece.material?.metalness {
-                texture.label = "Metalness?Mesh=\(meshID)&Piece=\(i)"
+            if let texture = piece.material?.metalRoughness {
+                texture.label = "MetalRoughness?Mesh=\(meshID)&Piece=\(i)"
 
                 encoder.compute.useResource(texture, usage: .read)
                 encoder.argument.setTexture(texture, index: 1)

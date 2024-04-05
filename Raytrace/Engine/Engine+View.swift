@@ -53,8 +53,8 @@ extension Engine {
                         )
                         mesh.pieces[0].material = .init(
                             albedo: mesh.pieces[0].material?.albedo,
-                            metalness: try! Shader.Texture.fill(
-                                .init(red: 1, green: 0, blue: 0, alpha: 0),
+                            metalRoughness: try! Shader.Texture.fill(
+                                .init(red: 1, green: 0.5, blue: 0, alpha: 0),
                                 with: device
                             )
                         )
@@ -75,8 +75,8 @@ extension Engine {
                         )
                         mesh.pieces[0].material = .init(
                             albedo: mesh.pieces[0].material?.albedo,
-                            metalness: try! Shader.Texture.fill(
-                                .init(red: 0, green: 0, blue: 0, alpha: 0),
+                            metalRoughness: try! Shader.Texture.fill(
+                                .init(red: 0, green: 1, blue: 0, alpha: 0),
                                 with: device
                             )
                         )
@@ -112,8 +112,8 @@ extension Engine {
                             .init(red: 1, green: 0.75, blue: 0.25, alpha: 1),
                             with: device
                         ),
-                        metalness: try! Shader.Texture.fill(
-                            .init(red: 1, green: 0, blue: 0, alpha: 0),
+                        metalRoughness: try! Shader.Texture.fill(
+                            .init(red: 1, green: 0.5, blue: 0, alpha: 0),
                             with: device
                         )
                     )
@@ -147,8 +147,8 @@ extension Engine {
                             from: Bundle.main.url(forResource: "Ground", withExtension: "png", subdirectory: "Farm/Ground")!,
                             with: device
                         ),
-                        metalness: try! Shader.Texture.fill(
-                            .init(red: 0, green: 0, blue: 0, alpha: 0),
+                        metalRoughness: try! Shader.Texture.fill(
+                            .init(red: 0, green: 1, blue: 0, alpha: 0),
                             with: device
                         )
                     )

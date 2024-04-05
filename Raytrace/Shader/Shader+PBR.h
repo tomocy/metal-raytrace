@@ -21,14 +21,14 @@ public:
     public:
         static float compute(const float roughness, const float3 normal, const float3 halfway)
         {
-            const auto alpha = metal::pow(roughness, 2);
-            const auto alpha2 = metal::pow(alpha, 2);
+            const float alpha = metal::pow(roughness, 2);
+            const float alpha2 = metal::pow(alpha, 2);
 
             const auto dotNH = metal::saturate(
                 metal::dot(normal, halfway)
             );
 
-            const auto d = metal::pow(dotNH, 2) * (alpha2 - 1) + 1;
+            const float d = (metal::pow(dotNH, 2) * (alpha2 - 1) + 1);
 
             return alpha2 / (M_PI_F * metal::pow(d, 2));
         }

@@ -29,9 +29,19 @@ public:
             metal::filter::linear
         );
 
-        return metalness.sample(sampler, coordinate).r;
+        return metalRoughness.sample(sampler, coordinate).r;
     }
 
 public:
-    metal::texture2d<float> metalness;
+    float roughnessAt(const float2 coordinate) const {
+        constexpr auto sampler = metal::sampler(
+            metal::filter::linear
+        );
+
+        return metal::max(metalRoughness.sample(sampler, coordinate).g, 0.04);
+    }
+
+public:
+    // R for metalness, G for roughness.
+    metal::texture2d<float> metalRoughness;
 };

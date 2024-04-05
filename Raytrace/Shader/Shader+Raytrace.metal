@@ -119,7 +119,7 @@ private:
 
             // Specular
             {
-                const auto roughness = 0.5;
+                const auto roughness = piece.material.roughnessAt(primitive.textureCoordinate);
 
                 const auto distribution = PBR::CookTorrance::D::compute(roughness, dirs.normal, dirs.halfway);
                 const auto occulusion = PBR::CookTorrance::G::compute(roughness, dirs.normal, dirs.light, dirs.view);
