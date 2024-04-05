@@ -14,13 +14,44 @@
 namespace Raytrace {
 struct Tracer {
 public:
-    float3 trace(const metal::raytracing::ray ray, const uint32_t bounceCount = 0) const
+    // For some reason, the metal compiler fails to compile recursive trace.
+    // As a workaround, we implement tracing in a loop instead.
+    float3 trace(const metal::raytracing::ray ray) const
     {
-        namespace raytracing = metal::raytracing;
+        float3 color = 1;
+        auto incidentRay = ray;
 
-        // If rays hit nothing, there is no emissive nor reflection.
-        if (bounceCount >= 3) {
-            return 0;
+        for (uint32_t bounceCount = 0;; bounceCount++) {
+            const auto result = trace(incidentRay, bounceCount);
+
+            color *= result.color;
+
+            if (!result.continues) {
+                break;
+            }
+
+            incidentRay = result.incidentRay;
+        }
+
+        return color;
+    }
+
+private:
+    struct TraceResult {
+    public:
+        float3 color;
+
+        bool continues;
+        metal::raytracing::ray incidentRay;
+    };
+
+    TraceResult trace(const metal::raytracing::ray ray, const uint32_t bounceCount) const
+    {
+        if (bounceCount >= maxBounceCount) {
+            return {
+                .color = 0,
+                .continues = false,
+            };
         }
 
         const auto intersection = intersector.intersectAlong(ray, 0xff);
@@ -33,8 +64,13 @@ public:
                 color /= directionalLight.color;
             }
 
-            return color;
+            return {
+                .color = color,
+                .continues = false,
+            };
         }
+
+        const auto intersectionPosition = intersection.positionWith(ray);
 
         const Primitive primitive = intersection.to();
         const Mesh::Piece piece = *intersection.findIn(instances, meshes);
@@ -47,7 +83,7 @@ public:
         } dirs = {
             .normal = primitive.normal,
             .light = -directionalLight.direction,
-            .view = metal::normalize(view.position - intersection.positionWith(ray)),
+            .view = metal::normalize(view.position - intersectionPosition),
         };
         dirs.halfway = metal::normalize(dirs.light + dirs.view);
 
@@ -70,41 +106,18 @@ public:
 
         const auto fresnel = PBR::CookTorrance::F::compute(albedo.specular, dirs.view, dirs.halfway);
 
-        float3 color = 0;
+        TraceResult result = {
+            .color = 0,
+        };
 
-        // Diffuse
         {
-            float3 contribution = 1;
-
+            // Diffuse
             {
                 const auto diffuse = PBR::Lambertian::compute(albedo.diffuse);
-                contribution *= (1 - fresnel) * diffuse;
+                result.color += (1 - fresnel) * diffuse * dotNL;
             }
 
-            {
-                // We are supposed to trace a ray here, but the compiler reports a strange error for some reason.
-                // This requires us to use the background color directly.
-
-                const auto random = float2(
-                    Random::Halton::generate(2 + bounceCount * 5 + 3, seed + frame.id),
-                    Random::Halton::generate(2 + bounceCount * 5 + 4, seed + frame.id)
-                );
-
-                const float3 direction = Geometry::alignAsUp(
-                    Sample::CosineWeightedHemisphere::sample(random),
-                    primitive.normal
-                );
-
-                contribution *= backgroundColorFor(direction) * dotNL;
-            }
-
-            color += contribution;
-        }
-
-        // Specular
-        {
-            float3 contribution = 1;
-
+            // Specular
             {
                 const auto roughness = 0.5;
 
@@ -116,19 +129,33 @@ public:
                     dirs.normal, dirs.light, dirs.view
                 );
 
-                contribution *= specular;
+                result.color += specular * dotNL;
             }
-
-            {
-                const auto direction = metal::reflect(-ray.direction, dirs.normal);
-
-                contribution *= backgroundColorFor(direction) * dotNL;
-            }
-
-            color += contribution;
         }
 
-        return color;
+        {
+            result.continues = true;
+
+            result.incidentRay.origin = intersectionPosition;
+            result.incidentRay.min_distance = 1e-4;
+            result.incidentRay.max_distance = INFINITY;
+
+            if (metalness == 0) {
+                const auto random = float2(
+                    Random::Halton::generate(2 + bounceCount * 5 + 3, seed + frame.id),
+                    Random::Halton::generate(2 + bounceCount * 5 + 4, seed + frame.id)
+                );
+
+                result.incidentRay.direction = Geometry::alignAsUp(
+                    Sample::CosineWeightedHemisphere::sample(random),
+                    primitive.normal
+                );
+            } else {
+                result.incidentRay.direction = metal::reflect(ray.direction, dirs.normal);
+            }
+        }
+
+        return result;
     }
 
 public:
@@ -145,6 +172,8 @@ public:
     }
 
 public:
+    uint32_t maxBounceCount = 3;
+
     Frame frame;
     uint32_t seed;
 
@@ -208,6 +237,7 @@ kernel void kernelMain(
     const auto inNDC = float2(inUV.x * 2 - 1, inUV.y * -2 + 1);
 
     const auto tracer = Tracer {
+        .maxBounceCount = 3,
         .frame = frame,
         .seed = seed,
         .intersector = Intersector(accelerator),
