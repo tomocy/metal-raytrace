@@ -49,7 +49,7 @@ private:
     {
         if (bounceCount >= maxBounceCount) {
             return {
-                .color = 0,
+                .color = 1,
                 .continues = false,
             };
         }

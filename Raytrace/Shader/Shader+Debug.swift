@@ -63,13 +63,14 @@ extension Shader.Debug {
 
                 let buffer = Shader.Metal.bufferBuildable(aspect).build(
                     with: encoder.device,
+                    label: "Aspect",
                     options: .storageModeShared
                 )
 
                 encoder.setVertexBuffer(buffer, offset: 0, index: 1)
             }
 
-            do {
+            /* do {
                 let instances = mesh.instances.map { $0.transform.resolve() }
 
                 let buffer = Shader.Metal.bufferBuildable(instances).build(
@@ -78,7 +79,7 @@ extension Shader.Debug {
                 )
 
                 encoder.setVertexBuffer(buffer, offset: 0, index: 2)
-            }
+            } */
 
             encoder.setVertexBuffer(
                 mesh.positions.buffer,
