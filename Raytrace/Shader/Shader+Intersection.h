@@ -8,8 +8,7 @@
 
 struct Intersection {
 public:
-    using Raw = metal::raytracing::intersector<
-        metal::raytracing::instancing, metal::raytracing::triangle_data>::result_type;
+    using Raw = metal::raytracing::intersector<metal::raytracing::instancing, metal::raytracing::triangle_data>::result_type;
 
 public:
     Intersection(const metal::raytracing::ray ray, const Raw raw)
@@ -33,8 +32,10 @@ public:
 public:
     Primitive toPrimitive() const
     {
+        const auto triangle = *(const device Primitive::Triangle*)raw_.primitive_data;
+
         return Primitive::from(
-            *(const device Primitive::Triangle*)raw_.primitive_data,
+            triangle,
             raw_.triangle_barycentric_coord
         );
     }
@@ -58,8 +59,7 @@ private:
 
 struct Intersector {
 public:
-    using Raw = typename metal::raytracing::intersector<
-        metal::raytracing::instancing, metal::raytracing::triangle_data>;
+    using Raw = typename metal::raytracing::intersector<metal::raytracing::instancing, metal::raytracing::triangle_data>;
 
     using Accelerator = metal::raytracing::instance_acceleration_structure;
 
@@ -70,7 +70,7 @@ public:
     }
 
 public:
-    Intersection intersectAlong(const metal::raytracing::ray ray, const uint32_t mask = 0) const
+    Intersection intersectAlong(const thread metal::raytracing::ray& ray, const uint32_t mask = 0) const
     {
         const auto intersection = raw_.intersect(ray, accelerator, mask);
         return { ray, intersection };

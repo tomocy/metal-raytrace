@@ -89,7 +89,7 @@ private:
 
         result.color = surface.colorWith(
             -directionalLight.direction.value(),
-            metal::normalize(view.position - intersection.position())
+            Geometry::normalize(view.position - intersection.position())
         );
 
         {

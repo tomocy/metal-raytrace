@@ -7,7 +7,7 @@
 namespace Sample {
 struct CosineWeightedHemisphere {
 public:
-    static float3 sample(const float2 uv)
+    static float3 sample(const thread float2& uv)
     {
         struct SinCos {
             float sin;

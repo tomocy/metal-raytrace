@@ -21,12 +21,12 @@ public:
     };
 
 public:
-    static Primitive from(const Triangle triangle, const float2 position)
+    static Primitive from(const thread Triangle& triangle, const thread float2& position)
     {
         Primitive primitive = {};
 
         {
-            primitive.normal = metal::normalize(
+            primitive.normal = Geometry::normalize(
                 mix(
                     float3(triangle.normals[0]),
                     float3(triangle.normals[1]),

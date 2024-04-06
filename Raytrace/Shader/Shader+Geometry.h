@@ -24,21 +24,21 @@ private:
 };
 
 template <typename T>
-Normalized<T> normalize(const T value) { return { metal::normalize(value) }; }
+Normalized<T> normalize(const thread T& value) { return { metal::normalize(value) }; }
 }
 
 namespace Geometry {
 float3 alignAs(
-    const float3 v,
-    const Normalized<float3> forward,
-    const Normalized<float3> right,
-    const Normalized<float3> up
+    const thread float3& v,
+    const thread Normalized<float3>& forward,
+    const thread Normalized<float3>& right,
+    const thread Normalized<float3>& up
 )
 {
     return v.x * right.value() + v.y * up.value() + v.z * forward.value();
 }
 
-float3 alignAsUp(const float3 v, const Normalized<float3> up)
+float3 alignAsUp(const thread float3& v, const thread Normalized<float3>& up)
 {
     const auto right = normalize(
         metal::cross(

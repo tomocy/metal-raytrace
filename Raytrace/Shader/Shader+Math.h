@@ -4,10 +4,10 @@
 
 template <typename T>
 T mix(
-    const T origin, // origin
-    const T x,
-    const T y,
-    const float2 alpha
+    const thread T& origin, // origin
+    const thread T& x,
+    const thread T& y,
+    const thread float2& alpha
 )
 {
     return (1 - alpha.x - alpha.y) * origin + alpha.x * x + alpha.y * y;

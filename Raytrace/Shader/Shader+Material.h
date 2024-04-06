@@ -10,7 +10,7 @@ public:
         float3 specular;
     };
 
-    Albedo albedoAt(const float2 coordinate) const
+    Albedo albedoAt(const thread float2& coordinate) const
     {
         const auto metalness = metalnessAt(coordinate);
         const auto raw = rawAlbedoAt(coordinate).rgb;
@@ -21,7 +21,7 @@ public:
         };
     }
 
-    float4 rawAlbedoAt(const float2 coordinate) const
+    float4 rawAlbedoAt(const thread float2& coordinate) const
     {
         constexpr auto sampler = metal::sampler(
             metal::filter::linear
@@ -34,12 +34,12 @@ public:
     metal::texture2d<float> albedo;
 
 public:
-    bool isMetalicAt(const float2 coordinate) const
+    bool isMetalicAt(const thread float2& coordinate) const
     {
         return metalnessAt(coordinate) == 1;
     }
 
-    float metalnessAt(const float2 coordinate) const
+    float metalnessAt(const thread float2& coordinate) const
     {
         constexpr auto sampler = metal::sampler(
             metal::filter::linear
@@ -49,7 +49,7 @@ public:
     }
 
 public:
-    float roughnessAt(const float2 coordinate) const
+    float roughnessAt(const thread float2& coordinate) const
     {
         constexpr auto sampler = metal::sampler(
             metal::filter::linear

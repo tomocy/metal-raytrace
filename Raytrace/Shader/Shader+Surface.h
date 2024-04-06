@@ -16,7 +16,10 @@ public:
     }
 
 public:
-    float3 colorWith(const Geometry::Normalized<float3> light, const Geometry::Normalized<float3> view) const
+    float3 colorWith(
+        const thread Geometry::Normalized<float3>& light,
+        const thread Geometry::Normalized<float3>& view
+    ) const
     {
         float3 color = 0;
 
@@ -60,9 +63,9 @@ public:
     const thread Mesh::Piece& piece() const { return piece_; }
 
 public:
-    Geometry::Normalized<float3> normal() const { return primitive().normal; }
+    const thread Geometry::Normalized<float3>& normal() const { return primitive().normal; }
 
-    float2 textureCoordinate() const { return primitive().textureCoordinate; }
+    const thread float2& textureCoordinate() const { return primitive().textureCoordinate; }
 
 public:
     const thread Material& material() const { return piece().material; }

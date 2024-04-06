@@ -8,7 +8,7 @@
 namespace PBR {
 struct Lambertian {
 public:
-    static float3 compute(const float3 albedo)
+    static float3 compute(const thread float3& albedo)
     {
         return albedo / M_PI_F;
     }
@@ -22,8 +22,8 @@ public:
     public:
         static float compute(
             const float roughness,
-            const Geometry::Normalized<float3> normal,
-            const Geometry::Normalized<float3> halfway
+            const thread Geometry::Normalized<float3>& normal,
+            const thread Geometry::Normalized<float3>& halfway
         )
         {
             const float alpha = metal::pow(roughness, 2);
@@ -44,9 +44,9 @@ public:
     public:
         static float compute(
             const float roughness,
-            const Geometry::Normalized<float3> normal,
-            const Geometry::Normalized<float3> light,
-            const Geometry::Normalized<float3> view
+            const thread Geometry::Normalized<float3>& normal,
+            const thread Geometry::Normalized<float3>& light,
+            const thread Geometry::Normalized<float3>& view
         )
         {
             return schlick(roughness, normal, light) * schlick(roughness, normal, view);
@@ -54,8 +54,8 @@ public:
 
         static float schlick(
             const float roughness,
-            const Geometry::Normalized<float3> normal,
-            const Geometry::Normalized<float3> v
+            const thread Geometry::Normalized<float3>& normal,
+            const thread Geometry::Normalized<float3>& v
         )
         {
             const auto k = metal::pow(roughness + 1, 2) / 8.0;
@@ -73,9 +73,9 @@ public:
     struct F {
     public:
         static float3 compute(
-            const float3 albedo,
-            const Geometry::Normalized<float3> view,
-            const Geometry::Normalized<float3> halfway
+            const thread float3& albedo,
+            const thread Geometry::Normalized<float3>& view,
+            const thread Geometry::Normalized<float3>& halfway
         )
         {
             const auto dotVH = metal::saturate(
@@ -88,10 +88,10 @@ public:
 
 public:
     static float3 compute(
-        const float d, const float g, const float3 f,
-        const Geometry::Normalized<float3> normal,
-        const Geometry::Normalized<float3> light,
-        const Geometry::Normalized<float3> view
+        const float d, const float g, const thread float3& f,
+        const thread Geometry::Normalized<float3>& normal,
+        const thread Geometry::Normalized<float3>& light,
+        const thread Geometry::Normalized<float3>& view
     )
     {
         const auto dotNL = metal::clamp(
