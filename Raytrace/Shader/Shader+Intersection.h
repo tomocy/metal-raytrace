@@ -40,7 +40,7 @@ public:
     }
 
 public:
-    constant Mesh::Piece* findIn(constant Primitive::Instance* const instances, constant Mesh* const meshes) const
+    constant Mesh::Piece* pieceIn(constant Primitive::Instance* const instances, constant Mesh* const meshes) const
     {
         const auto instance = instances[raw.instance_id];
         const auto mesh = meshes[instance.meshID];

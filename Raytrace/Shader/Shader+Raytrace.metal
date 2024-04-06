@@ -10,6 +10,7 @@
 #include "Shader+Primitive.h"
 #include "Shader+Random.h"
 #include "Shader+Sample.h"
+#include "Shader+Surface.h"
 #include <metal_stdlib>
 
 namespace Raytrace {
@@ -70,58 +71,17 @@ private:
             };
         }
 
-        const Primitive primitive = intersection.toPrimitive();
-        const Mesh::Piece piece = *intersection.findIn(instances, meshes);
-
-        struct {
-            float3 normal;
-            float3 light;
-            float3 view;
-            float3 halfway;
-        } dirs = {
-            .normal = primitive.normal,
-            .light = -directionalLight.direction,
-            .view = metal::normalize(view.position - intersection.position()),
-        };
-        dirs.halfway = metal::normalize(dirs.light + dirs.view);
-
-        const auto dotNL = metal::clamp(
-            metal::dot(dirs.normal, dirs.light),
-            1e-3, 1.0
+        const auto surface = Surface(
+            intersection.toPrimitive(),
+            *intersection.pieceIn(instances, meshes)
         );
 
-        const auto metalness = piece.material.metalnessAt(primitive.textureCoordinate);
+        TraceResult result = {};
 
-        const auto albedo = piece.material.albedoAt(primitive.textureCoordinate);
-
-        const auto fresnel = PBR::CookTorrance::F::compute(albedo.specular, dirs.view, dirs.halfway);
-
-        TraceResult result = {
-            .color = 0,
-        };
-
-        {
-            // Diffuse
-            {
-                const auto diffuse = PBR::Lambertian::compute(albedo.diffuse);
-                result.color += (1 - fresnel) * diffuse * dotNL;
-            }
-
-            // Specular
-            {
-                const auto roughness = piece.material.roughnessAt(primitive.textureCoordinate);
-
-                const auto distribution = PBR::CookTorrance::D::compute(roughness, dirs.normal, dirs.halfway);
-                const auto occulusion = PBR::CookTorrance::G::compute(roughness, dirs.normal, dirs.light, dirs.view);
-
-                const auto specular = PBR::CookTorrance::compute(
-                    distribution, occulusion, fresnel,
-                    dirs.normal, dirs.light, dirs.view
-                );
-
-                result.color += specular * dotNL;
-            }
-        }
+        result.color = surface.colorFor(
+            -directionalLight.direction,
+            metal::normalize(view.position - intersection.position())
+        );
 
         {
             result.hasIncident = true;
@@ -130,7 +90,7 @@ private:
             result.incidentRay.min_distance = 1e-3;
             result.incidentRay.max_distance = INFINITY;
 
-            if (metalness == 0) {
+            if (!surface.material().isMetalicAt(surface.textureCoordinate())) {
                 const auto random = float2(
                     Random::Halton::generate(bounceCount * 5 + 5, seed + frame.id),
                     Random::Halton::generate(bounceCount * 5 + 6, seed + frame.id)
@@ -138,10 +98,10 @@ private:
 
                 result.incidentRay.direction = Geometry::alignAsUp(
                     Sample::CosineWeightedHemisphere::sample(random),
-                    primitive.normal
+                    surface.normal()
                 );
             } else {
-                result.incidentRay.direction = metal::reflect(ray.direction, dirs.normal);
+                result.incidentRay.direction = metal::reflect(ray.direction, surface.normal());
             }
         }
 
