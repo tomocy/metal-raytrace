@@ -13,44 +13,47 @@ public:
 
 public:
     Intersection(const metal::raytracing::ray ray, const Raw raw)
-        : raw(raw)
-        , ray(ray)
+        : raw_(raw)
+        , ray_(ray)
     {
     }
 
 public:
     bool has() const
     {
-        return raw.type != metal::raytracing::intersection_type::none;
+        return raw_.type != metal::raytracing::intersection_type::none;
     }
 
 public:
     float3 position() const
     {
-        return ray.origin + ray.direction * raw.distance;
+        return ray().origin + ray().direction * raw_.distance;
     }
 
 public:
     Primitive toPrimitive() const
     {
         return Primitive::from(
-            *(const device Primitive::Triangle*)raw.primitive_data,
-            raw.triangle_barycentric_coord
+            *(const device Primitive::Triangle*)raw_.primitive_data,
+            raw_.triangle_barycentric_coord
         );
     }
 
 public:
     constant Mesh::Piece* pieceIn(constant Primitive::Instance* const instances, constant Mesh* const meshes) const
     {
-        const auto instance = instances[raw.instance_id];
+        const auto instance = instances[raw_.instance_id];
         const auto mesh = meshes[instance.meshID];
 
-        return &mesh.pieces[raw.geometry_id];
+        return &mesh.pieces[raw_.geometry_id];
     }
 
+public:
+    metal::raytracing::ray ray() const { return ray_; }
+
 private:
-    metal::raytracing::ray ray;
-    Raw raw;
+    metal::raytracing::ray ray_;
+    Raw raw_;
 };
 
 struct Intersector {

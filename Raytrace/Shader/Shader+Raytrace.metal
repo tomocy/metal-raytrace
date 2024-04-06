@@ -78,7 +78,7 @@ private:
 
         TraceResult result = {};
 
-        result.color = surface.colorFor(
+        result.color = surface.colorWith(
             -directionalLight.direction,
             metal::normalize(view.position - intersection.position())
         );

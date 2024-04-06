@@ -15,7 +15,7 @@ public:
     }
 
 public:
-    float3 colorFor(const float3 light, const float3 view) const
+    float3 colorWith(const float3 light, const float3 view) const
     {
         float3 color = 0;
 

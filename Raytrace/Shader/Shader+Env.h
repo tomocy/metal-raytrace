@@ -7,7 +7,7 @@
 struct Env {
 public:
     Env(const metal::texturecube<float> texture)
-        : texture(texture)
+        : texture_(texture)
     {
     }
 
@@ -18,9 +18,9 @@ public:
             metal::filter::linear
         );
 
-        return texture.sample(sampler, ray.direction).rgb;
+        return texture_.sample(sampler, ray.direction).rgb;
     }
 
 private:
-    metal::texturecube<float> texture;
+    metal::texturecube<float> texture_;
 };
