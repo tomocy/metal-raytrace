@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Shader+Geometry.h"
 #include "Shader+Math.h"
 #include <metal_stdlib>
 
@@ -27,9 +28,9 @@ public:
         {
             primitive.normal = metal::normalize(
                 mix(
-                    triangle.normals[0],
-                    triangle.normals[1],
-                    triangle.normals[2],
+                    float3(triangle.normals[0]),
+                    float3(triangle.normals[1]),
+                    float3(triangle.normals[2]),
                     position
                 )
             );
@@ -50,6 +51,6 @@ public:
     }
 
 public:
-    packed_float3 normal;
+    Geometry::Normalized<float3> normal;
     float2 textureCoordinate;
 };

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Shader+Geometry.h"
 #include "Shader+Mesh.h"
 #include "Shader+Primitive.h"
 #include <metal_stdlib>
@@ -15,15 +16,15 @@ public:
     }
 
 public:
-    float3 colorWith(const float3 light, const float3 view) const
+    float3 colorWith(const Geometry::Normalized<float3> light, const Geometry::Normalized<float3> view) const
     {
         float3 color = 0;
 
         const auto normal = this->normal();
-        const float3 halfway = metal::normalize(light + view);
+        const auto halfway = Geometry::normalize(light.value() + view.value());
 
         const auto dotNL = metal::saturate(
-            metal::dot(normal, light)
+            metal::dot(normal.value(), light.value())
         );
 
         const auto albedo = this->albedo();
@@ -59,7 +60,7 @@ public:
     const thread Mesh::Piece& piece() const { return piece_; }
 
 public:
-    float3 normal() const { return primitive().normal; }
+    Geometry::Normalized<float3> normal() const { return primitive().normal; }
 
     float2 textureCoordinate() const { return primitive().textureCoordinate; }
 

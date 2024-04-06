@@ -49,7 +49,7 @@ public:
     }
 
 public:
-    metal::raytracing::ray ray() const { return ray_; }
+    const thread metal::raytracing::ray& ray() const { return ray_; }
 
 private:
     metal::raytracing::ray ray_;
@@ -72,11 +72,13 @@ public:
 public:
     Intersection intersectAlong(const metal::raytracing::ray ray, const uint32_t mask = 0) const
     {
-        const auto intersection = raw.intersect(ray, accelerator, mask);
+        const auto intersection = raw_.intersect(ray, accelerator, mask);
         return { ray, intersection };
     }
 
 public:
-    Raw raw;
     metal::raytracing::instance_acceleration_structure accelerator;
+
+private:
+    Raw raw_;
 };

@@ -20,22 +20,31 @@ public:
     // As a workaround, we implement tracing in a loop instead.
     float3 trace(const metal::raytracing::ray ray) const
     {
-        float3 color = 1;
-        auto incidentRay = ray;
+        if (maxTraceCount <= 0) {
+            return 0;
+        }
+
+        struct {
+            float3 color;
+            metal::raytracing::ray incidentRay;
+        } state = {
+            .color = 1,
+            .incidentRay = ray,
+        };
 
         for (uint32_t bounceCount = 0;; bounceCount++) {
-            const auto result = trace(incidentRay, bounceCount);
+            const auto result = trace(state.incidentRay, bounceCount);
 
-            color *= result.color;
+            state.color *= result.color;
 
             if (!result.hasIncident) {
                 break;
             }
 
-            incidentRay = result.incidentRay;
+            state.incidentRay = result.incidentRay;
         }
 
-        return color;
+        return state.color;
     }
 
 private:
@@ -49,7 +58,7 @@ private:
 
     TraceResult trace(const metal::raytracing::ray ray, const uint32_t bounceCount) const
     {
-        if (bounceCount >= maxBounceCount) {
+        if (bounceCount >= maxTraceCount) {
             return {
                 .color = 1,
                 .hasIncident = false,
@@ -79,7 +88,7 @@ private:
         TraceResult result = {};
 
         result.color = surface.colorWith(
-            -directionalLight.direction,
+            -directionalLight.direction.value(),
             metal::normalize(view.position - intersection.position())
         );
 
@@ -101,7 +110,7 @@ private:
                     surface.normal()
                 );
             } else {
-                result.incidentRay.direction = metal::reflect(ray.direction, surface.normal());
+                result.incidentRay.direction = metal::reflect(ray.direction, surface.normal().value());
             }
         }
 
@@ -109,7 +118,7 @@ private:
     }
 
 public:
-    uint32_t maxBounceCount = 3;
+    uint32_t maxTraceCount = 3;
 
     Frame frame;
     uint32_t seed;
@@ -122,7 +131,7 @@ public:
     constant Mesh* meshes;
 
     struct {
-        float3 direction;
+        Geometry::Normalized<float3> direction;
         float3 color;
     } directionalLight;
 
@@ -157,9 +166,9 @@ kernel void kernelMain(
 
     // We know the camera for now.
     const struct {
-        float3 forward;
-        float3 right;
-        float3 up;
+        Geometry::Normalized<float3> forward;
+        Geometry::Normalized<float3> right;
+        Geometry::Normalized<float3> up;
         float3 position;
     } camera = {
         .forward = float3(0, 0, 1),
@@ -177,7 +186,7 @@ kernel void kernelMain(
     const auto inNDC = float2(inUV.x * 2 - 1, inUV.y * -2 + 1);
 
     const auto tracer = Tracer {
-        .maxBounceCount = 3,
+        .maxTraceCount = 3,
         .frame = frame,
         .seed = seed,
         .env = Env(env),
@@ -185,7 +194,7 @@ kernel void kernelMain(
         .instances = instances,
         .meshes = meshes,
         .directionalLight = {
-            .direction = metal::normalize(float3(-1, -1, 1)),
+            .direction = Geometry::normalize(float3(-1, -1, 1)),
             .color = float3(1) * M_PI_F,
         },
         .view = {
@@ -195,9 +204,9 @@ kernel void kernelMain(
 
     const auto ray = raytracing::ray(
         camera.position,
-        metal::normalize(
+        Geometry::normalize(
             Geometry::alignAs(float3(inNDC, 1), camera.forward, camera.right, camera.up)
-        )
+        ).value()
     );
 
     const auto color = tracer.trace(ray);
