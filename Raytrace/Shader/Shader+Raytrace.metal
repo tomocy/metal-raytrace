@@ -1,5 +1,6 @@
 // tomocy
 
+#include "Shader+Env.h"
 #include "Shader+Frame.h"
 #include "Shader+Geometry.h"
 #include "Shader+Intersection.h"
@@ -57,7 +58,8 @@ private:
         const auto intersection = intersector.intersectAlong(ray, 0xff);
 
         if (!intersection.has()) {
-            auto color = envColorFor(ray.direction);
+            auto color = env.colorFor(ray);
+
             if (bounceCount != 0) {
                 color *= directionalLight.color;
             }
@@ -157,21 +159,12 @@ private:
     }
 
 public:
-    float3 envColorFor(const float3 direction) const {
-        constexpr auto sampler = metal::sampler(
-            metal::filter::linear
-        );
-
-        return env.sample(sampler, direction).rgb;
-    }
-
-public:
     uint32_t maxBounceCount = 3;
 
     Frame frame;
     uint32_t seed;
 
-    metal::texturecube<float> env;
+    Env env;
 
     Intersector intersector;
 
@@ -237,7 +230,7 @@ kernel void kernelMain(
         .maxBounceCount = 3,
         .frame = frame,
         .seed = seed,
-        .env = env,
+        .env = Env(env),
         .intersector = Intersector(accelerator),
         .instances = instances,
         .meshes = meshes,

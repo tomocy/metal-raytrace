@@ -51,6 +51,7 @@
 		F552BDE52BBD98FC00734E33 /* Shader+PBR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+PBR.h"; sourceTree = "<group>"; };
 		F552BDE62BBDB50100734E33 /* Shader+Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Texture.swift"; sourceTree = "<group>"; };
 		F552BDE82BBE5F9300734E33 /* Shader+CG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+CG.swift"; sourceTree = "<group>"; };
+		F5776A152BC168D600E9DFAF /* Shader+Env.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Env.h"; sourceTree = "<group>"; };
 		F57A1B432BB938F800F20794 /* Shader+Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Material.swift"; sourceTree = "<group>"; };
 		F57A828C2BB71111007224CF /* Shader+Primitive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Primitive.swift"; sourceTree = "<group>"; };
 		F57A828E2BB71BDB007224CF /* Shader+Primitive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Primitive.h"; sourceTree = "<group>"; };
@@ -130,6 +131,7 @@
 				F5B35B4F2BB54EF500651A54 /* Shader+Debug.swift */,
 				F53A73892BB2F829003C899A /* Shader+Echo.metal */,
 				F53A738B2BB2FC45003C899A /* Shader+Echo.swift */,
+				F5776A152BC168D600E9DFAF /* Shader+Env.h */,
 				F595494F2BBBFCC7001BC8E1 /* Shader+Frame.h */,
 				F552BDE02BBBFD3A00734E33 /* Shader+Frame.swift */,
 				F552BDE32BBC38E600734E33 /* Shader+Geometry.h */,
