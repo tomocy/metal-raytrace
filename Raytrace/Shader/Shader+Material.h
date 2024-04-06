@@ -4,7 +4,24 @@
 
 struct Material {
 public:
-    float4 albedoAt(const float2 coordinate) const
+    struct Albedo {
+    public:
+        float3 diffuse;
+        float3 specular;
+    };
+
+    Albedo albedoAt(const float2 coordinate) const
+    {
+        const auto metalness = metalnessAt(coordinate);
+        const auto raw = rawAlbedoAt(coordinate).rgb;
+
+        return {
+            .diffuse = metal::mix(0, raw, 1 - metalness),
+            .specular = metal::mix(0.04, raw, metalness),
+        };
+    }
+
+    float4 rawAlbedoAt(const float2 coordinate) const
     {
         constexpr auto sampler = metal::sampler(
             metal::filter::linear
@@ -22,7 +39,8 @@ public:
         return metalnessAt(coordinate) == 1;
     }
 
-    float metalnessAt(const float2 coordinate) const {
+    float metalnessAt(const float2 coordinate) const
+    {
         constexpr auto sampler = metal::sampler(
             metal::filter::linear
         );
@@ -31,7 +49,8 @@ public:
     }
 
 public:
-    float roughnessAt(const float2 coordinate) const {
+    float roughnessAt(const float2 coordinate) const
+    {
         constexpr auto sampler = metal::sampler(
             metal::filter::linear
         );

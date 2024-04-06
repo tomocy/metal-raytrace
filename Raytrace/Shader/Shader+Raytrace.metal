@@ -94,15 +94,7 @@ private:
 
         const auto metalness = piece.material.metalnessAt(primitive.textureCoordinate);
 
-        struct {
-            float4 raw;
-            float3 diffuse;
-            float3 specular;
-        } albedo = {
-            .raw = piece.material.albedoAt(primitive.textureCoordinate)
-        };
-        albedo.diffuse = metal::mix(0, albedo.raw.rgb, 1 - metalness);
-        albedo.specular = metal::mix(0.04, albedo.raw.rgb, metalness);
+        const auto albedo = piece.material.albedoAt(primitive.textureCoordinate);
 
         const auto fresnel = PBR::CookTorrance::F::compute(albedo.specular, dirs.view, dirs.halfway);
 
