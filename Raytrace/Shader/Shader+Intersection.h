@@ -12,15 +12,10 @@ public:
         metal::raytracing::instancing, metal::raytracing::triangle_data>::result_type;
 
 public:
-    Intersection(const Raw raw)
+    Intersection(const metal::raytracing::ray ray, const Raw raw)
         : raw(raw)
+        , ray(ray)
     {
-    }
-
-public:
-    float3 positionWith(const metal::raytracing::ray ray) const
-    {
-        return ray.origin + ray.direction * raw.distance;
     }
 
 public:
@@ -30,7 +25,13 @@ public:
     }
 
 public:
-    Primitive to() const
+    float3 position() const
+    {
+        return ray.origin + ray.direction * raw.distance;
+    }
+
+public:
+    Primitive toPrimitive() const
     {
         return Primitive::from(
             *(const device Primitive::Triangle*)raw.primitive_data,
@@ -48,6 +49,7 @@ public:
     }
 
 private:
+    metal::raytracing::ray ray;
     Raw raw;
 };
 
@@ -67,7 +69,8 @@ public:
 public:
     Intersection intersectAlong(const metal::raytracing::ray ray, const uint32_t mask = 0) const
     {
-        return { raw.intersect(ray, accelerator, mask) };
+        const auto intersection = raw.intersect(ray, accelerator, mask);
+        return { ray, intersection };
     }
 
 public:

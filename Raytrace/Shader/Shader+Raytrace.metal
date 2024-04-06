@@ -70,9 +70,7 @@ private:
             };
         }
 
-        const auto intersectionPosition = intersection.positionWith(ray);
-
-        const Primitive primitive = intersection.to();
+        const Primitive primitive = intersection.toPrimitive();
         const Mesh::Piece piece = *intersection.findIn(instances, meshes);
 
         struct {
@@ -83,7 +81,7 @@ private:
         } dirs = {
             .normal = primitive.normal,
             .light = -directionalLight.direction,
-            .view = metal::normalize(view.position - intersectionPosition),
+            .view = metal::normalize(view.position - intersection.position()),
         };
         dirs.halfway = metal::normalize(dirs.light + dirs.view);
 
@@ -128,7 +126,7 @@ private:
         {
             result.hasIncident = true;
 
-            result.incidentRay.origin = intersectionPosition;
+            result.incidentRay.origin = intersection.position();
             result.incidentRay.min_distance = 1e-3;
             result.incidentRay.max_distance = INFINITY;
 
