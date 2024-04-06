@@ -57,8 +57,13 @@ private:
         const auto intersection = intersector.intersectAlong(ray, 0xff);
 
         if (!intersection.has()) {
+            auto color = envColorFor(ray.direction);
+            if (bounceCount != 0) {
+                color *= directionalLight.color;
+            }
+
             return {
-                .color = directionalLight.color,
+                .color = color,
                 .hasIncident = false,
             };
         }
@@ -152,10 +157,21 @@ private:
     }
 
 public:
+    float3 envColorFor(const float3 direction) const {
+        constexpr auto sampler = metal::sampler(
+            metal::filter::linear
+        );
+
+        return env.sample(sampler, direction).rgb;
+    }
+
+public:
     uint32_t maxBounceCount = 3;
 
     Frame frame;
     uint32_t seed;
+
+    metal::texturecube<float> env;
 
     Intersector intersector;
 
@@ -179,6 +195,7 @@ kernel void kernelMain(
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
     constant Frame& frame [[buffer(0)]],
     const metal::texture2d<uint32_t> seeds [[texture(1)]],
+    const metal::texturecube<float> env [[texture(2)]],
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(1)]],
     constant Primitive::Instance* const instances [[buffer(2)]],
     constant Mesh* const meshes [[buffer(3)]]
@@ -220,6 +237,7 @@ kernel void kernelMain(
         .maxBounceCount = 3,
         .frame = frame,
         .seed = seed,
+        .env = env,
         .intersector = Intersector(accelerator),
         .instances = instances,
         .meshes = meshes,

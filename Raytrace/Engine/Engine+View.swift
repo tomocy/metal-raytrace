@@ -30,11 +30,7 @@ extension Engine {
                 do {
                     let raw = MDLMesh.init(
                         try! .load(
-                            url: Bundle.main.url(
-                                forResource: "Spot",
-                                withExtension: "obj",
-                                subdirectory: "Farm/Spot"
-                            )!,
+                            url: Bundle.main.url(forResource: "Spot", withExtension: "obj", subdirectory: "Farm/Spot")!,
                             with: device
                         ).first!,
                         indexType: .uint16
