@@ -67,6 +67,8 @@
 
 /* Begin PBXFileReference section */
 		F5006B722BC2D2A000A26DEF /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		F5006B742BC2EF2200A26DEF /* Distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Distribution.h; sourceTree = "<group>"; };
+		F5006B752BC2F08600A26DEF /* Sequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sequence.h; sourceTree = "<group>"; };
 		F53486B92BB98DE300EB7E03 /* Shader+Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Mesh.h"; sourceTree = "<group>"; };
 		F53486BA2BB98E8400EB7E03 /* Shader+Material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Material.h"; sourceTree = "<group>"; };
 		F53A73892BB2F829003C899A /* Shader+Echo.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shader+Echo.metal"; sourceTree = "<group>"; };
@@ -141,11 +143,13 @@
 			children = (
 				F5006B722BC2D2A000A26DEF /* App.swift */,
 				F5776A352BC2B34700E9DFAF /* CG.swift */,
+				F5006B742BC2EF2200A26DEF /* Distribution.h */,
 				F5776A1E2BC2837600E9DFAF /* main.swift */,
 				F5776A2A2BC2933100E9DFAF /* Math.swift */,
 				F5776A2C2BC295D800E9DFAF /* Metal.swift */,
 				F5776A282BC28CDD00E9DFAF /* Prelight.metal */,
 				F5776A262BC28A2300E9DFAF /* Prelight.swift */,
+				F5006B752BC2F08600A26DEF /* Sequence.h */,
 			);
 			path = Prelight;
 			sourceTree = "<group>";

@@ -1,5 +1,6 @@
 // tomocy
 
+#include "Distribution.h"
 #include <metal_stdlib>
 
 namespace Prelight {
