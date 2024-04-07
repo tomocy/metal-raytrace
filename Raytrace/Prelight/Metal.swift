@@ -4,28 +4,6 @@ import CoreGraphics
 import CoreImage
 import Metal
 
-extension MTLTexture {
-    var resolution: CGSize {
-        .init(
-            width: .init(width),
-            height: .init(height)
-        )
-    }
-}
-
-extension MTLTexture {
-    func into(in colorSpace: CGColorSpace, mipmapLevel: Int) -> CGImage? {
-        guard let image = CIImage.init(mtlTexture: self)?.oriented(.down) else { return nil }
-
-        return CIContext.init(mtlDevice: device).createCGImage(
-            image,
-            from: image.extent,
-            format: .RGBA8,
-            colorSpace: colorSpace
-        )
-    }
-}
-
 extension MTLCommandBuffer {
     func commit(_ code: () throws -> Void) throws {
         try code()

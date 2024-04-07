@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		F5006B732BC2D2A000A26DEF /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5006B722BC2D2A000A26DEF /* App.swift */; };
+		F5006B812BC3136F00A26DEF /* CubeTo2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5006B802BC3136F00A26DEF /* CubeTo2D.swift */; };
+		F5006B832BC314D700A26DEF /* Measure.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5006B822BC314D700A26DEF /* Measure.swift */; };
+		F5006B852BC3158600A26DEF /* Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5006B842BC3158600A26DEF /* Texture.swift */; };
+		F5006B872BC318B600A26DEF /* CubeTo2D.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5006B862BC318B600A26DEF /* CubeTo2D.metal */; };
 		F53A738A2BB2F829003C899A /* Shader+Echo.metal in Sources */ = {isa = PBXBuildFile; fileRef = F53A73892BB2F829003C899A /* Shader+Echo.metal */; };
 		F53A738C2BB2FC45003C899A /* Shader+Echo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53A738B2BB2FC45003C899A /* Shader+Echo.swift */; };
 		F53A738E2BB300CD003C899A /* Shader+Raytrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53A738D2BB300CD003C899A /* Shader+Raytrace.swift */; };
@@ -69,6 +73,10 @@
 		F5006B722BC2D2A000A26DEF /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 		F5006B742BC2EF2200A26DEF /* Distribution.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Distribution.h; sourceTree = "<group>"; };
 		F5006B752BC2F08600A26DEF /* Sequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sequence.h; sourceTree = "<group>"; };
+		F5006B802BC3136F00A26DEF /* CubeTo2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CubeTo2D.swift; sourceTree = "<group>"; };
+		F5006B822BC314D700A26DEF /* Measure.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Measure.swift; sourceTree = "<group>"; };
+		F5006B842BC3158600A26DEF /* Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
+		F5006B862BC318B600A26DEF /* CubeTo2D.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = CubeTo2D.metal; sourceTree = "<group>"; };
 		F53486B92BB98DE300EB7E03 /* Shader+Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Mesh.h"; sourceTree = "<group>"; };
 		F53486BA2BB98E8400EB7E03 /* Shader+Material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Material.h"; sourceTree = "<group>"; };
 		F53A73892BB2F829003C899A /* Shader+Echo.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shader+Echo.metal"; sourceTree = "<group>"; };
@@ -143,13 +151,17 @@
 			children = (
 				F5006B722BC2D2A000A26DEF /* App.swift */,
 				F5776A352BC2B34700E9DFAF /* CG.swift */,
+				F5006B862BC318B600A26DEF /* CubeTo2D.metal */,
+				F5006B802BC3136F00A26DEF /* CubeTo2D.swift */,
 				F5006B742BC2EF2200A26DEF /* Distribution.h */,
 				F5776A1E2BC2837600E9DFAF /* main.swift */,
 				F5776A2A2BC2933100E9DFAF /* Math.swift */,
+				F5006B822BC314D700A26DEF /* Measure.swift */,
 				F5776A2C2BC295D800E9DFAF /* Metal.swift */,
 				F5776A282BC28CDD00E9DFAF /* Prelight.metal */,
 				F5776A262BC28A2300E9DFAF /* Prelight.swift */,
 				F5006B752BC2F08600A26DEF /* Sequence.h */,
+				F5006B842BC3158600A26DEF /* Texture.swift */,
 			);
 			path = Prelight;
 			sourceTree = "<group>";
@@ -360,12 +372,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5776A292BC28CDD00E9DFAF /* Prelight.metal in Sources */,
+				F5006B852BC3158600A26DEF /* Texture.swift in Sources */,
+				F5006B812BC3136F00A26DEF /* CubeTo2D.swift in Sources */,
+				F5006B832BC314D700A26DEF /* Measure.swift in Sources */,
 				F5776A272BC28A2300E9DFAF /* Prelight.swift in Sources */,
 				F5776A2D2BC295D800E9DFAF /* Metal.swift in Sources */,
 				F5776A1F2BC2837600E9DFAF /* main.swift in Sources */,
 				F5776A2B2BC2933100E9DFAF /* Math.swift in Sources */,
 				F5006B732BC2D2A000A26DEF /* App.swift in Sources */,
 				F5776A362BC2B34700E9DFAF /* CG.swift in Sources */,
+				F5006B872BC318B600A26DEF /* CubeTo2D.metal in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

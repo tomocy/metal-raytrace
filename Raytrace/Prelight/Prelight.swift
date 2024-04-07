@@ -22,44 +22,20 @@ extension Prelight {
             encoder: Args.make(for: fn)
         )
 
-        self.source = source
+        do {
+            self.source = source
+            source.label!.append(",Prelight/Source")
+        }
 
-        target = Self.make(
+        target = Texture.makeCube(
             with: device,
-            label: "Target",
+            label: "Prelight/Target",
             format: .bgra8Unorm,
-            resolution: source.resolution,
+            size: source.width,
             usage: [.shaderRead, .shaderWrite],
             storageMode: .managed,
             mipmapped: false
         )!
-    }
-}
-
-extension Prelight {
-    static func make(
-        with device: some MTLDevice,
-        label: String,
-        format: MTLPixelFormat,
-        resolution: CGSize,
-        usage: MTLTextureUsage,
-        storageMode: MTLStorageMode,
-        mipmapped: Bool
-    ) -> (any MTLTexture)? {
-        let desc = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: format,
-            width: .init(resolution.width), height: .init(resolution.height),
-            mipmapped: mipmapped
-        )
-
-        desc.usage = usage
-        desc.storageMode = storageMode
-
-        guard let texture = device.makeTexture(descriptor: desc) else { return nil }
-
-        texture.label = label
-
-        return texture
     }
 }
 
@@ -76,10 +52,12 @@ extension Prelight {
         }
 
         do {
+            let (width, height) = (target.width, target.width * 6 /* face count in a cube */)
+
             let threadsSizePerGroup = MTLSize.init(width: 8, height: 8, depth: 1)
             let threadsGroupSize = MTLSize.init(
-                width: target.width.align(by: threadsSizePerGroup.width) / threadsSizePerGroup.width,
-                height: target.height.align(by: threadsSizePerGroup.height) / threadsSizePerGroup.height,
+                width: width.align(by: threadsSizePerGroup.width) / threadsSizePerGroup.width,
+                height: height.align(by: threadsSizePerGroup.height) / threadsSizePerGroup.height,
                 depth: threadsSizePerGroup.depth
             )
 

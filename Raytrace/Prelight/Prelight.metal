@@ -6,15 +6,20 @@
 namespace Prelight {
     struct Args {
     public:
-        metal::texture2d<float, metal::access::sample> source;
-        metal::texture2d<float, metal::access::write> target;
+        metal::texturecube<float, metal::access::sample> source;
+        metal::texturecube<float, metal::access::write> target;
     };
 
     kernel void compute(
         const uint2 id [[thread_position_in_grid]],
-        device Args& arg [[buffer(0)]]
+        constant Args& args [[buffer(0)]]
     ) {
-        const auto color = arg.source.read(id);
-        arg.target.write(color, id);
+        const uint32_t size = args.target.get_width();
+
+        const auto face = id.y / size;
+        const auto inFace = id % size;
+
+        const auto color = args.source.read(inFace, face);
+        args.target.write(color, inFace, face);
     }
 }
