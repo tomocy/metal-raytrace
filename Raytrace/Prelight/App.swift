@@ -6,10 +6,10 @@ import CoreImage
 import MetalKit
 
 struct App {
-    var args: Args
+    private(set) var args: Args
 
-    var commandQueue: any MTLCommandQueue
-    var prelight: Prelight
+    private var commandQueue: any MTLCommandQueue
+    private var prelight: Prelight
 }
 
 extension App {
@@ -49,14 +49,13 @@ extension App {
             try await command.complete {
                 try command.commit {
                     prelight.diffuse.encode(to: command)
-                    // cubeTo2D.encode(to: command)
                 }
             }
         }
     }
 
     private func save() async throws {
-        let image: CGImage = prelight.diffuse.targets.d2.into(
+        let image: CGImage = prelight.diffuse.target.into(
             in: CGColorSpace.init(name: CGColorSpace.linearSRGB)!,
             mipmapLevel: 0
         )!

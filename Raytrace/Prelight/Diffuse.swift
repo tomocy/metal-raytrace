@@ -9,8 +9,6 @@ extension Prelight {
 
         private var source: any MTLTexture
         private(set) var target: any MTLTexture
-
-        private var cubeTo2D: CubeTo2D
     }
 }
 
@@ -31,60 +29,46 @@ extension Prelight.Diffuse {
             source.label!.append(",Prelight/Diffuse/Source")
         }
 
-        target = Texture.makeCube(
+        target = Texture.make2D(
             with: device,
             label: "Prelight/Diffuse/Target",
             format: .bgra8Unorm,
-            size: source.width,
+            size: .init(
+                width: source.width,
+                height: source.height * 6 /* face count in a cube */
+            ),
             usage: [.shaderRead, .shaderWrite],
             storageMode: .managed,
             mipmapped: false
         )!
-
-        cubeTo2D = try .init(device: device, source: target)
-    }
-}
-
-extension Prelight.Diffuse {
-    var targets: Prelight.Targets {
-        .init(
-            cube: target,
-            d2: cubeTo2D.target
-        )
     }
 }
 
 extension Prelight.Diffuse {
     func encode(to buffer: some MTLCommandBuffer) {
+        let encoder = buffer.makeComputeCommandEncoder()!
+        defer { encoder.endEncoding() }
+
+        encoder.setComputePipelineState(pipelineStates.compute)
+
         do {
-            let encoder = buffer.makeComputeCommandEncoder()!
-            defer { encoder.endEncoding() }
-
-            encoder.setComputePipelineState(pipelineStates.compute)
-
-            do {
-                let buffer = args.build(source, target, with: encoder)!
-                encoder.setBuffer(buffer, offset: 0, index: 0)
-            }
-
-            do {
-                let (width, height) = (targets.cube.width, targets.cube.width * 6 /* face count in a cube */)
-
-                let threadsSizePerGroup = MTLSize.init(width: 8, height: 8, depth: 1)
-                let threadsGroupSize = MTLSize.init(
-                    width: width.align(by: threadsSizePerGroup.width) / threadsSizePerGroup.width,
-                    height: height.align(by: threadsSizePerGroup.height) / threadsSizePerGroup.height,
-                    depth: threadsSizePerGroup.depth
-                )
-
-                encoder.dispatchThreadgroups(
-                    threadsGroupSize,
-                    threadsPerThreadgroup: threadsSizePerGroup
-                )
-            }
+            let buffer = args.build(source, target, with: encoder)!
+            encoder.setBuffer(buffer, offset: 0, index: 0)
         }
 
-        cubeTo2D.encode(to: buffer)
+        do {
+            let threadsSizePerGroup = MTLSize.init(width: 8, height: 8, depth: 1)
+            let threadsGroupSize = MTLSize.init(
+                width: target.width.align(by: threadsSizePerGroup.width) / threadsSizePerGroup.width,
+                height: target.height.align(by: threadsSizePerGroup.height) / threadsSizePerGroup.height,
+                depth: threadsSizePerGroup.depth
+            )
+
+            encoder.dispatchThreadgroups(
+                threadsGroupSize,
+                threadsPerThreadgroup: threadsSizePerGroup
+            )
+        }
     }
 }
 

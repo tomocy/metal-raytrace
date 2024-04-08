@@ -18,9 +18,9 @@ namespace Diffuse {
         } coordinates = {
             .inScreen = Coordinate::InScreen(id),
         };
-        coordinates.inFace = args.target.coordinateInFace(coordinates.inScreen);
-        coordinates.inUV = Coordinate::InUV::from(coordinates.inFace, args.target.size());
-        coordinates.inNDC = Coordinate::InNDC::from(coordinates.inUV, args.target.faceFor(coordinates.inScreen));
+        coordinates.inFace = args.source.coordinateInFace(coordinates.inScreen);
+        coordinates.inUV = Coordinate::InUV::from(coordinates.inFace, args.source.size());
+        coordinates.inNDC = Coordinate::InNDC::from(coordinates.inUV, args.source.faceFor(coordinates.inScreen));
 
         constexpr auto sampler = metal::sampler(
             metal::filter::linear
@@ -30,7 +30,7 @@ namespace Diffuse {
 
         const auto color = args.source.raw().sample(sampler, direction);
 
-        args.target.writeInFace(color, coordinates.inScreen);
+        args.target.write(color, coordinates.inScreen.value());
     }
 }
 }
