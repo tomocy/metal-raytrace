@@ -3,11 +3,11 @@
 import Metal
 
 struct CubeTo2D {
-    var pipelineStates: PipelineStates
-    var args: Args
+    private var pipelineStates: PipelineStates
+    private var args: Args
 
-    var source: any MTLTexture
-    var target: any MTLTexture
+    private var source: any MTLTexture
+    private(set) var target: any MTLTexture
 }
 
 extension CubeTo2D {

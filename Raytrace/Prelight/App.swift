@@ -10,7 +10,6 @@ struct App {
 
     var commandQueue: any MTLCommandQueue
     var prelight: Prelight
-    var cubeTo2D: CubeTo2D
 }
 
 extension App {
@@ -19,9 +18,8 @@ extension App {
 
         commandQueue = device.makeCommandQueue()!
 
-        prelight = try Prelight.init(
-            device: device,
-            source: try MTKTextureLoader.init(device: device).newTexture(
+        do {
+            let source = try MTKTextureLoader.init(device: device).newTexture(
                 URL: args.sourceURL,
                 options: [
                     .textureUsage: MTLTextureUsage.shaderRead.rawValue,
@@ -30,9 +28,11 @@ extension App {
                     .generateMipmaps: false,
                 ]
             )
-        )
 
-        cubeTo2D = try CubeTo2D.init(device: device, source: prelight.target)
+            prelight = .init(
+                diffuse: try Prelight.Diffuse.init(device: device, source: source)
+            )
+        }
     }
 }
 
@@ -48,15 +48,15 @@ extension App {
         try await process(label: "Prelighting") {
             try await command.complete {
                 try command.commit {
-                    prelight.encode(to: command)
-                    cubeTo2D.encode(to: command)
+                    prelight.diffuse.encode(to: command)
+                    // cubeTo2D.encode(to: command)
                 }
             }
         }
     }
 
     private func save() async throws {
-        let image: CGImage = cubeTo2D.target.into(
+        let image: CGImage = prelight.diffuse.targets.d2.into(
             in: CGColorSpace.init(name: CGColorSpace.linearSRGB)!,
             mipmapLevel: 0
         )!
