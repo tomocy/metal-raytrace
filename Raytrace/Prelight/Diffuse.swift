@@ -33,10 +33,7 @@ extension Prelight.Diffuse {
             with: device,
             label: "Prelight/Diffuse/Target",
             format: .bgra8Unorm,
-            size: .init(
-                width: source.width,
-                height: source.height * 6 /* face count in a cube */
-            ),
+            size: .init(source.width, source.height * 6 /* face count in a cube */),
             usage: [.shaderRead, .shaderWrite],
             storageMode: .managed,
             mipmapped: false

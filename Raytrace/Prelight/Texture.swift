@@ -11,15 +11,15 @@ extension Texture {
         with device: some MTLDevice,
         label: String,
         format: MTLPixelFormat,
-        size: Size2D<Int>,
+        size: SIMD2<Int>,
         usage: MTLTextureUsage,
         storageMode: MTLStorageMode,
         mipmapped: Bool
     ) -> (any MTLTexture)? {
         let desc = MTLTextureDescriptor.texture2DDescriptor(
             pixelFormat: format,
-            width: size.width,
-            height: size.height,
+            width: size.x,
+            height: size.y,
             mipmapped: mipmapped
         )
 
