@@ -93,7 +93,7 @@
 		F552BDE52BBD98FC00734E33 /* Shader+PBR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+PBR.h"; sourceTree = "<group>"; };
 		F552BDE62BBDB50100734E33 /* Shader+Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Texture.swift"; sourceTree = "<group>"; };
 		F552BDE82BBE5F9300734E33 /* Shader+CG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+CG.swift"; sourceTree = "<group>"; };
-		F5776A152BC168D600E9DFAF /* Shader+Env.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Env.h"; sourceTree = "<group>"; };
+		F5776A152BC168D600E9DFAF /* Shader+Background.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Background.h"; sourceTree = "<group>"; };
 		F5776A172BC171FB00E9DFAF /* Shader+Surface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Surface.h"; sourceTree = "<group>"; };
 		F5776A1C2BC2837600E9DFAF /* Prelight */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Prelight; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5776A1E2BC2837600E9DFAF /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -217,12 +217,12 @@
 			children = (
 				F5E4F7A62BB4615100B21B16 /* Shader+Accelerator.swift */,
 				F5E4F7AE2BB52FEB00B21B16 /* Shader+Array.swift */,
+				F5776A152BC168D600E9DFAF /* Shader+Background.h */,
 				F552BDE82BBE5F9300734E33 /* Shader+CG.swift */,
 				F5B35B512BB54FEA00651A54 /* Shader+Debug.metal */,
 				F5B35B4F2BB54EF500651A54 /* Shader+Debug.swift */,
 				F53A73892BB2F829003C899A /* Shader+Echo.metal */,
 				F53A738B2BB2FC45003C899A /* Shader+Echo.swift */,
-				F5776A152BC168D600E9DFAF /* Shader+Env.h */,
 				F595494F2BBBFCC7001BC8E1 /* Shader+Frame.h */,
 				F552BDE02BBBFD3A00734E33 /* Shader+Frame.swift */,
 				F552BDE32BBC38E600734E33 /* Shader+Geometry.h */,
@@ -287,7 +287,6 @@
 				F5A782682BB2CC4E00415220 /* Sources */,
 				F5A782692BB2CC4E00415220 /* Frameworks */,
 				F5A7826A2BB2CC4E00415220 /* Resources */,
-				F5776A252BC2843000E9DFAF /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -348,27 +347,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		F5776A252BC2843000E9DFAF /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${BUILT_PRODUCTS_DIR}/Prelight\" \"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Farm/Env/Env.png\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F5776A182BC2837600E9DFAF /* Sources */ = {

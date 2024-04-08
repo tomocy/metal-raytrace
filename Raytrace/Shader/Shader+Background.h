@@ -4,9 +4,9 @@
 
 #include <metal_stdlib>
 
-struct Env {
+struct Background {
 public:
-    Env(const metal::texturecube<float> texture)
+    Background(const metal::texturecube<float> texture)
         : texture_(texture)
     {
     }

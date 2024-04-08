@@ -1,6 +1,6 @@
 // tomocy
 
-#include "Shader+Env.h"
+#include "Shader+Background.h"
 #include "Shader+Frame.h"
 #include "Shader+Geometry.h"
 #include "Shader+Intersection.h"
@@ -68,7 +68,7 @@ private:
         const auto intersection = intersector.intersectAlong(ray, 0xff);
 
         if (!intersection.has()) {
-            auto color = env.colorFor(ray);
+            auto color = background.colorFor(ray);
 
             if (bounceCount != 0) {
                 color *= directionalLight.color;
@@ -123,7 +123,7 @@ public:
     Frame frame;
     uint32_t seed;
 
-    Env env;
+    Background background;
 
     Intersector intersector;
 
@@ -147,7 +147,7 @@ kernel void kernelMain(
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
     constant Frame& frame [[buffer(0)]],
     const metal::texture2d<uint32_t> seeds [[texture(1)]],
-    const metal::texturecube<float> env [[texture(2)]],
+    const metal::texturecube<float> background [[texture(2)]],
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(1)]],
     constant Primitive::Instance* const instances [[buffer(2)]],
     constant Mesh* const meshes [[buffer(3)]]
@@ -189,7 +189,7 @@ kernel void kernelMain(
         .maxTraceCount = 3,
         .frame = frame,
         .seed = seed,
-        .env = Env(env),
+        .background = Background(background),
         .intersector = Intersector(accelerator),
         .instances = instances,
         .meshes = meshes,
