@@ -24,7 +24,7 @@ public:
 namespace Sample {
 struct GGX {
 public:
-    static float3 sample(const float roughness, const thread float2& v, const thread float3& normal)
+    static float3 sample(const thread float2& v, const float roughness, const thread float3& normal)
     {
         const auto alpha = roughness * roughness;
         const auto alpha2 = metal::pow(alpha, 2);
