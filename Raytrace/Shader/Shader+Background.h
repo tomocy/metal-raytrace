@@ -22,5 +22,5 @@ public:
     }
 
 private:
-    metal::texturecube<float> texture_;
+    metal::texturecube<float, metal::access::sample> texture_ [[texture(2)]];
 };

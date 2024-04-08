@@ -147,7 +147,8 @@ kernel void kernelMain(
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
     constant Frame& frame [[buffer(0)]],
     const metal::texture2d<uint32_t> seeds [[texture(1)]],
-    const metal::texturecube<float> background [[texture(2)]],
+    // const metal::texturecube<float> background [[texture(2)]],
+    const Background background,
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(1)]],
     constant Primitive::Instance* const instances [[buffer(2)]],
     constant Mesh* const meshes [[buffer(3)]]
@@ -189,7 +190,7 @@ kernel void kernelMain(
         .maxTraceCount = 3,
         .frame = frame,
         .seed = seed,
-        .background = Background(background),
+        .background = background,
         .intersector = Intersector(accelerator),
         .instances = instances,
         .meshes = meshes,
@@ -206,7 +207,8 @@ kernel void kernelMain(
         camera.position,
         Geometry::normalize(
             Geometry::alignAs(float3(inNDC, 1), camera.forward, camera.right, camera.up)
-        ).value()
+        )
+            .value()
     );
 
     const auto color = tracer.trace(ray);
