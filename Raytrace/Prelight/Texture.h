@@ -13,6 +13,7 @@ public:
 
 public:
     thread Raw& raw() { return raw_; }
+    const thread Raw& raw() const { return raw_; }
     constant Raw& raw() constant { return raw_; }
 
 private:

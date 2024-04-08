@@ -15,13 +15,13 @@ float3 alignAs(
     return v.x * right + v.y * up + v.z * forward;
 }
 
-float3 alignAsUp(const thread float3& v, const thread float3& up)
+float3 alignFromTangent(const thread float3& v, const thread float3& normal)
 {
-    const auto arbitary = metal::abs(up.z) < 0.999 ? float3(0, 0, 1) : float3(1, 0, 0);
+    const auto arbitary = metal::abs(normal.z) < 0.999 ? float3(0, 0, 1) : float3(1, 0, 0);
 
-    const auto right = metal::normalize(metal::cross(arbitary, up));
-    const auto forward = metal::cross(up, right);
+    const auto x = metal::normalize(metal::cross(arbitary, normal));
+    const auto y = metal::cross(normal, x);
 
-    return alignAs(v, forward, right, up);
+    return alignAs(v, normal, x, y);
 }
 }

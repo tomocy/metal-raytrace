@@ -5,9 +5,9 @@
 #include "Geometry.h"
 
 namespace Sample {
-struct CosWeighted {
+struct CosineWeighted {
 public:
-    static float3 sample(const thread float3& v, const thread float3& normal)
+    static float3 sample(const thread float2& v, const thread float3& normal)
     {
         const auto r = metal::sqrt(v.x);
         const auto phi = 2.0 * M_PI_F * v.y;
@@ -16,7 +16,7 @@ public:
         const auto y = r * metal::sin(phi);
         const auto z = metal::sqrt(1 - v.x);
 
-        return Geometry::alignAsUp(float3(x, y, z), normal);
+        return Geometry::alignFromTangent(float3(x, y, z), normal);
     }
 };
 }
