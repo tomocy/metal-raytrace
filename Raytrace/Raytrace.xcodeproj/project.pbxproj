@@ -80,6 +80,7 @@
 		F5006B882BC3A37F00A26DEF /* Sample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sample.h; sourceTree = "<group>"; };
 		F5006B892BC3A3AD00A26DEF /* Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
 		F5006B8A2BC3AADB00A26DEF /* Prelight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prelight.h; sourceTree = "<group>"; };
+		F5006B8D2BC3AC0000A26DEF /* Texture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Texture.h; sourceTree = "<group>"; };
 		F53486B92BB98DE300EB7E03 /* Shader+Mesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Mesh.h"; sourceTree = "<group>"; };
 		F53486BA2BB98E8400EB7E03 /* Shader+Material.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Material.h"; sourceTree = "<group>"; };
 		F53A73892BB2F829003C899A /* Shader+Echo.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shader+Echo.metal"; sourceTree = "<group>"; };
@@ -162,11 +163,12 @@
 				F5776A2A2BC2933100E9DFAF /* Math.swift */,
 				F5006B822BC314D700A26DEF /* Measure.swift */,
 				F5776A2C2BC295D800E9DFAF /* Metal.swift */,
-				F5776A282BC28CDD00E9DFAF /* Prelight.metal */,
 				F5006B8A2BC3AADB00A26DEF /* Prelight.h */,
+				F5776A282BC28CDD00E9DFAF /* Prelight.metal */,
 				F5776A262BC28A2300E9DFAF /* Prelight.swift */,
 				F5006B882BC3A37F00A26DEF /* Sample.h */,
 				F5006B752BC2F08600A26DEF /* Sequence.h */,
+				F5006B8D2BC3AC0000A26DEF /* Texture.h */,
 				F5006B842BC3158600A26DEF /* Texture.swift */,
 			);
 			path = Prelight;

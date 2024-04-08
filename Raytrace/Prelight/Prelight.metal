@@ -8,12 +8,13 @@ namespace Prelight {
         const uint2 id [[thread_position_in_grid]],
         constant Args& args [[buffer(0)]]
     ) {
-        const uint32_t size = args.target.get_width();
+        struct {
+            uint2 inScreen;
+        } coordinates = {
+            .inScreen = id,
+        };
 
-        const auto face = id.y / size;
-        const auto inFace = id % size;
-
-        const auto color = args.source.read(inFace, face);
-        args.target.write(color, inFace, face);
+        const auto color = args.source.readInFace(coordinates.inScreen);
+        args.target.writeInFace(color, coordinates.inScreen);
     }
 }

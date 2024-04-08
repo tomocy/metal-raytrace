@@ -1,12 +1,12 @@
 // tomocy
 
-#include "Distribution.h"
+#include "Texture.h"
 #include <metal_stdlib>
 
 namespace CubeTo2D {
     struct Args {
     public:
-        metal::texturecube<float, metal::access::sample> source;
+        Texture::Cube<float, metal::access::sample> source;
         metal::texture2d<float, metal::access::write> target;
     };
 
@@ -14,12 +14,13 @@ namespace CubeTo2D {
         const uint2 id [[thread_position_in_grid]],
         constant Args& args [[buffer(0)]]
     ) {
-        const uint32_t size = args.target.get_width();
+        struct {
+            uint2 inScreen;
+        } coordinates = {
+            .inScreen = id,
+        };
 
-        const auto face = id.y / size;
-        const auto inFace = id % size;
-
-        const auto color = args.source.read(inFace, face);
-        args.target.write(color, id);
+        const auto color = args.source.readInFace(coordinates.inScreen);
+        args.target.write(color, coordinates.inScreen);
     }
 }
