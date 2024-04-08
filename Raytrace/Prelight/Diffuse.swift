@@ -57,11 +57,10 @@ extension Prelight.Diffuse {
         }
 
         do {
-            let threadsSizePerGroup = MTLSize.init(width: 8, height: 8, depth: 1)
-            let threadsGroupSize = MTLSize.init(
-                width: target.width.align(by: threadsSizePerGroup.width) / threadsSizePerGroup.width,
-                height: target.height.align(by: threadsSizePerGroup.height) / threadsSizePerGroup.height,
-                depth: threadsSizePerGroup.depth
+            let threadsSizePerGroup = encoder.defaultThreadsSizePerGroup
+            let threadsGroupSize = encoder.threadsGroupSize(
+                for: .init(target.width, target.height),
+                as: threadsSizePerGroup
             )
 
             encoder.dispatchThreadgroups(

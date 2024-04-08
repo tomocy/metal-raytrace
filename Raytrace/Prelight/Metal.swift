@@ -16,6 +16,18 @@ extension MTLCommandBuffer {
     }
 }
 
+extension MTLComputeCommandEncoder {
+    var defaultThreadsSizePerGroup: MTLSize { .init(width: 8, height: 8, depth: 1) }
+
+    func threadsGroupSize(for size: SIMD2<Int>, as threadsSize: MTLSize) -> MTLSize {
+        .init(
+            width: size.x.align(by: threadsSize.width) / threadsSize.width,
+            height: size.y.align(by: threadsSize.height) / threadsSize.height,
+            depth: threadsSize.depth
+        )
+    }
+}
+
 struct MTLFrameCapture {}
 
 extension MTLFrameCapture {
