@@ -5,13 +5,17 @@ import Metal
 extension Prelight {
     struct Kernel {
         var label: String
+
         private var pipelineStates: PipelineStates
         private var args: Args
+
+        private var source: any MTLTexture
+        private(set) var target: any MTLTexture
     }
 }
 
 extension Prelight.Kernel {
-    init(device: some MTLDevice, label: String, function: some MTLFunction) throws {
+    init(device: some MTLDevice, label: String, function: some MTLFunction, source: some MTLTexture) throws {
         self.label = label
 
         pipelineStates = .init(
@@ -20,11 +24,26 @@ extension Prelight.Kernel {
         args = .init(
             encoder: Args.make(for: function)
         )
+
+        do {
+            self.source = source
+            source.label!.append(",Prelight/\(label)/Source")
+        }
+
+        target = Texture.make2D(
+            with: device,
+            label: "Prelight/\(label)/Target",
+            format: .bgra8Unorm,
+            size: .init(source.width, source.height * 6 /* face count in a cube */),
+            usage: [.shaderRead, .shaderWrite],
+            storageMode: .managed,
+            mipmapped: false
+        )!
     }
 }
 
 extension Prelight.Kernel {
-    func encode(to buffer: some MTLCommandBuffer, source: some MTLTexture, target: some MTLTexture) {
+    func encode(to buffer: some MTLCommandBuffer) {
         let encoder = buffer.makeComputeCommandEncoder()!
         defer { encoder.endEncoding() }
 
