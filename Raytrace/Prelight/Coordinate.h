@@ -3,87 +3,74 @@
 #pragma once
 
 namespace Coordinate {
-template <typename T>
 struct InScreen {
 public:
     InScreen() = default;
 
-    explicit InScreen(T value)
+    explicit InScreen(uint2 value)
         : value_(value)
     {
     }
 
 public:
-    thread T& value() { return value_; }
-    const thread T& value() const { return value_; }
+    thread uint2& value() { return value_; }
+    const thread uint2& value() const { return value_; }
 
 private:
-    T value_;
+    uint2 value_;
 };
 
-template <typename T>
-InScreen<T> inScreen(T value) { return InScreen<T>(value); }
-
-template <typename T>
 struct InFace {
+public:
+    static InFace from(const thread InScreen& inScreen, const uint size);
+
 public:
     InFace() = default;
 
-    explicit InFace(T value)
+    explicit InFace(uint2 value)
         : value_(value)
     {
     }
 
 public:
-    thread T& value() { return value_; }
-    const thread T& value() const { return value_; }
+    thread uint2& value() { return value_; }
+    const thread uint2& value() const { return value_; }
 
 private:
-    T value_;
+    uint2 value_;
 };
 
-template <typename T>
-InFace<T> inFace(T value) { return InFace<T>(value); }
-
-template <typename T>
 struct InUV {
 public:
     InUV() = default;
 
-    explicit InUV(T value)
+    explicit InUV(float2 value)
         : value_(value)
     {
     }
 
 public:
-    thread T& value() { return value_; }
-    const thread T& value() const { return value_; }
+    thread float2& value() { return value_; }
+    const thread float2& value() const { return value_; }
 
 private:
-    T value_;
+    float2 value_;
 };
 
-template <typename T>
-InUV<T> inUV(T value) { return InUV<T>(value); }
-
-template <typename T>
 struct InNDC {
 public:
     InNDC() = default;
 
-    explicit InNDC(T value)
+    explicit InNDC(float3 value)
         : value_(value)
     {
     }
 
 public:
-    thread T& value() { return value_; }
-    const thread T& value() const { return value_; }
+    thread float3& value() { return value_; }
+    const thread float3& value() const { return value_; }
 
 private:
-    T value_;
+    float3 value_;
 };
-
-template <typename T>
-InNDC<T> inNDC(T value) { return InNDC<T>(value); }
 }

@@ -15,9 +15,9 @@ namespace CubeTo2D {
         constant Args& args [[buffer(0)]]
     ) {
         struct {
-            Coordinate::InScreen<uint2> inScreen;
+            Coordinate::InScreen inScreen;
         } coordinates = {
-            .inScreen = Coordinate::inScreen(id),
+            .inScreen = Coordinate::InScreen(id),
         };
 
         const auto color = args.source.readInFace(coordinates.inScreen);
