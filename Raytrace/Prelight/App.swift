@@ -39,7 +39,7 @@ extension App {
 extension App {
     func run() async throws {
         try await preLight()
-        try await save()
+        try await save(prelight.diffuse.target, label: "Prelight_Diffuse")
     }
 
     private func preLight() async throws {
@@ -54,15 +54,15 @@ extension App {
         }
     }
 
-    private func save() async throws {
-        let image: CGImage = prelight.diffuse.target.into(
+    private func save(_ texture: some MTLTexture, label: String) async throws {
+        let image: CGImage = texture.into(
             in: CGColorSpace.init(name: CGColorSpace.linearSRGB)!,
             mipmapLevel: 0
         )!
 
         let url = ({
             let name = (args.sourceURL.lastPathComponent as NSString).deletingPathExtension
-            return args.sourceURL.deletingLastPathComponent().appending(path: "\(name)_Prelighted.png")
+            return args.sourceURL.deletingLastPathComponent().appending(path: "\(name)_\(label).png")
         }) ()
 
         try await process(label: "Saving") {
