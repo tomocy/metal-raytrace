@@ -3,6 +3,17 @@
 #pragma once
 
 namespace Coordinate {
+enum class Face : uint {
+    right,
+    left,
+    up,
+    down,
+    front,
+    back,
+};
+}
+
+namespace Coordinate {
 struct InScreen {
 public:
     InScreen() = default;
@@ -87,31 +98,28 @@ public:
         );
     }
 
-    static InNDC from(const thread InUV& coordinate, const uint face)
+    static InNDC from(const thread InUV& coordinate, const Face face)
     {
         float3 inNDC = from(coordinate, float(0)).value();
 
         switch (face) {
-        case 0:
+        case Face::right:
             inNDC = float3(1, inNDC.y, -inNDC.x);
             break;
-        case 1:
+        case Face::left:
             inNDC = float3(-1, inNDC.y, inNDC.x);
             break;
-        case 2:
+        case Face::up:
             inNDC = float3(inNDC.x, 1, -inNDC.y);
             break;
-        case 3:
+        case Face::down:
             inNDC = float3(inNDC.x, -1, inNDC.y);
             break;
-        case 4:
+        case Face::front:
             inNDC = float3(inNDC.x, inNDC.y, 1);
             break;
-        case 5:
+        case Face::back:
             inNDC = float3(-inNDC.x, inNDC.y, -1);
-            break;
-        default:
-            inNDC = 0;
             break;
         }
 

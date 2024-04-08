@@ -22,9 +22,9 @@ public:
     uint size() constant { return raw().get_width(); }
 
 public:
-    uint faceFor(const thread Coordinate::InScreen& coordinate) constant
+    Coordinate::Face faceFor(const thread Coordinate::InScreen& coordinate) constant
     {
-        return coordinate.value().y / size();
+        return Coordinate::Face(coordinate.value().y / size());
     }
 
     Coordinate::InFace coordinateInFace(const thread Coordinate::InScreen& coordinate) constant
@@ -35,7 +35,7 @@ public:
 public:
     metal::vec<T, 4> readInFace(const thread Coordinate::InScreen& coordinate) constant
     {
-        return raw().read(coordinateInFace(coordinate).value(), faceFor(coordinate));
+        return raw().read(coordinateInFace(coordinate).value(), uint(faceFor(coordinate)));
     }
 
     void writeInFace(
@@ -44,7 +44,7 @@ public:
         const uint lod = 0
     ) constant
     {
-        raw().write(color, coordinateInFace(coordinate).value(), faceFor(coordinate), lod);
+        raw().write(color, coordinateInFace(coordinate).value(), uint(faceFor(coordinate)), lod);
     }
 };
 }
