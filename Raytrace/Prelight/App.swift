@@ -31,7 +31,8 @@ extension App {
 
             prelight = .init(
                 diffuse: try .init(device: device, source: source),
-                specular: try .init(device: device, source: source)
+                specular: try .init(device: device, source: source),
+                env: try .init(device: device)
             )
         }
     }
@@ -39,7 +40,7 @@ extension App {
 
 extension App {
     func preLight() async throws {
-        async let diffuse = Task.detached {
+        do {
             let command = commandQueue.makeCommandBuffer()!
             command.label = "Prelight/Diffuse"
 
@@ -50,9 +51,9 @@ extension App {
                     }
                 }
             }
-        }.result
+        }
 
-        async let specular = Task.detached {
+        do {
             let command = commandQueue.makeCommandBuffer()!
             command.label = "Prelight/Specular"
 
@@ -63,9 +64,20 @@ extension App {
                     }
                 }
             }
-        }.result
+        }
 
-        _ = await (diffuse, specular)
+        do {
+            let command = commandQueue.makeCommandBuffer()!
+            command.label = "Prelight/Env"
+
+            try await process(label: "Prelight: Env") {
+                try await command.complete {
+                    try command.commit {
+                        prelight.env.encode(to: command)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -73,8 +85,9 @@ extension App {
     func save() async throws {
         async let diffuse: () = save(prelight.diffuse.target, label: "Prelight_Diffuse")
         async let specular: () = save(prelight.specular.target, label: "Prelight_Specular")
+        async let env: () = save(prelight.env.target, label: "Prelight_Env_GGX")
 
-        _ = try await (diffuse, specular)
+        _ = try await (diffuse, specular, env)
     }
 
     private func save(_ texture: some MTLTexture, label: String) async throws {

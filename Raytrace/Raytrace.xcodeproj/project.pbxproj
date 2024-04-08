@@ -30,6 +30,8 @@
 		F5976B222BC41C6700ABEF37 /* Specular.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5976B212BC41C6700ABEF37 /* Specular.metal */; };
 		F5976B242BC41CDC00ABEF37 /* Specular.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B232BC41CDC00ABEF37 /* Specular.swift */; };
 		F5976B262BC4212900ABEF37 /* Geometry.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5976B252BC4212900ABEF37 /* Geometry.metal */; };
+		F5976B302BC449EB00ABEF37 /* Env.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B2F2BC449EB00ABEF37 /* Env.swift */; };
+		F5976B322BC44A4A00ABEF37 /* Env.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5976B312BC44A4A00ABEF37 /* Env.metal */; };
 		F5A782742BB2CC5000415220 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5A782732BB2CC5000415220 /* Assets.xcassets */; };
 		F5A7827F2BB2CCA600415220 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A7827E2BB2CCA600415220 /* main.swift */; };
 		F5A782812BB2CD2E00415220 /* Engine+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A782802BB2CD2E00415220 /* Engine+App.swift */; };
@@ -113,6 +115,9 @@
 		F5976B212BC41C6700ABEF37 /* Specular.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Specular.metal; sourceTree = "<group>"; };
 		F5976B232BC41CDC00ABEF37 /* Specular.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Specular.swift; sourceTree = "<group>"; };
 		F5976B252BC4212900ABEF37 /* Geometry.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Geometry.metal; sourceTree = "<group>"; };
+		F5976B2F2BC449EB00ABEF37 /* Env.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Env.swift; sourceTree = "<group>"; };
+		F5976B312BC44A4A00ABEF37 /* Env.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Env.metal; sourceTree = "<group>"; };
+		F5976B332BC44D7D00ABEF37 /* PBR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBR.h; sourceTree = "<group>"; };
 		F5A7826C2BB2CC4E00415220 /* Raytrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Raytrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A782732BB2CC5000415220 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F5A782782BB2CC5000415220 /* Raytrace.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Raytrace.entitlements; sourceTree = "<group>"; };
@@ -163,12 +168,15 @@
 				F5006B942BC3E10D00A26DEF /* Diffuse.metal */,
 				F5776A262BC28A2300E9DFAF /* Diffuse.swift */,
 				F5006B742BC2EF2200A26DEF /* Distribution.h */,
+				F5976B312BC44A4A00ABEF37 /* Env.metal */,
+				F5976B2F2BC449EB00ABEF37 /* Env.swift */,
 				F5006B892BC3A3AD00A26DEF /* Geometry.h */,
 				F5976B252BC4212900ABEF37 /* Geometry.metal */,
 				F5976B172BC40E0C00ABEF37 /* Kernel.swift */,
 				F5776A1E2BC2837600E9DFAF /* main.swift */,
 				F5776A2A2BC2933100E9DFAF /* Math.swift */,
 				F5776A2C2BC295D800E9DFAF /* Metal.swift */,
+				F5976B332BC44D7D00ABEF37 /* PBR.h */,
 				F5006B8A2BC3AADB00A26DEF /* Prelight.h */,
 				F5006B962BC3E17900A26DEF /* Prelight.swift */,
 				F5006B882BC3A37F00A26DEF /* Sample.h */,
@@ -359,6 +367,7 @@
 				F5976B222BC41C6700ABEF37 /* Specular.metal in Sources */,
 				F5976B182BC40E0C00ABEF37 /* Kernel.swift in Sources */,
 				F5006B852BC3158600A26DEF /* Texture.swift in Sources */,
+				F5976B322BC44A4A00ABEF37 /* Env.metal in Sources */,
 				F5006B952BC3E10D00A26DEF /* Diffuse.metal in Sources */,
 				F5776A272BC28A2300E9DFAF /* Diffuse.swift in Sources */,
 				F5976B262BC4212900ABEF37 /* Geometry.metal in Sources */,
@@ -369,6 +378,7 @@
 				F5006B732BC2D2A000A26DEF /* App.swift in Sources */,
 				F5006B972BC3E17900A26DEF /* Prelight.swift in Sources */,
 				F5776A362BC2B34700E9DFAF /* CG.swift in Sources */,
+				F5976B302BC449EB00ABEF37 /* Env.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
