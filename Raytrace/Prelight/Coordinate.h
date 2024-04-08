@@ -22,7 +22,10 @@ private:
 
 struct InFace {
 public:
-    static InFace from(const thread InScreen& inScreen, const uint size);
+    static InFace from(const thread InScreen& coordinate, const uint size)
+    {
+        return InFace(coordinate.value() % size);
+    }
 
 public:
     InFace() = default;
@@ -42,6 +45,21 @@ private:
 
 struct InUV {
 public:
+    static InUV from(const thread InScreen& coordinate, const uint2 size)
+    {
+        return InUV(
+            float2(coordinate.value()) / float2(size)
+        );
+    }
+
+    static InUV from(const thread InFace& coordinate, const uint size)
+    {
+        return InUV(
+            float2(coordinate.value()) / float2(size)
+        );
+    }
+
+public:
     InUV() = default;
 
     explicit InUV(float2 value)
@@ -58,6 +76,48 @@ private:
 };
 
 struct InNDC {
+public:
+    static InNDC from(const thread InUV& coordinate, const float z)
+    {
+        return InNDC(
+            float3(
+                float2(coordinate.value().x * 2 - 1, coordinate.value().y * -2 + 1),
+                z
+            )
+        );
+    }
+
+    static InNDC from(const thread InUV& coordinate, const uint face)
+    {
+        float3 inNDC = from(coordinate, float(0)).value();
+
+        switch (face) {
+        case 0:
+            inNDC = float3(1, inNDC.y, -inNDC.x);
+            break;
+        case 1:
+            inNDC = float3(-1, inNDC.y, inNDC.x);
+            break;
+        case 2:
+            inNDC = float3(inNDC.x, 1, -inNDC.y);
+            break;
+        case 3:
+            inNDC = float3(inNDC.x, -1, inNDC.y);
+            break;
+        case 4:
+            inNDC = float3(inNDC.x, inNDC.y, 1);
+            break;
+        case 5:
+            inNDC = float3(-inNDC.x, inNDC.y, -1);
+            break;
+        default:
+            inNDC = 0;
+            break;
+        }
+
+        return InNDC(inNDC);
+    }
+
 public:
     InNDC() = default;
 

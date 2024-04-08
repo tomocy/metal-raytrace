@@ -29,7 +29,7 @@ public:
 
     Coordinate::InFace coordinateInFace(const thread Coordinate::InScreen& coordinate) constant
     {
-        return Coordinate::InFace(coordinate.value() % size());
+        return Coordinate::InFace::from(coordinate, size());
     }
 
 public:
