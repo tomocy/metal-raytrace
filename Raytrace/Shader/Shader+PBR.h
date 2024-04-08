@@ -49,13 +49,13 @@ public:
             const thread Geometry::Normalized<float3>& view
         )
         {
-            return schlick(roughness, normal, light) * schlick(roughness, normal, view);
+            return schlick(roughness, light, normal) * schlick(roughness, view, normal);
         }
 
         static float schlick(
             const float roughness,
-            const thread Geometry::Normalized<float3>& normal,
-            const thread Geometry::Normalized<float3>& v
+            const thread Geometry::Normalized<float3>& v,
+            const thread Geometry::Normalized<float3>& normal
         )
         {
             const auto k = metal::pow(roughness + 1, 2) / 8.0;
