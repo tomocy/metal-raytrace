@@ -12,6 +12,7 @@ extension Shader {
         var target: Target
         var seeds: any MTLTexture
         var background: any MTLTexture
+        var env: Env
     }
 }
 
@@ -27,7 +28,9 @@ extension Shader.Raytrace {
 
         target = Self.make(with: device, resolution: resolution)!
         seeds = Self.makeSeeds(with: device, resolution: resolution)!
+
         background = try Self.makeBackground(with: device)
+        env = try .init(device: device)
     }
 }
 
@@ -95,6 +98,7 @@ extension Shader.Raytrace {
 
 extension Shader.Raytrace {
     static func makeBackground(with device: some MTLDevice) throws -> any MTLTexture {
+        // We know the background texture for now.
         return try MTKTextureLoader.init(device: device).newTexture(
             URL: Bundle.main.url(forResource: "Env", withExtension: "png", subdirectory: "Farm/Env")!,
             options: [
@@ -133,7 +137,13 @@ extension Shader.Raytrace {
         }
 
         encoder.setTexture(seeds, index: 1)
+
         encoder.setTexture(background, index: 2)
+        do {
+            encoder.setTexture(env.diffuse, index: 3)
+            encoder.setTexture(env.specular, index: 4)
+            encoder.setTexture(env.lut, index: 5)
+        }
 
         encoder.setAccelerationStructure(accelerator, bufferIndex: 1)
 

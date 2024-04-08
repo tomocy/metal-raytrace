@@ -32,6 +32,7 @@
 		F5976B262BC4212900ABEF37 /* Geometry.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5976B252BC4212900ABEF37 /* Geometry.metal */; };
 		F5976B302BC449EB00ABEF37 /* Env.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B2F2BC449EB00ABEF37 /* Env.swift */; };
 		F5976B322BC44A4A00ABEF37 /* Env.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5976B312BC44A4A00ABEF37 /* Env.metal */; };
+		F5976B362BC46D3200ABEF37 /* Shader+Env.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B352BC46D3200ABEF37 /* Shader+Env.swift */; };
 		F5A782742BB2CC5000415220 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5A782732BB2CC5000415220 /* Assets.xcassets */; };
 		F5A7827F2BB2CCA600415220 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A7827E2BB2CCA600415220 /* main.swift */; };
 		F5A782812BB2CD2E00415220 /* Engine+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5A782802BB2CD2E00415220 /* Engine+App.swift */; };
@@ -118,6 +119,8 @@
 		F5976B2F2BC449EB00ABEF37 /* Env.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Env.swift; sourceTree = "<group>"; };
 		F5976B312BC44A4A00ABEF37 /* Env.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Env.metal; sourceTree = "<group>"; };
 		F5976B332BC44D7D00ABEF37 /* PBR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBR.h; sourceTree = "<group>"; };
+		F5976B342BC4667400ABEF37 /* Shader+Env.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Env.h"; sourceTree = "<group>"; };
+		F5976B352BC46D3200ABEF37 /* Shader+Env.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Env.swift"; sourceTree = "<group>"; };
 		F5A7826C2BB2CC4E00415220 /* Raytrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Raytrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A782732BB2CC5000415220 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F5A782782BB2CC5000415220 /* Raytrace.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Raytrace.entitlements; sourceTree = "<group>"; };
@@ -233,6 +236,8 @@
 				F5B35B4F2BB54EF500651A54 /* Shader+Debug.swift */,
 				F53A73892BB2F829003C899A /* Shader+Echo.metal */,
 				F53A738B2BB2FC45003C899A /* Shader+Echo.swift */,
+				F5976B342BC4667400ABEF37 /* Shader+Env.h */,
+				F5976B352BC46D3200ABEF37 /* Shader+Env.swift */,
 				F595494F2BBBFCC7001BC8E1 /* Shader+Frame.h */,
 				F552BDE02BBBFD3A00734E33 /* Shader+Frame.swift */,
 				F552BDE32BBC38E600734E33 /* Shader+Geometry.h */,
@@ -390,6 +395,7 @@
 				F5CF69652BBE9EB100CEF5B0 /* Shader+Memory.swift in Sources */,
 				F53A738E2BB300CD003C899A /* Shader+Raytrace.swift in Sources */,
 				F57A1B442BB938F800F20794 /* Shader+Material.swift in Sources */,
+				F5976B362BC46D3200ABEF37 /* Shader+Env.swift in Sources */,
 				F5A782852BB2CDDE00415220 /* Engine+View.swift in Sources */,
 				F5E4F7AB2BB52E4900B21B16 /* Shader+SIMD.swift in Sources */,
 				F53A73942BB30967003C899A /* Shader+Math.swift in Sources */,

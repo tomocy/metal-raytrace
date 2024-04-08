@@ -1,5 +1,7 @@
 // tomocy
 
+#pragma once
+
 #include <metal_stdlib>
 
 struct Material {

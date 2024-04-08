@@ -1,6 +1,7 @@
 // tomocy
 
 #include "Shader+Background.h"
+#include "Shader+Env.h"
 #include "Shader+Frame.h"
 #include "Shader+Geometry.h"
 #include "Shader+Intersection.h"
@@ -87,10 +88,23 @@ private:
 
         TraceResult result = {};
 
-        result.color = surface.colorWith(
-            -directionalLight.direction.value(),
-            Geometry::normalize(view.position - intersection.position())
-        );
+        {
+            const struct {
+                Geometry::Normalized<float3> light;
+                Geometry::Normalized<float3> view;
+            } dirs = {
+                .light = -directionalLight.direction.value(),
+                .view = Geometry::normalize(view.position - intersection.position()),
+            };
+
+            result.color = surface.colorWith(dirs.light, dirs.view);
+
+            result.color += env.colorWith(
+                surface.albedo(),
+                surface.roughness(),
+                surface.normal(), dirs.view
+            );
+        }
 
         {
             result.hasIncident = true;
@@ -124,6 +138,7 @@ public:
     uint32_t seed;
 
     Background background;
+    Env env;
 
     Intersector intersector;
 
@@ -147,8 +162,8 @@ kernel void kernelMain(
     const metal::texture2d<float, metal::access::write> target [[texture(0)]],
     constant Frame& frame [[buffer(0)]],
     const metal::texture2d<uint32_t> seeds [[texture(1)]],
-    // const metal::texturecube<float> background [[texture(2)]],
     const Background background,
+    const Env env,
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(1)]],
     constant Primitive::Instance* const instances [[buffer(2)]],
     constant Mesh* const meshes [[buffer(3)]]
@@ -191,6 +206,7 @@ kernel void kernelMain(
         .frame = frame,
         .seed = seed,
         .background = background,
+        .env = env,
         .intersector = Intersector(accelerator),
         .instances = instances,
         .meshes = meshes,
