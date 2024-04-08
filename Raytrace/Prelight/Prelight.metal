@@ -1,15 +1,9 @@
 // tomocy
 
-#include "Distribution.h"
+#include "Prelight.h"
 #include <metal_stdlib>
 
 namespace Prelight {
-    struct Args {
-    public:
-        metal::texturecube<float, metal::access::sample> source;
-        metal::texturecube<float, metal::access::write> target;
-    };
-
     kernel void compute(
         const uint2 id [[thread_position_in_grid]],
         constant Args& args [[buffer(0)]]
