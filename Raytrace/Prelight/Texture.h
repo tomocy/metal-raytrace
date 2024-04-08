@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Coordinate.h"
 #include <metal_stdlib>
 
 namespace Texture {
@@ -21,21 +22,25 @@ public:
     uint size() constant { return raw().get_width(); }
 
 public:
-    uint faceFor(const thread uint2& coordinate) constant {
-        return coordinate.y / size();
+    uint faceFor(const thread Coordinate::InScreen<uint2>& coordinate) constant {
+        return coordinate.value().y / size();
     }
 
-    uint2 coordinateInFace(const thread uint2& coordinate) constant {
-        return coordinate % size();
+    Coordinate::InFace<uint2> coordinateInFace(const thread Coordinate::InScreen<uint2>& coordinate) constant {
+        return Coordinate::inFace(coordinate.value() % size());
     }
 
 public:
-    metal::vec<T, 4> readInFace(const thread uint2& coordinate) constant {
-        return raw().read(coordinateInFace(coordinate), faceFor(coordinate));
+    metal::vec<T, 4> readInFace(const thread Coordinate::InScreen<uint2>& coordinate) constant {
+        return raw().read(coordinateInFace(coordinate).value(), faceFor(coordinate));
     }
 
-    void writeInFace(const thread metal::vec<T, 4>& color, const thread uint2& coordinate, const uint lod = 0) constant {
-        raw().write(color, coordinateInFace(coordinate), faceFor(coordinate), lod);
+    void writeInFace(
+        const thread metal::vec<T, 4>& color,
+        const thread Coordinate::InScreen<uint2>& coordinate,
+        const uint lod = 0
+    ) constant {
+        raw().write(color, coordinateInFace(coordinate).value(), faceFor(coordinate), lod);
     }
 };
 }

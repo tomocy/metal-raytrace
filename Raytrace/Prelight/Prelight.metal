@@ -1,5 +1,6 @@
 // tomocy
 
+#include "Coordinate.h"
 #include "Prelight.h"
 #include <metal_stdlib>
 
@@ -9,9 +10,9 @@ namespace Prelight {
         constant Args& args [[buffer(0)]]
     ) {
         struct {
-            uint2 inScreen;
+            Coordinate::InScreen<uint2> inScreen;
         } coordinates = {
-            .inScreen = id,
+            .inScreen = Coordinate::inScreen(id),
         };
 
         const auto color = args.source.readInFace(coordinates.inScreen);

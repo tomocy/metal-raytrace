@@ -15,12 +15,12 @@ namespace CubeTo2D {
         constant Args& args [[buffer(0)]]
     ) {
         struct {
-            uint2 inScreen;
+            Coordinate::InScreen<uint2> inScreen;
         } coordinates = {
-            .inScreen = id,
+            .inScreen = Coordinate::inScreen(id),
         };
 
         const auto color = args.source.readInFace(coordinates.inScreen);
-        args.target.write(color, coordinates.inScreen);
+        args.target.write(color, coordinates.inScreen.value());
     }
 }
