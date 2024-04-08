@@ -14,5 +14,7 @@ let device = MTLCreateSystemDefaultDevice()!
 let app = try App.init(args: args, device: device)
 
 try await MTLFrameCapture.capture(for: device, if: args.capturesFrame) {
-    try await app.run()
+    try await app.preLight()
 }
+
+try await app.save()

@@ -36,7 +36,7 @@ extension Prelight.Kernel {
             format: .bgra8Unorm,
             size: .init(source.width, source.height * 6 /* face count in a cube */),
             usage: [.shaderRead, .shaderWrite],
-            storageMode: .managed,
+            storageMode: .private,
             mipmapped: false
         )!
     }

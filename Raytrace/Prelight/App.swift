@@ -30,28 +30,51 @@ extension App {
             )
 
             prelight = .init(
-                diffuse: try Prelight.Diffuse.init(device: device, source: source)
+                diffuse: try .init(device: device, source: source),
+                specular: try .init(device: device, source: source)
             )
         }
     }
 }
 
 extension App {
-    func run() async throws {
-        try await preLight()
-        try await save(prelight.diffuse.target, label: "Prelight_Diffuse")
-    }
+    func preLight() async throws {
+        async let diffuse = Task.detached {
+            let command = commandQueue.makeCommandBuffer()!
+            command.label = "Prelight/Diffuse"
 
-    private func preLight() async throws {
-        let command = commandQueue.makeCommandBuffer()!
-
-        try await process(label: "Prelighting") {
-            try await command.complete {
-                try command.commit {
-                    prelight.diffuse.encode(to: command)
+            try await process(label: "Prelight: Diffuse") {
+                try await command.complete {
+                    try command.commit {
+                        prelight.diffuse.encode(to: command)
+                    }
                 }
             }
-        }
+        }.result
+
+        async let specular = Task.detached {
+            let command = commandQueue.makeCommandBuffer()!
+            command.label = "Prelight/Specular"
+
+            try await process(label: "Prelight: Specular") {
+                try await command.complete {
+                    try command.commit {
+                        prelight.specular.encode(to: command)
+                    }
+                }
+            }
+        }.result
+
+        _ = await (diffuse, specular)
+    }
+}
+
+extension App {
+    func save() async throws {
+        async let diffuse: () = save(prelight.diffuse.target, label: "Prelight_Diffuse")
+        async let specular: () = save(prelight.specular.target, label: "Prelight_Specular")
+
+        _ = try await (diffuse, specular)
     }
 
     private func save(_ texture: some MTLTexture, label: String) async throws {
@@ -65,16 +88,16 @@ extension App {
             return args.sourceURL.deletingLastPathComponent().appending(path: "\(name)_\(label).png")
         }) ()
 
-        try await process(label: "Saving") {
+        try await process(label: "Save: \(url.lastPathComponent)") {
             try image.save(at: url, as: .png)
         }
     }
 }
 
 extension App {
-    private func process(label: String, _ code: () async throws -> Void) async throws {
-        print("\(label)...", terminator: "")
-        defer { print("Done") }
+    private func process(label: String = "Processing", _ code: () async throws -> Void) async throws {
+        print("> \(label)")
+        defer { print("[Done] \(label)") }
 
         try await code()
     }
