@@ -1,0 +1,7 @@
+$(SRCROOT)/ShaderX/ShaderX.metal
+$(SRCROOT)/ShaderX/ShaderX.h
+
+$(SRCROOT)/ShaderX/Geometry/Geometry.metal
+$(SRCROOT)/ShaderX/Geometry/Geometry.h
+
+$(SRCROOT)/ShaderX/Geometry/Geometry+Normalized.h

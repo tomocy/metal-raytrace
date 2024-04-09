@@ -102,7 +102,6 @@
 		F53A73932BB30967003C899A /* Shader+Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Math.swift"; sourceTree = "<group>"; };
 		F552BDE02BBBFD3A00734E33 /* Shader+Frame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Frame.swift"; sourceTree = "<group>"; };
 		F552BDE22BBC35C200734E33 /* Shader+Sample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Sample.h"; sourceTree = "<group>"; };
-		F552BDE32BBC38E600734E33 /* Shader+Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Geometry.h"; sourceTree = "<group>"; };
 		F552BDE42BBC3BCC00734E33 /* Shader+Random.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Random.h"; sourceTree = "<group>"; };
 		F552BDE52BBD98FC00734E33 /* Shader+PBR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+PBR.h"; sourceTree = "<group>"; };
 		F552BDE62BBDB50100734E33 /* Shader+Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Texture.swift"; sourceTree = "<group>"; };
@@ -132,6 +131,10 @@
 		F5976B7E2BC56DA100ABEF37 /* ShaderX.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShaderX.metal; sourceTree = "<group>"; };
 		F5976B832BC56F0700ABEF37 /* ShaderX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderX.h; sourceTree = "<group>"; };
 		F5976B922BC5AA7900ABEF37 /* Geometry+Normalized.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Geometry+Normalized.h"; sourceTree = "<group>"; };
+		F5976B932BC5AD5400ABEF37 /* Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
+		F5976B982BC5ADE700ABEF37 /* Geometry.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Geometry.metal; sourceTree = "<group>"; };
+		F5976B9A2BC5AF9400ABEF37 /* Source.xcfilelist */ = {isa = PBXFileReference; lastKnownFileType = text.xcfilelist; path = Source.xcfilelist; sourceTree = "<group>"; };
+		F5976B9C2BC5B2FA00ABEF37 /* Air.xcfilelist */ = {isa = PBXFileReference; lastKnownFileType = text.xcfilelist; path = Air.xcfilelist; sourceTree = "<group>"; };
 		F5A7826C2BB2CC4E00415220 /* Raytrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Raytrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A782732BB2CC5000415220 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F5A782782BB2CC5000415220 /* Raytrace.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Raytrace.entitlements; sourceTree = "<group>"; };
@@ -207,6 +210,8 @@
 			isa = PBXGroup;
 			children = (
 				F5976B912BC5AA5500ABEF37 /* Geometry */,
+				F5976B9A2BC5AF9400ABEF37 /* Source.xcfilelist */,
+				F5976B9C2BC5B2FA00ABEF37 /* Air.xcfilelist */,
 				F5976B832BC56F0700ABEF37 /* ShaderX.h */,
 				F5976B7E2BC56DA100ABEF37 /* ShaderX.metal */,
 			);
@@ -216,6 +221,8 @@
 		F5976B912BC5AA5500ABEF37 /* Geometry */ = {
 			isa = PBXGroup;
 			children = (
+				F5976B932BC5AD5400ABEF37 /* Geometry.h */,
+				F5976B982BC5ADE700ABEF37 /* Geometry.metal */,
 				F5976B922BC5AA7900ABEF37 /* Geometry+Normalized.h */,
 			);
 			path = Geometry;
@@ -271,7 +278,6 @@
 				F5976B352BC46D3200ABEF37 /* Shader+Env.swift */,
 				F595494F2BBBFCC7001BC8E1 /* Shader+Frame.h */,
 				F552BDE02BBBFD3A00734E33 /* Shader+Frame.swift */,
-				F552BDE32BBC38E600734E33 /* Shader+Geometry.h */,
 				F5CF69602BBE803B00CEF5B0 /* Shader+Intersection.h */,
 				F5CF69622BBE9E8000CEF5B0 /* Shader+IO.swift */,
 				F53486BA2BB98E8400EB7E03 /* Shader+Material.h */,
@@ -330,7 +336,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F5976B802BC56DA100ABEF37 /* Build configuration list for PBXNativeTarget "ShaderX" */;
 			buildPhases = (
-				F5976B7A2BC56DA100ABEF37 /* Sources */,
 				F5976B852BC56F6200ABEF37 /* Build static Metal Library */,
 				F5976B882BC5726D00ABEF37 /* Archive static Metal Library */,
 			);
@@ -428,20 +433,19 @@
 			files = (
 			);
 			inputFileListPaths = (
+				"$(SRCROOT)/ShaderX/Source.xcfilelist",
 			);
 			inputPaths = (
-				"$(SRCROOT)/ShaderX/ShaderX.metal",
-				"$(SRCROOT)/ShaderX/ShaderX.h",
 			);
 			name = "Build static Metal Library";
 			outputFileListPaths = (
+				"$(SRCROOT)/ShaderX/Air.xcfilelist",
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/ShaderX.air",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -x\n\n# A workaround for the Raytrace target to force to re-link this library.\nrm -rf \"${OBJROOT}/Raytrace.build/${CONFIGURATION}/Raytrace.build/Metal\"\nmetal -c \"${SCRIPT_INPUT_FILE_0}\" -o \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "set -x\n\n# A workaround for the Raytrace target to force to re-link this library.\nrm -rf \"${OBJROOT}/Raytrace.build/${CONFIGURATION}/Raytrace.build/Metal\"\n\nmetal -c \"${SRCROOT}/ShaderX/ShaderX.metal\" -o \"${DERIVED_FILE_DIR}/ShaderX.air\"\nmetal -c \"${SRCROOT}/ShaderX/Geometry/Geometry.metal\" -o \"${DERIVED_FILE_DIR}/Geometry/Geometry.air\"\n";
 		};
 		F5976B882BC5726D00ABEF37 /* Archive static Metal Library */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -449,9 +453,9 @@
 			files = (
 			);
 			inputFileListPaths = (
+				"$(SRCROOT)/ShaderX/Air.xcfilelist",
 			);
 			inputPaths = (
-				"$(DERIVED_FILE_DIR)/ShaderX.air",
 			);
 			name = "Archive static Metal Library";
 			outputFileListPaths = (
@@ -461,7 +465,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -x\n\nmetal-libtool -static $SCRIPT_INPUT_FILE_0 -o $SCRIPT_OUTPUT_FILE_0\n";
+			shellScript = "set -x\n\nmetal-libtool -static $(cat ${SCRIPT_INPUT_FILE_LIST_0}) -o $SCRIPT_OUTPUT_FILE_0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -485,13 +489,6 @@
 				F5006B972BC3E17900A26DEF /* Prelight.swift in Sources */,
 				F5776A362BC2B34700E9DFAF /* CG.swift in Sources */,
 				F5976B302BC449EB00ABEF37 /* Env.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F5976B7A2BC56DA100ABEF37 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,0 +1,3 @@
+$(DERIVED_FILE_DIR)/ShaderX.air
+$(DERIVED_FILE_DIR)/Geometry/Geometry.air
+

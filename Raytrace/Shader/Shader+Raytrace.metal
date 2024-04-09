@@ -1,10 +1,10 @@
 // tomocy
 
+#include "../ShaderX/Geometry/Geometry.h"
 #include "../ShaderX/Geometry/Geometry+Normalized.h"
 #include "Shader+Background.h"
 #include "Shader+Env.h"
 #include "Shader+Frame.h"
-#include "Shader+Geometry.h"
 #include "Shader+Intersection.h"
 #include "Shader+Math.h"
 #include "Shader+Mesh.h"
@@ -120,7 +120,7 @@ private:
                     Random::Halton::generate(bounceCount * 5 + 6, seed + frame.id)
                 );
 
-                result.incidentRay.direction = Geometry::alignAsUp(
+                result.incidentRay.direction = ShaderX::Geometry::alignFromTangent(
                     Sample::CosineWeightedHemisphere::sample(random),
                     surface.normal()
                 );
@@ -223,7 +223,7 @@ kernel void kernelMain(
     const auto ray = raytracing::ray(
         camera.position,
         ShaderX::Geometry::normalize(
-            Geometry::alignAs(float3(inNDC, 1), camera.forward, camera.right, camera.up)
+            ShaderX::Geometry::alignAs(float3(inNDC, 1), camera.forward, camera.right, camera.up)
         ).value()
     );
 

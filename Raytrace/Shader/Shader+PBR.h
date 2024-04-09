@@ -3,7 +3,6 @@
 #pragma once
 
 #include "../ShaderX/Geometry/Geometry+Normalized.h"
-#include "Shader+Geometry.h"
 #include "Shader+Material.h"
 #include <metal_stdlib>
 
