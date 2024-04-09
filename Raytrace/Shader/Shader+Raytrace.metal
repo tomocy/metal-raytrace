@@ -1,5 +1,6 @@
 // tomocy
 
+#include "../ShaderX/ShaderX.h"
 #include "../ShaderX/Geometry/Geometry.h"
 #include "../ShaderX/Geometry/Geometry+Normalized.h"
 #include "Shader+Background.h"

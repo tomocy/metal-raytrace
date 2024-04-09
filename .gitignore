@@ -11,3 +11,5 @@ DerivedData/
 !*.xcworkspace/contents.xcworkspacedata
 
 **_Prelight_**
+
+Raytrace/ShaderX/Source.xcfilelist
