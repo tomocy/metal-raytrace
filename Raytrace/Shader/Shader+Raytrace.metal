@@ -1,5 +1,6 @@
 // tomocy
 
+#include "../ShaderX/ShaderX.h"
 #include "Shader+Background.h"
 #include "Shader+Env.h"
 #include "Shader+Frame.h"
@@ -29,7 +30,8 @@ public:
             float3 color;
             metal::raytracing::ray incidentRay;
         } state = {
-            .color = 1,
+            // .color = 1,
+            .color = ShaderX::test(),
             .incidentRay = ray,
         };
 

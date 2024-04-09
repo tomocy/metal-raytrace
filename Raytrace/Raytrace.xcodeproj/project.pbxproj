@@ -60,6 +60,13 @@
 			remoteGlobalIDString = F5776A1B2BC2837600E9DFAF;
 			remoteInfo = Prelight;
 		};
+		F5976B892BC5753600ABEF37 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F5A782642BB2CC4D00415220 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F5976B7B2BC56DA100ABEF37;
+			remoteInfo = ShaderX;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -121,6 +128,9 @@
 		F5976B332BC44D7D00ABEF37 /* PBR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBR.h; sourceTree = "<group>"; };
 		F5976B342BC4667400ABEF37 /* Shader+Env.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Env.h"; sourceTree = "<group>"; };
 		F5976B352BC46D3200ABEF37 /* Shader+Env.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Env.swift"; sourceTree = "<group>"; };
+		F5976B7C2BC56DA100ABEF37 /* libShaderX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libShaderX.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F5976B7E2BC56DA100ABEF37 /* ShaderX.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShaderX.metal; sourceTree = "<group>"; };
+		F5976B832BC56F0700ABEF37 /* ShaderX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderX.h; sourceTree = "<group>"; };
 		F5A7826C2BB2CC4E00415220 /* Raytrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Raytrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A782732BB2CC5000415220 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F5A782782BB2CC5000415220 /* Raytrace.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Raytrace.entitlements; sourceTree = "<group>"; };
@@ -192,6 +202,15 @@
 			path = Prelight;
 			sourceTree = "<group>";
 		};
+		F5976B7D2BC56DA100ABEF37 /* ShaderX */ = {
+			isa = PBXGroup;
+			children = (
+				F5976B832BC56F0700ABEF37 /* ShaderX.h */,
+				F5976B7E2BC56DA100ABEF37 /* ShaderX.metal */,
+			);
+			path = ShaderX;
+			sourceTree = "<group>";
+		};
 		F5A782632BB2CC4D00415220 = {
 			isa = PBXGroup;
 			children = (
@@ -200,6 +219,7 @@
 				F5A7826D2BB2CC4E00415220 /* Products */,
 				F5B35B532BB555A800651A54 /* Resources */,
 				F5A782862BB2D27800415220 /* Shader */,
+				F5976B7D2BC56DA100ABEF37 /* ShaderX */,
 			);
 			sourceTree = "<group>";
 		};
@@ -208,6 +228,7 @@
 			children = (
 				F5A7826C2BB2CC4E00415220 /* Raytrace.app */,
 				F5776A1C2BC2837600E9DFAF /* Prelight */,
+				F5976B7C2BC56DA100ABEF37 /* libShaderX.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -295,6 +316,23 @@
 			productReference = F5776A1C2BC2837600E9DFAF /* Prelight */;
 			productType = "com.apple.product-type.tool";
 		};
+		F5976B7B2BC56DA100ABEF37 /* ShaderX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F5976B802BC56DA100ABEF37 /* Build configuration list for PBXNativeTarget "ShaderX" */;
+			buildPhases = (
+				F5976B7A2BC56DA100ABEF37 /* Sources */,
+				F5976B852BC56F6200ABEF37 /* Build static Metal Library */,
+				F5976B882BC5726D00ABEF37 /* Archive static Metal Library */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShaderX;
+			productName = ShaderX;
+			productReference = F5976B7C2BC56DA100ABEF37 /* libShaderX.a */;
+			productType = "com.apple.product-type.metal-library";
+		};
 		F5A7826B2BB2CC4E00415220 /* Raytrace */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F5A7827B2BB2CC5000415220 /* Build configuration list for PBXNativeTarget "Raytrace" */;
@@ -306,9 +344,12 @@
 			buildRules = (
 			);
 			dependencies = (
+				F5976B8A2BC5753600ABEF37 /* PBXTargetDependency */,
 				F5776A242BC2838F00E9DFAF /* PBXTargetDependency */,
 			);
 			name = Raytrace;
+			packageProductDependencies = (
+			);
 			productName = Raytrace;
 			productReference = F5A7826C2BB2CC4E00415220 /* Raytrace.app */;
 			productType = "com.apple.product-type.application";
@@ -327,6 +368,9 @@
 						CreatedOnToolsVersion = 15.3;
 						LastSwiftMigration = 1530;
 					};
+					F5976B7B2BC56DA100ABEF37 = {
+						CreatedOnToolsVersion = 15.3;
+					};
 					F5A7826B2BB2CC4E00415220 = {
 						CreatedOnToolsVersion = 15.3;
 						LastSwiftMigration = 1530;
@@ -342,10 +386,13 @@
 				Base,
 			);
 			mainGroup = F5A782632BB2CC4D00415220;
+			packageReferences = (
+			);
 			productRefGroup = F5A7826D2BB2CC4E00415220 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				F5976B7B2BC56DA100ABEF37 /* ShaderX */,
 				F5776A1B2BC2837600E9DFAF /* Prelight */,
 				F5A7826B2BB2CC4E00415220 /* Raytrace */,
 			);
@@ -363,6 +410,50 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F5976B852BC56F6200ABEF37 /* Build static Metal Library */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/ShaderX/ShaderX.metal",
+				"$(SRCROOT)/ShaderX/ShaderX.h",
+			);
+			name = "Build static Metal Library";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/ShaderX.air",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -x\n\n# A workaround for the Raytrace target to force to re-link this library.\nrm -rf \"${OBJROOT}/Raytrace.build/${CONFIGURATION}/Raytrace.build/Metal\"\nmetal -c \"${SCRIPT_INPUT_FILE_0}\" -o \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+		};
+		F5976B882BC5726D00ABEF37 /* Archive static Metal Library */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(DERIVED_FILE_DIR)/ShaderX.air",
+			);
+			name = "Archive static Metal Library";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/libShaderX.a",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -x\n\nmetal-libtool -static $SCRIPT_INPUT_FILE_0 -o $SCRIPT_OUTPUT_FILE_0\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		F5776A182BC2837600E9DFAF /* Sources */ = {
@@ -384,6 +475,13 @@
 				F5006B972BC3E17900A26DEF /* Prelight.swift in Sources */,
 				F5776A362BC2B34700E9DFAF /* CG.swift in Sources */,
 				F5976B302BC449EB00ABEF37 /* Env.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F5976B7A2BC56DA100ABEF37 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -428,6 +526,11 @@
 			target = F5776A1B2BC2837600E9DFAF /* Prelight */;
 			targetProxy = F5776A232BC2838F00E9DFAF /* PBXContainerItemProxy */;
 		};
+		F5976B8A2BC5753600ABEF37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F5976B7B2BC56DA100ABEF37 /* ShaderX */;
+			targetProxy = F5976B892BC5753600ABEF37 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -453,6 +556,30 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		F5976B812BC56DA100ABEF37 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7675C8B65F;
+				EXECUTABLE_EXTENSION = a;
+				PRODUCT_NAME = "lib$(TARGET_NAME)";
+				VERSIONING_SYSTEM = "";
+				WRAPPER_EXTENSION = "";
+			};
+			name = Debug;
+		};
+		F5976B822BC56DA100ABEF37 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7675C8B65F;
+				EXECUTABLE_EXTENSION = a;
+				PRODUCT_NAME = "lib$(TARGET_NAME)";
+				VERSIONING_SYSTEM = "";
+				WRAPPER_EXTENSION = "";
 			};
 			name = Release;
 		};
@@ -595,6 +722,9 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				MTLLINKER_FLAGS = "-L$(BUILT_PRODUCTS_DIR) -lShaderX";
+				MTL_COMPILER_FLAGS = "";
+				MTL_PREPROCESSOR_DEFINITIONS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tomocy.raytrace.Raytrace;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -624,6 +754,9 @@
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				MTLLINKER_FLAGS = "-L$(BUILT_PRODUCTS_DIR) -lShaderX";
+				MTL_COMPILER_FLAGS = "";
+				MTL_PREPROCESSOR_DEFINITIONS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tomocy.raytrace.Raytrace;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -639,6 +772,15 @@
 			buildConfigurations = (
 				F5776A212BC2837600E9DFAF /* Debug */,
 				F5776A222BC2837600E9DFAF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F5976B802BC56DA100ABEF37 /* Build configuration list for PBXNativeTarget "ShaderX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F5976B812BC56DA100ABEF37 /* Debug */,
+				F5976B822BC56DA100ABEF37 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
