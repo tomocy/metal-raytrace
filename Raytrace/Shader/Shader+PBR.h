@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../ShaderX/Geometry/Geometry+Normalized.h"
 #include "Shader+Geometry.h"
 #include "Shader+Material.h"
 #include <metal_stdlib>
@@ -23,8 +24,8 @@ public:
     public:
         static float compute(
             const float roughness,
-            const thread Geometry::Normalized<float3>& normal,
-            const thread Geometry::Normalized<float3>& halfway
+            const thread ShaderX::Geometry::Normalized<float3>& normal,
+            const thread ShaderX::Geometry::Normalized<float3>& halfway
         )
         {
             const float alpha = metal::pow(roughness, 2);
@@ -45,9 +46,9 @@ public:
     public:
         static float compute(
             const float roughness,
-            const thread Geometry::Normalized<float3>& normal,
-            const thread Geometry::Normalized<float3>& light,
-            const thread Geometry::Normalized<float3>& view
+            const thread ShaderX::Geometry::Normalized<float3>& normal,
+            const thread ShaderX::Geometry::Normalized<float3>& light,
+            const thread ShaderX::Geometry::Normalized<float3>& view
         )
         {
             return schlick(roughness, light, normal) * schlick(roughness, view, normal);
@@ -55,8 +56,8 @@ public:
 
         static float schlick(
             const float roughness,
-            const thread Geometry::Normalized<float3>& v,
-            const thread Geometry::Normalized<float3>& normal
+            const thread ShaderX::Geometry::Normalized<float3>& v,
+            const thread ShaderX::Geometry::Normalized<float3>& normal
         )
         {
             const auto k = metal::pow(roughness + 1, 2) / 8.0;
@@ -75,8 +76,8 @@ public:
     public:
         static float3 compute(
             const thread float3& albedo,
-            const thread Geometry::Normalized<float3>& view,
-            const thread Geometry::Normalized<float3>& halfway
+            const thread ShaderX::Geometry::Normalized<float3>& view,
+            const thread ShaderX::Geometry::Normalized<float3>& halfway
         )
         {
             const auto dotVH = metal::saturate(
@@ -90,9 +91,9 @@ public:
 public:
     static float3 compute(
         const float d, const float g, const thread float3& f,
-        const thread Geometry::Normalized<float3>& normal,
-        const thread Geometry::Normalized<float3>& light,
-        const thread Geometry::Normalized<float3>& view
+        const thread ShaderX::Geometry::Normalized<float3>& normal,
+        const thread ShaderX::Geometry::Normalized<float3>& light,
+        const thread ShaderX::Geometry::Normalized<float3>& view
     )
     {
         const auto dotNL = metal::clamp(
@@ -117,7 +118,7 @@ public:
         static float3 compute(
             const thread metal::texturecube<float, metal::access::sample>& source,
             const thread float3& albedo,
-            const thread Geometry::Normalized<float3>& normal
+            const thread ShaderX::Geometry::Normalized<float3>& normal
         )
         {
             constexpr auto sampler = metal::sampler(
@@ -138,8 +139,8 @@ public:
             const thread metal::texture2d<float, metal::access::sample>& lut,
             const thread float3& albedo,
             const float roughness,
-            const thread Geometry::Normalized<float3>& normal,
-            const thread Geometry::Normalized<float3>& view
+            const thread ShaderX::Geometry::Normalized<float3>& normal,
+            const thread ShaderX::Geometry::Normalized<float3>& view
         )
         {
             constexpr auto sampler = metal::sampler(
@@ -169,8 +170,8 @@ public:
         const thread metal::texture2d<float, metal::access::sample>& lut,
         const thread Material::Albedo& albedo,
         const float roughness,
-        const thread Geometry::Normalized<float3>& normal,
-        const thread Geometry::Normalized<float3>& view
+        const thread ShaderX::Geometry::Normalized<float3>& normal,
+        const thread ShaderX::Geometry::Normalized<float3>& view
     )
     {
         return Diffuse::compute(diffuse, albedo.diffuse, normal)

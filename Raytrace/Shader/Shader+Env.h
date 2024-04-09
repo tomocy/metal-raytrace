@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../ShaderX/Geometry/Geometry+Normalized.h"
 #include "Shader+Geometry.h"
 #include "Shader+Material.h"
 #include "Shader+PBR.h"
@@ -12,8 +13,8 @@ public:
     float3 colorWith(
         const thread Material::Albedo& albedo,
         const float roughness,
-        const thread Geometry::Normalized<float3>& normal,
-        const thread Geometry::Normalized<float3>& view
+        const thread ShaderX::Geometry::Normalized<float3>& normal,
+        const thread ShaderX::Geometry::Normalized<float3>& view
     ) const
     {
         return PBR::IBL::compute(

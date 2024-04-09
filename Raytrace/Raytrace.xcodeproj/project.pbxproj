@@ -131,6 +131,7 @@
 		F5976B7C2BC56DA100ABEF37 /* libShaderX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libShaderX.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5976B7E2BC56DA100ABEF37 /* ShaderX.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = ShaderX.metal; sourceTree = "<group>"; };
 		F5976B832BC56F0700ABEF37 /* ShaderX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderX.h; sourceTree = "<group>"; };
+		F5976B922BC5AA7900ABEF37 /* Geometry+Normalized.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Geometry+Normalized.h"; sourceTree = "<group>"; };
 		F5A7826C2BB2CC4E00415220 /* Raytrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Raytrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5A782732BB2CC5000415220 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F5A782782BB2CC5000415220 /* Raytrace.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Raytrace.entitlements; sourceTree = "<group>"; };
@@ -205,10 +206,19 @@
 		F5976B7D2BC56DA100ABEF37 /* ShaderX */ = {
 			isa = PBXGroup;
 			children = (
+				F5976B912BC5AA5500ABEF37 /* Geometry */,
 				F5976B832BC56F0700ABEF37 /* ShaderX.h */,
 				F5976B7E2BC56DA100ABEF37 /* ShaderX.metal */,
 			);
 			path = ShaderX;
+			sourceTree = "<group>";
+		};
+		F5976B912BC5AA5500ABEF37 /* Geometry */ = {
+			isa = PBXGroup;
+			children = (
+				F5976B922BC5AA7900ABEF37 /* Geometry+Normalized.h */,
+			);
+			path = Geometry;
 			sourceTree = "<group>";
 		};
 		F5A782632BB2CC4D00415220 = {

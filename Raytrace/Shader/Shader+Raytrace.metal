@@ -1,6 +1,6 @@
 // tomocy
 
-#include "../ShaderX/ShaderX.h"
+#include "../ShaderX/Geometry/Geometry+Normalized.h"
 #include "Shader+Background.h"
 #include "Shader+Env.h"
 #include "Shader+Frame.h"
@@ -30,8 +30,7 @@ public:
             float3 color;
             metal::raytracing::ray incidentRay;
         } state = {
-            // .color = 1,
-            .color = ShaderX::test(),
+            .color = 1,
             .incidentRay = ray,
         };
 
@@ -92,11 +91,11 @@ private:
 
         {
             const struct {
-                Geometry::Normalized<float3> light;
-                Geometry::Normalized<float3> view;
+                ShaderX::Geometry::Normalized<float3> light;
+                ShaderX::Geometry::Normalized<float3> view;
             } dirs = {
                 .light = -directionalLight.direction.value(),
-                .view = Geometry::normalize(view.position - intersection.position()),
+                .view = ShaderX::Geometry::normalize(view.position - intersection.position()),
             };
 
             result.color = surface.colorWith(dirs.light, dirs.view);
@@ -148,7 +147,7 @@ public:
     constant Mesh* meshes;
 
     struct {
-        Geometry::Normalized<float3> direction;
+        ShaderX::Geometry::Normalized<float3> direction;
         float3 color;
     } directionalLight;
 
@@ -184,9 +183,9 @@ kernel void kernelMain(
 
     // We know the camera for now.
     const struct {
-        Geometry::Normalized<float3> forward;
-        Geometry::Normalized<float3> right;
-        Geometry::Normalized<float3> up;
+        ShaderX::Geometry::Normalized<float3> forward;
+        ShaderX::Geometry::Normalized<float3> right;
+        ShaderX::Geometry::Normalized<float3> up;
         float3 position;
     } camera = {
         .forward = float3(0, 0, 1),
@@ -213,7 +212,7 @@ kernel void kernelMain(
         .instances = instances,
         .meshes = meshes,
         .directionalLight = {
-            .direction = Geometry::normalize(float3(-1, -1, 1)),
+            .direction = ShaderX::Geometry::normalize(float3(-1, -1, 1)),
             .color = float3(1) * M_PI_F,
         },
         .view = {
@@ -223,10 +222,9 @@ kernel void kernelMain(
 
     const auto ray = raytracing::ray(
         camera.position,
-        Geometry::normalize(
+        ShaderX::Geometry::normalize(
             Geometry::alignAs(float3(inNDC, 1), camera.forward, camera.right, camera.up)
-        )
-            .value()
+        ).value()
     );
 
     const auto color = tracer.trace(ray);

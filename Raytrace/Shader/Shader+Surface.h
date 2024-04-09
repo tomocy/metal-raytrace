@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../ShaderX/Geometry/Geometry+Normalized.h"
 #include "Shader+Geometry.h"
 #include "Shader+Mesh.h"
 #include "Shader+Primitive.h"
@@ -17,14 +18,14 @@ public:
 
 public:
     float3 colorWith(
-        const thread Geometry::Normalized<float3>& light,
-        const thread Geometry::Normalized<float3>& view
+        const thread ShaderX::Geometry::Normalized<float3>& light,
+        const thread ShaderX::Geometry::Normalized<float3>& view
     ) const
     {
         float3 color = 0;
 
         const auto normal = this->normal();
-        const auto halfway = Geometry::normalize(light.value() + view.value());
+        const auto halfway = ShaderX::Geometry::normalize(light.value() + view.value());
 
         const auto dotNL = metal::saturate(
             metal::dot(normal.value(), light.value())
@@ -63,7 +64,7 @@ public:
     const thread Mesh::Piece& piece() const { return piece_; }
 
 public:
-    const thread Geometry::Normalized<float3>& normal() const { return primitive().normal; }
+    const thread ShaderX::Geometry::Normalized<float3>& normal() const { return primitive().normal; }
 
     const thread float2& textureCoordinate() const { return primitive().textureCoordinate; }
 
