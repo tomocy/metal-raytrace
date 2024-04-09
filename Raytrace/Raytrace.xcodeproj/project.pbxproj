@@ -29,7 +29,6 @@
 		F5976B182BC40E0C00ABEF37 /* Kernel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B172BC40E0C00ABEF37 /* Kernel.swift */; };
 		F5976B222BC41C6700ABEF37 /* Specular.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5976B212BC41C6700ABEF37 /* Specular.metal */; };
 		F5976B242BC41CDC00ABEF37 /* Specular.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B232BC41CDC00ABEF37 /* Specular.swift */; };
-		F5976B262BC4212900ABEF37 /* Geometry.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5976B252BC4212900ABEF37 /* Geometry.metal */; };
 		F5976B302BC449EB00ABEF37 /* Env.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B2F2BC449EB00ABEF37 /* Env.swift */; };
 		F5976B322BC44A4A00ABEF37 /* Env.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5976B312BC44A4A00ABEF37 /* Env.metal */; };
 		F5976B362BC46D3200ABEF37 /* Shader+Env.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B352BC46D3200ABEF37 /* Shader+Env.swift */; };
@@ -87,7 +86,6 @@
 		F5006B752BC2F08600A26DEF /* Sequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sequence.h; sourceTree = "<group>"; };
 		F5006B842BC3158600A26DEF /* Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
 		F5006B882BC3A37F00A26DEF /* Sample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sample.h; sourceTree = "<group>"; };
-		F5006B892BC3A3AD00A26DEF /* Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
 		F5006B8A2BC3AADB00A26DEF /* Prelight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prelight.h; sourceTree = "<group>"; };
 		F5006B8D2BC3AC0000A26DEF /* Texture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Texture.h; sourceTree = "<group>"; };
 		F5006B8E2BC3B32400A26DEF /* Coordinate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Coordinate.h; sourceTree = "<group>"; };
@@ -121,7 +119,6 @@
 		F5976B172BC40E0C00ABEF37 /* Kernel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kernel.swift; sourceTree = "<group>"; };
 		F5976B212BC41C6700ABEF37 /* Specular.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Specular.metal; sourceTree = "<group>"; };
 		F5976B232BC41CDC00ABEF37 /* Specular.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Specular.swift; sourceTree = "<group>"; };
-		F5976B252BC4212900ABEF37 /* Geometry.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Geometry.metal; sourceTree = "<group>"; };
 		F5976B2F2BC449EB00ABEF37 /* Env.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Env.swift; sourceTree = "<group>"; };
 		F5976B312BC44A4A00ABEF37 /* Env.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Env.metal; sourceTree = "<group>"; };
 		F5976B332BC44D7D00ABEF37 /* PBR.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBR.h; sourceTree = "<group>"; };
@@ -187,8 +184,6 @@
 				F5006B742BC2EF2200A26DEF /* Distribution.h */,
 				F5976B312BC44A4A00ABEF37 /* Env.metal */,
 				F5976B2F2BC449EB00ABEF37 /* Env.swift */,
-				F5006B892BC3A3AD00A26DEF /* Geometry.h */,
-				F5976B252BC4212900ABEF37 /* Geometry.metal */,
 				F5976B172BC40E0C00ABEF37 /* Kernel.swift */,
 				F5776A1E2BC2837600E9DFAF /* main.swift */,
 				F5776A2A2BC2933100E9DFAF /* Math.swift */,
@@ -445,7 +440,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -x\n\n# A workaround for the Raytrace target to force to re-link this library.\nrm -rf \"${OBJROOT}/Raytrace.build/${CONFIGURATION}/Raytrace.build/Metal\"\n\nmetal -c \"${SRCROOT}/ShaderX/ShaderX.metal\" -o \"${DERIVED_FILE_DIR}/ShaderX.air\"\nmetal -c \"${SRCROOT}/ShaderX/Geometry/Geometry.metal\" -o \"${DERIVED_FILE_DIR}/Geometry/Geometry.air\"\n";
+			shellScript = "set -x\n\n# A workaround for the targets to force to re-link this library.\nrm -rf \"${OBJROOT}/Raytrace.build/${CONFIGURATION}/Prelight.build/Metal\"\nrm -rf \"${OBJROOT}/Raytrace.build/${CONFIGURATION}/Raytrace.build/Metal\"\n\nmetal -c \"${SRCROOT}/ShaderX/ShaderX.metal\" -o \"${DERIVED_FILE_DIR}/ShaderX.air\"\nmetal -c \"${SRCROOT}/ShaderX/Geometry/Geometry.metal\" -o \"${DERIVED_FILE_DIR}/Geometry/Geometry.air\"\n";
 		};
 		F5976B882BC5726D00ABEF37 /* Archive static Metal Library */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -480,7 +475,6 @@
 				F5976B322BC44A4A00ABEF37 /* Env.metal in Sources */,
 				F5006B952BC3E10D00A26DEF /* Diffuse.metal in Sources */,
 				F5776A272BC28A2300E9DFAF /* Diffuse.swift in Sources */,
-				F5976B262BC4212900ABEF37 /* Geometry.metal in Sources */,
 				F5776A2D2BC295D800E9DFAF /* Metal.swift in Sources */,
 				F5776A1F2BC2837600E9DFAF /* main.swift in Sources */,
 				F5776A2B2BC2933100E9DFAF /* Math.swift in Sources */,
@@ -548,6 +542,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7675C8B65F;
 				ENABLE_HARDENED_RUNTIME = YES;
+				MTLLINKER_FLAGS = "-L$(BUILT_PRODUCTS_DIR) -lShaderX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -561,6 +556,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 7675C8B65F;
 				ENABLE_HARDENED_RUNTIME = YES;
+				MTLLINKER_FLAGS = "-L$(BUILT_PRODUCTS_DIR) -lShaderX";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
