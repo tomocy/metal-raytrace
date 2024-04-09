@@ -347,8 +347,8 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = F5976B802BC56DA100ABEF37 /* Build configuration list for PBXNativeTarget "ShaderX" */;
 			buildPhases = (
-				F55BD0ED2BC5D7E50074EDFC /* Generate build file lists */,
-				F5976B852BC56F6200ABEF37 /* Build static Metal Library */,
+				F55BD0ED2BC5D7E50074EDFC /* Generate Source File List */,
+				F5976B852BC56F6200ABEF37 /* Build as Static Metal Library */,
 			);
 			buildRules = (
 			);
@@ -438,7 +438,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		F55BD0ED2BC5D7E50074EDFC /* Generate build file lists */ = {
+		F55BD0ED2BC5D7E50074EDFC /* Generate Source File List */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -448,17 +448,17 @@
 			inputPaths = (
 				"$(SRCROOT)/ShaderX/Tool/GenerateSourceList.sh",
 			);
-			name = "Generate build file lists";
+			name = "Generate Source File List";
 			outputFileListPaths = (
-				"$(SRCROOT)/ShaderX/Source.xcfilelist",
 			);
 			outputPaths = (
+				"$(SRCROOT)/ShaderX/Source.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "source \"${SCRIPT_INPUT_FILE_0}\"\n";
 		};
-		F5976B852BC56F6200ABEF37 /* Build static Metal Library */ = {
+		F5976B852BC56F6200ABEF37 /* Build as Static Metal Library */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -469,7 +469,7 @@
 			inputPaths = (
 				"$(SRCROOT)/ShaderX/Tool/BuildAsStaticLibrary.sh",
 			);
-			name = "Build static Metal Library";
+			name = "Build as Static Metal Library";
 			outputFileListPaths = (
 			);
 			outputPaths = (
