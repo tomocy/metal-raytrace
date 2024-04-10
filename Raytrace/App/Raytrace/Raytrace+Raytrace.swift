@@ -135,6 +135,8 @@ extension Raytrace.Raytrace {
         do {
             let buffer = args.build(
                 target: target.texture,
+                frame: frame,
+                seeds: seeds,
                 with: encoder
             )!
 
@@ -152,7 +154,7 @@ extension Raytrace.Raytrace {
             encoder.setBuffer(buffer, offset: 0, index: 1)
         }
 
-        encoder.setTexture(seeds, index: 0)
+        // encoder.setTexture(seeds, index: 0)
 
         encoder.setTexture(background, index: 1)
         do {
@@ -308,6 +310,8 @@ extension Raytrace.Raytrace.Args {
 extension Raytrace.Raytrace.Args {
     func build(
         target: some MTLTexture,
+        frame: Raytrace.Frame,
+        seeds: some MTLTexture,
         with encoder: some MTLComputeCommandEncoder
     ) -> (any MTLBuffer)? {
         guard let buffer = encoder.device.makeBuffer(
@@ -318,9 +322,19 @@ extension Raytrace.Raytrace.Args {
 
         self.encoder.setArgumentBuffer(buffer, offset: 0)
 
+        // target
         do {
             encoder.useResource(target, usage: .write)
             self.encoder.setTexture(target, index: 0)
+        }
+
+        // frame
+        frame.encode(with: self.encoder, at: 1)
+
+        // seeds
+        do {
+            encoder.useResource(seeds, usage: .read)
+            self.encoder.setTexture(seeds, index: 2)
         }
 
         return buffer

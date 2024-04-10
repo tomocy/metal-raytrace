@@ -158,14 +158,13 @@ namespace Raytrace {
 struct Args {
 public:
     metal::texture2d<float, metal::access::write> target;
+    Frame frame;
+    metal::texture2d<uint32_t> seeds;
 };
 
 kernel void compute(
     const uint2 id [[thread_position_in_grid]],
-    // const metal::texture2d<float, metal::access::write> target [[texture(0)]],
     constant Args& args [[buffer(0)]],
-    constant Frame& frame [[buffer(1)]],
-    const metal::texture2d<uint32_t> seeds [[texture(0)]],
     const Background background,
     const Env env,
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(2)]],
@@ -197,7 +196,7 @@ kernel void compute(
         .position = float3(0, 0.5, -2),
     };
 
-    const auto seed = seeds.read(id).r;
+    const auto seed = args.seeds.read(id).r;
 
     // Map Screen (0...width, 0...height) to UV (0...1, 0...1),
     // then UV to NDC (-1...1, 1...-1).
@@ -207,7 +206,7 @@ kernel void compute(
 
     const auto tracer = Tracer {
         .maxTraceCount = 3,
-        .frame = frame,
+        .frame = args.frame,
         .seed = seed,
         .background = background,
         .env = env,
