@@ -177,7 +177,6 @@
 				F5976B332BC44D7D00ABEF37 /* PBR.h */,
 				F5006B8A2BC3AADB00A26DEF /* Prelight.h */,
 				F5006B962BC3E17900A26DEF /* Prelight.swift */,
-				F5006B752BC2F08600A26DEF /* Sequence.h */,
 				F5976B212BC41C6700ABEF37 /* Specular.metal */,
 				F5976B232BC41CDC00ABEF37 /* Specular.swift */,
 				F5006B8D2BC3AC0000A26DEF /* Texture.h */,
@@ -193,6 +192,7 @@
 				F5976B912BC5AA5500ABEF37 /* Geometry */,
 				F55BD0EF2BC657400074EDFC /* Interpolate.h */,
 				F5006B882BC3A37F00A26DEF /* Sample.h */,
+				F5006B752BC2F08600A26DEF /* Sequence.h */,
 				F5976B832BC56F0700ABEF37 /* ShaderX.h */,
 			);
 			path = ShaderX;
