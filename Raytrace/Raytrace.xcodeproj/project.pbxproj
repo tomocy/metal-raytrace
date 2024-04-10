@@ -24,6 +24,16 @@
 		F55BD1202BC72E8E0074EDFC /* Engine+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD11F2BC72E8E0074EDFC /* Engine+App.swift */; };
 		F55BD1242BC72F030074EDFC /* Engine+Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD1232BC72F030074EDFC /* Engine+Window.swift */; };
 		F55BD1262BC72F670074EDFC /* Engine+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD1252BC72F670074EDFC /* Engine+View.swift */; };
+		F55BD1292BC730500074EDFC /* Raytrace+Material.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD1282BC730500074EDFC /* Raytrace+Material.swift */; };
+		F55BD12B2BC730630074EDFC /* Raytrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD12A2BC730630074EDFC /* Raytrace.swift */; };
+		F55BD12D2BC730A50074EDFC /* Raytrace+Transform.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD12C2BC730A50074EDFC /* Raytrace+Transform.swift */; };
+		F55BD12F2BC730DD0074EDFC /* Raytrace+SIMD.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD12E2BC730DD0074EDFC /* Raytrace+SIMD.swift */; };
+		F55BD1312BC731230074EDFC /* Raytrace+Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD1302BC731230074EDFC /* Raytrace+Texture.swift */; };
+		F55BD1332BC731710074EDFC /* Raytrace+CG.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD1322BC731710074EDFC /* Raytrace+CG.swift */; };
+		F55BD1352BC731B20074EDFC /* Raytrace+Memory.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD1342BC731B20074EDFC /* Raytrace+Memory.swift */; };
+		F55BD1372BC731C30074EDFC /* Raytrace+IO.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD1362BC731C30074EDFC /* Raytrace+IO.swift */; };
+		F55BD1392BC732100074EDFC /* Raytrace+Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD1382BC732100074EDFC /* Raytrace+Math.swift */; };
+		F55BD13B2BC732650074EDFC /* Raytrace+Metal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD13A2BC732650074EDFC /* Raytrace+Metal.swift */; };
 		F5776A1F2BC2837600E9DFAF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A1E2BC2837600E9DFAF /* main.swift */; };
 		F5776A272BC28A2300E9DFAF /* Diffuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A262BC28A2300E9DFAF /* Diffuse.swift */; };
 		F5776A2B2BC2933100E9DFAF /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A2A2BC2933100E9DFAF /* Math.swift */; };
@@ -111,6 +121,16 @@
 		F55BD11F2BC72E8E0074EDFC /* Engine+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Engine+App.swift"; sourceTree = "<group>"; };
 		F55BD1232BC72F030074EDFC /* Engine+Window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Engine+Window.swift"; sourceTree = "<group>"; };
 		F55BD1252BC72F670074EDFC /* Engine+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Engine+View.swift"; sourceTree = "<group>"; };
+		F55BD1282BC730500074EDFC /* Raytrace+Material.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+Material.swift"; sourceTree = "<group>"; };
+		F55BD12A2BC730630074EDFC /* Raytrace.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Raytrace.swift; sourceTree = "<group>"; };
+		F55BD12C2BC730A50074EDFC /* Raytrace+Transform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+Transform.swift"; sourceTree = "<group>"; };
+		F55BD12E2BC730DD0074EDFC /* Raytrace+SIMD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+SIMD.swift"; sourceTree = "<group>"; };
+		F55BD1302BC731230074EDFC /* Raytrace+Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+Texture.swift"; sourceTree = "<group>"; };
+		F55BD1322BC731710074EDFC /* Raytrace+CG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+CG.swift"; sourceTree = "<group>"; };
+		F55BD1342BC731B20074EDFC /* Raytrace+Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+Memory.swift"; sourceTree = "<group>"; };
+		F55BD1362BC731C30074EDFC /* Raytrace+IO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+IO.swift"; sourceTree = "<group>"; };
+		F55BD1382BC732100074EDFC /* Raytrace+Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+Math.swift"; sourceTree = "<group>"; };
+		F55BD13A2BC732650074EDFC /* Raytrace+Metal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+Metal.swift"; sourceTree = "<group>"; };
 		F5776A152BC168D600E9DFAF /* Shader+Background.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Background.h"; sourceTree = "<group>"; };
 		F5776A172BC171FB00E9DFAF /* Shader+Surface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Surface.h"; sourceTree = "<group>"; };
 		F5776A1C2BC2837600E9DFAF /* Prelight */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Prelight; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -211,10 +231,11 @@
 		F55BD10E2BC72C980074EDFC /* App */ = {
 			isa = PBXGroup;
 			children = (
-				F55BD11E2BC72E800074EDFC /* Engine */,
 				F55BD1182BC72C9A0074EDFC /* App.entitlements */,
 				F55BD1132BC72C9A0074EDFC /* Assets.xcassets */,
+				F55BD11E2BC72E800074EDFC /* Engine */,
 				F55BD11C2BC72DEA0074EDFC /* main.swift */,
+				F55BD1272BC72FD20074EDFC /* Raytrace */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -227,6 +248,23 @@
 				F55BD1232BC72F030074EDFC /* Engine+Window.swift */,
 			);
 			path = Engine;
+			sourceTree = "<group>";
+		};
+		F55BD1272BC72FD20074EDFC /* Raytrace */ = {
+			isa = PBXGroup;
+			children = (
+				F55BD12A2BC730630074EDFC /* Raytrace.swift */,
+				F55BD1322BC731710074EDFC /* Raytrace+CG.swift */,
+				F55BD1362BC731C30074EDFC /* Raytrace+IO.swift */,
+				F55BD1282BC730500074EDFC /* Raytrace+Material.swift */,
+				F55BD1382BC732100074EDFC /* Raytrace+Math.swift */,
+				F55BD1342BC731B20074EDFC /* Raytrace+Memory.swift */,
+				F55BD13A2BC732650074EDFC /* Raytrace+Metal.swift */,
+				F55BD12E2BC730DD0074EDFC /* Raytrace+SIMD.swift */,
+				F55BD1302BC731230074EDFC /* Raytrace+Texture.swift */,
+				F55BD12C2BC730A50074EDFC /* Raytrace+Transform.swift */,
+			);
+			path = Raytrace;
 			sourceTree = "<group>";
 		};
 		F5776A1D2BC2837600E9DFAF /* Prelight */ = {
@@ -484,10 +522,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F55BD13B2BC732650074EDFC /* Raytrace+Metal.swift in Sources */,
+				F55BD1292BC730500074EDFC /* Raytrace+Material.swift in Sources */,
+				F55BD12F2BC730DD0074EDFC /* Raytrace+SIMD.swift in Sources */,
+				F55BD1392BC732100074EDFC /* Raytrace+Math.swift in Sources */,
+				F55BD1372BC731C30074EDFC /* Raytrace+IO.swift in Sources */,
+				F55BD1352BC731B20074EDFC /* Raytrace+Memory.swift in Sources */,
 				F55BD1262BC72F670074EDFC /* Engine+View.swift in Sources */,
+				F55BD1312BC731230074EDFC /* Raytrace+Texture.swift in Sources */,
+				F55BD12B2BC730630074EDFC /* Raytrace.swift in Sources */,
 				F55BD11D2BC72DEA0074EDFC /* main.swift in Sources */,
 				F55BD1242BC72F030074EDFC /* Engine+Window.swift in Sources */,
 				F55BD1202BC72E8E0074EDFC /* Engine+App.swift in Sources */,
+				F55BD1332BC731710074EDFC /* Raytrace+CG.swift in Sources */,
+				F55BD12D2BC730A50074EDFC /* Raytrace+Transform.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -572,6 +620,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Raytrace;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -602,6 +651,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Raytrace;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
