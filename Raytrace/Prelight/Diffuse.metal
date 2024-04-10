@@ -1,9 +1,9 @@
 // tomocy
 
 #include "../ShaderX/Coordinate.h"
+#include "../ShaderX/Distribution.h"
 #include "../ShaderX/Geometry/Geometry+Normalized.h"
 #include "../ShaderX/Sample.h"
-#include "Distribution.h"
 #include "Prelight.h"
 #include <metal_stdlib>
 
@@ -16,7 +16,7 @@ public:
         float3 color = 0;
 
         for (uint i = 0; i < sampleCount; i++) {
-            const auto v = Distribution::Hammersley::distribute(sampleCount, i);
+            const auto v = ShaderX::Distribution::Hammersley::distribute(sampleCount, i);
             const auto direction = ShaderX::Sample::CosineWeighted::sample(v, normal);
 
             color += colorFor(direction).rgb;

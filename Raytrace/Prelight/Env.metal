@@ -2,7 +2,7 @@
 
 #include "../ShaderX/Coordinate.h"
 #include "../ShaderX/Sample.h"
-#include "Distribution.h"
+#include "../ShaderX/Distribution.h"
 #include "PBR.h"
 #include <metal_stdlib>
 
@@ -23,7 +23,7 @@ public:
         float2 brdf = 0;
 
         for (uint i = 0; i < sampleCount; i++) {
-            const auto v = Distribution::Hammersley::distribute(sampleCount, i);
+            const auto v = ShaderX::Distribution::Hammersley::distribute(sampleCount, i);
             const auto subject = ShaderX::Sample::GGX::sample(v, roughness, normal);
             const auto light = 2 * metal::dot(view, subject) * subject - view;
 
