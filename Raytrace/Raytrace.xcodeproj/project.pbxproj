@@ -19,6 +19,8 @@
 		F552BDE12BBBFD3A00734E33 /* Shader+Frame.swift in Sources */ = {isa = PBXBuildFile; fileRef = F552BDE02BBBFD3A00734E33 /* Shader+Frame.swift */; };
 		F552BDE72BBDB50100734E33 /* Shader+Texture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F552BDE62BBDB50100734E33 /* Shader+Texture.swift */; };
 		F552BDE92BBE5F9300734E33 /* Shader+CG.swift in Sources */ = {isa = PBXBuildFile; fileRef = F552BDE82BBE5F9300734E33 /* Shader+CG.swift */; };
+		F55BD1142BC72C9A0074EDFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F55BD1132BC72C9A0074EDFC /* Assets.xcassets */; };
+		F55BD11D2BC72DEA0074EDFC /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD11C2BC72DEA0074EDFC /* main.swift */; };
 		F5776A1F2BC2837600E9DFAF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A1E2BC2837600E9DFAF /* main.swift */; };
 		F5776A272BC28A2300E9DFAF /* Diffuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A262BC28A2300E9DFAF /* Diffuse.swift */; };
 		F5776A2B2BC2933100E9DFAF /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A2A2BC2933100E9DFAF /* Math.swift */; };
@@ -99,6 +101,10 @@
 		F55BD0F32BC6A2EC0074EDFC /* PBR+IBL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PBR+IBL.h"; sourceTree = "<group>"; };
 		F55BD0F52BC6A5170074EDFC /* Texture+Cube.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Texture+Cube.h"; sourceTree = "<group>"; };
 		F55BD0F82BC6A8B70074EDFC /* Sequence+Halton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Sequence+Halton.h"; sourceTree = "<group>"; };
+		F55BD10D2BC72C980074EDFC /* Raytrace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Raytrace.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F55BD1132BC72C9A0074EDFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F55BD1182BC72C9A0074EDFC /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
+		F55BD11C2BC72DEA0074EDFC /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		F5776A152BC168D600E9DFAF /* Shader+Background.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Background.h"; sourceTree = "<group>"; };
 		F5776A172BC171FB00E9DFAF /* Shader+Surface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Surface.h"; sourceTree = "<group>"; };
 		F5776A1C2BC2837600E9DFAF /* Prelight */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Prelight; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -144,6 +150,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F55BD10A2BC72C980074EDFC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F5776A192BC2837600E9DFAF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -187,6 +200,16 @@
 				F5006B752BC2F08600A26DEF /* Sequence+VanDerCorput.h */,
 			);
 			path = Sequence;
+			sourceTree = "<group>";
+		};
+		F55BD10E2BC72C980074EDFC /* App */ = {
+			isa = PBXGroup;
+			children = (
+				F55BD1182BC72C9A0074EDFC /* App.entitlements */,
+				F55BD1132BC72C9A0074EDFC /* Assets.xcassets */,
+				F55BD11C2BC72DEA0074EDFC /* main.swift */,
+			);
+			path = App;
 			sourceTree = "<group>";
 		};
 		F5776A1D2BC2837600E9DFAF /* Prelight */ = {
@@ -239,6 +262,7 @@
 		F5A782632BB2CC4D00415220 = {
 			isa = PBXGroup;
 			children = (
+				F55BD10E2BC72C980074EDFC /* App */,
 				F5A7826E2BB2CC4E00415220 /* Engine */,
 				F5776A1D2BC2837600E9DFAF /* Prelight */,
 				F5A7826D2BB2CC4E00415220 /* Products */,
@@ -253,6 +277,7 @@
 			children = (
 				F5A7826C2BB2CC4E00415220 /* Raytrace.app */,
 				F5776A1C2BC2837600E9DFAF /* Prelight */,
+				F55BD10D2BC72C980074EDFC /* Raytrace.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -317,6 +342,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		F55BD10C2BC72C980074EDFC /* App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F55BD1192BC72C9A0074EDFC /* Build configuration list for PBXNativeTarget "App" */;
+			buildPhases = (
+				F55BD1092BC72C980074EDFC /* Sources */,
+				F55BD10A2BC72C980074EDFC /* Frameworks */,
+				F55BD10B2BC72C980074EDFC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = App;
+			productName = App;
+			productReference = F55BD10D2BC72C980074EDFC /* Raytrace.app */;
+			productType = "com.apple.product-type.application";
+		};
 		F5776A1B2BC2837600E9DFAF /* Prelight */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F5776A202BC2837600E9DFAF /* Build configuration list for PBXNativeTarget "Prelight" */;
@@ -364,6 +406,10 @@
 				LastSwiftUpdateCheck = 1530;
 				LastUpgradeCheck = 1530;
 				TargetAttributes = {
+					F55BD10C2BC72C980074EDFC = {
+						CreatedOnToolsVersion = 15.3;
+						LastSwiftMigration = 1530;
+					};
 					F5776A1B2BC2837600E9DFAF = {
 						CreatedOnToolsVersion = 15.3;
 						LastSwiftMigration = 1530;
@@ -389,13 +435,22 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F5776A1B2BC2837600E9DFAF /* Prelight */,
+				F55BD10C2BC72C980074EDFC /* App */,
 				F5A7826B2BB2CC4E00415220 /* Raytrace */,
+				F5776A1B2BC2837600E9DFAF /* Prelight */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F55BD10B2BC72C980074EDFC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F55BD1142BC72C9A0074EDFC /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F5A7826A2BB2CC4E00415220 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -408,6 +463,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F55BD1092BC72C980074EDFC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F55BD11D2BC72DEA0074EDFC /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F5776A182BC2837600E9DFAF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -473,6 +536,65 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		F55BD11A2BC72C9A0074EDFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 7675C8B65F;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Raytrace;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomocy.raytrace.App;
+				PRODUCT_NAME = Raytrace;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F55BD11B2BC72C9A0074EDFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = 7675C8B65F;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Raytrace;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tomocy.raytrace.App;
+				PRODUCT_NAME = Raytrace;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		F5776A212BC2837600E9DFAF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -627,6 +749,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Engine/Raytrace.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -634,6 +757,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -659,6 +783,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Engine/Raytrace.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -666,6 +791,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -686,6 +812,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F55BD1192BC72C9A0074EDFC /* Build configuration list for PBXNativeTarget "App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F55BD11A2BC72C9A0074EDFC /* Debug */,
+				F55BD11B2BC72C9A0074EDFC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F5776A202BC2837600E9DFAF /* Build configuration list for PBXNativeTarget "Prelight" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
