@@ -2,6 +2,7 @@
 
 #pragma once
 
+namespace ShaderX {
 namespace Coordinate {
 enum class Face : uint {
     right,
@@ -141,4 +142,6 @@ public:
 private:
     float3 value_;
 };
+}
+
 }

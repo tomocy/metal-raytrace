@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Coordinate.h"
+#include "../ShaderX/Coordinate.h"
 #include <metal_stdlib>
 
 namespace Texture {
@@ -23,25 +23,25 @@ public:
     uint size() constant { return raw().get_width(); }
 
 public:
-    Coordinate::Face faceFor(const thread Coordinate::InScreen& coordinate) constant
+    ShaderX::Coordinate::Face faceFor(const thread ShaderX::Coordinate::InScreen& coordinate) constant
     {
-        return Coordinate::Face(coordinate.value().y / size());
+        return ShaderX::Coordinate::Face(coordinate.value().y / size());
     }
 
-    Coordinate::InFace coordinateInFace(const thread Coordinate::InScreen& coordinate) constant
+    ShaderX::Coordinate::InFace coordinateInFace(const thread ShaderX::Coordinate::InScreen& coordinate) constant
     {
-        return Coordinate::InFace::from(coordinate, size());
+        return ShaderX::Coordinate::InFace::from(coordinate, size());
     }
 
 public:
-    metal::vec<T, 4> readInFace(const thread Coordinate::InScreen& coordinate) constant
+    metal::vec<T, 4> readInFace(const thread ShaderX::Coordinate::InScreen& coordinate) constant
     {
         return raw().read(coordinateInFace(coordinate).value(), uint(faceFor(coordinate)));
     }
 
     void writeInFace(
         const thread metal::vec<T, 4>& color,
-        const thread Coordinate::InScreen& coordinate,
+        const thread ShaderX::Coordinate::InScreen& coordinate,
         const uint lod = 0
     ) constant
     {

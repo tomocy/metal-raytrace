@@ -166,7 +166,6 @@
 			children = (
 				F5006B722BC2D2A000A26DEF /* App.swift */,
 				F5776A352BC2B34700E9DFAF /* CG.swift */,
-				F5006B8E2BC3B32400A26DEF /* Coordinate.h */,
 				F5006B942BC3E10D00A26DEF /* Diffuse.metal */,
 				F5776A262BC28A2300E9DFAF /* Diffuse.swift */,
 				F5006B742BC2EF2200A26DEF /* Distribution.h */,
@@ -192,6 +191,7 @@
 		F5976B7D2BC56DA100ABEF37 /* ShaderX */ = {
 			isa = PBXGroup;
 			children = (
+				F5006B8E2BC3B32400A26DEF /* Coordinate.h */,
 				F5976B912BC5AA5500ABEF37 /* Geometry */,
 				F55BD0EF2BC657400074EDFC /* Interpolate.h */,
 				F5976B832BC56F0700ABEF37 /* ShaderX.h */,

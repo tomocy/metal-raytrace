@@ -1,6 +1,6 @@
 // tomocy
 
-#include "Coordinate.h"
+#include "../ShaderX/Coordinate.h"
 #include "Distribution.h"
 #include "Prelight.h"
 #include "Sample.h"
@@ -49,16 +49,16 @@ kernel void compute(
 )
 {
     struct {
-        Coordinate::InScreen inScreen;
-        Coordinate::InFace inFace;
-        Coordinate::InUV inUV;
-        Coordinate::InNDC inNDC;
+        ShaderX::Coordinate::InScreen inScreen;
+        ShaderX::Coordinate::InFace inFace;
+        ShaderX::Coordinate::InUV inUV;
+        ShaderX::Coordinate::InNDC inNDC;
     } coordinates = {
-        .inScreen = Coordinate::InScreen(id),
+        .inScreen = ShaderX::Coordinate::InScreen(id),
     };
     coordinates.inFace = args.source.coordinateInFace(coordinates.inScreen);
-    coordinates.inUV = Coordinate::InUV::from(coordinates.inFace, args.source.size());
-    coordinates.inNDC = Coordinate::InNDC::from(coordinates.inUV, args.source.faceFor(coordinates.inScreen));
+    coordinates.inUV = ShaderX::Coordinate::InUV::from(coordinates.inFace, args.source.size());
+    coordinates.inNDC = ShaderX::Coordinate::InNDC::from(coordinates.inUV, args.source.faceFor(coordinates.inScreen));
 
     const auto normal = metal::normalize(coordinates.inNDC.value());
 

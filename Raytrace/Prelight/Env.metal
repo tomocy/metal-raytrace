@@ -1,6 +1,6 @@
 // tomocy
 
-#include "Coordinate.h"
+#include "../ShaderX/Coordinate.h"
 #include "Distribution.h"
 #include "PBR.h"
 #include "Sample.h"
@@ -65,12 +65,12 @@ kernel void compute(
 )
 {
     struct {
-        Coordinate::InScreen inScreen;
-        Coordinate::InUV inUV;
+        ShaderX::Coordinate::InScreen inScreen;
+        ShaderX::Coordinate::InUV inUV;
     } coordinates = {
-        .inScreen = Coordinate::InScreen(id),
+        .inScreen = ShaderX::Coordinate::InScreen(id),
     };
-    coordinates.inUV = Coordinate::InUV::from(
+    coordinates.inUV = ShaderX::Coordinate::InUV::from(
         coordinates.inScreen,
         uint2(args.target.get_width(), args.target.get_height())
     );
