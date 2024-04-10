@@ -21,6 +21,9 @@
 		F552BDE92BBE5F9300734E33 /* Shader+CG.swift in Sources */ = {isa = PBXBuildFile; fileRef = F552BDE82BBE5F9300734E33 /* Shader+CG.swift */; };
 		F55BD1142BC72C9A0074EDFC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F55BD1132BC72C9A0074EDFC /* Assets.xcassets */; };
 		F55BD11D2BC72DEA0074EDFC /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD11C2BC72DEA0074EDFC /* main.swift */; };
+		F55BD1202BC72E8E0074EDFC /* Engine+App.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD11F2BC72E8E0074EDFC /* Engine+App.swift */; };
+		F55BD1242BC72F030074EDFC /* Engine+Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD1232BC72F030074EDFC /* Engine+Window.swift */; };
+		F55BD1262BC72F670074EDFC /* Engine+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55BD1252BC72F670074EDFC /* Engine+View.swift */; };
 		F5776A1F2BC2837600E9DFAF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A1E2BC2837600E9DFAF /* main.swift */; };
 		F5776A272BC28A2300E9DFAF /* Diffuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A262BC28A2300E9DFAF /* Diffuse.swift */; };
 		F5776A2B2BC2933100E9DFAF /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A2A2BC2933100E9DFAF /* Math.swift */; };
@@ -105,6 +108,9 @@
 		F55BD1132BC72C9A0074EDFC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F55BD1182BC72C9A0074EDFC /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		F55BD11C2BC72DEA0074EDFC /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		F55BD11F2BC72E8E0074EDFC /* Engine+App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Engine+App.swift"; sourceTree = "<group>"; };
+		F55BD1232BC72F030074EDFC /* Engine+Window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Engine+Window.swift"; sourceTree = "<group>"; };
+		F55BD1252BC72F670074EDFC /* Engine+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Engine+View.swift"; sourceTree = "<group>"; };
 		F5776A152BC168D600E9DFAF /* Shader+Background.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Background.h"; sourceTree = "<group>"; };
 		F5776A172BC171FB00E9DFAF /* Shader+Surface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Surface.h"; sourceTree = "<group>"; };
 		F5776A1C2BC2837600E9DFAF /* Prelight */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Prelight; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -205,11 +211,22 @@
 		F55BD10E2BC72C980074EDFC /* App */ = {
 			isa = PBXGroup;
 			children = (
+				F55BD11E2BC72E800074EDFC /* Engine */,
 				F55BD1182BC72C9A0074EDFC /* App.entitlements */,
 				F55BD1132BC72C9A0074EDFC /* Assets.xcassets */,
 				F55BD11C2BC72DEA0074EDFC /* main.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		F55BD11E2BC72E800074EDFC /* Engine */ = {
+			isa = PBXGroup;
+			children = (
+				F55BD1252BC72F670074EDFC /* Engine+View.swift */,
+				F55BD11F2BC72E8E0074EDFC /* Engine+App.swift */,
+				F55BD1232BC72F030074EDFC /* Engine+Window.swift */,
+			);
+			path = Engine;
 			sourceTree = "<group>";
 		};
 		F5776A1D2BC2837600E9DFAF /* Prelight */ = {
@@ -467,7 +484,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F55BD1262BC72F670074EDFC /* Engine+View.swift in Sources */,
 				F55BD11D2BC72DEA0074EDFC /* main.swift in Sources */,
+				F55BD1242BC72F030074EDFC /* Engine+Window.swift in Sources */,
+				F55BD1202BC72E8E0074EDFC /* Engine+App.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
