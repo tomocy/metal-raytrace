@@ -7,6 +7,7 @@ import MetalKit
 extension Raytrace {
     struct Raytrace {
         var pipelineStates: PipelineStates
+        var args: Args
         var argumentEncoders: ArgumentEncoders
 
         var target: Target
@@ -19,13 +20,16 @@ extension Raytrace {
 extension Raytrace.Raytrace {
     init(device: some MTLDevice, resolution: CGSize) throws {
         let lib = device.makeDefaultLibrary()!
-        let fn = lib.makeFunction(name: "Raytrace::Kernel::compute")!
+        let fn = lib.makeFunction(name: "Raytrace::compute")!
 
 
         pipelineStates = .init(
             compute: try PipelineStates.make(with: device, for: fn)
         )
 
+        args = .init(
+            encoder: Args.make(for: fn)
+        )
         argumentEncoders = .init(
             meshes: ArgumentEncoders.makeMeshes(for: fn)
         )
@@ -128,7 +132,15 @@ extension Raytrace.Raytrace {
 
         encoder.setComputePipelineState(pipelineStates.compute)
 
-        encoder.setTexture(target.texture, index: 0)
+        do {
+            let buffer = args.build(
+                target: target.texture,
+                with: encoder
+            )!
+
+            encoder.setBuffer(buffer, offset: 0, index: 0)
+        }
+        // encoder.setTexture(target.texture, index: 0)
 
         do {
             let buffer = Raytrace.Metal.bufferBuildable(frame).build(
@@ -137,19 +149,19 @@ extension Raytrace.Raytrace {
                 options: .storageModeShared
             )!
 
-            encoder.setBuffer(buffer, offset: 0, index: 0)
+            encoder.setBuffer(buffer, offset: 0, index: 1)
         }
 
-        encoder.setTexture(seeds, index: 1)
+        encoder.setTexture(seeds, index: 0)
 
-        encoder.setTexture(background, index: 2)
+        encoder.setTexture(background, index: 1)
         do {
-            encoder.setTexture(env.diffuse, index: 3)
-            encoder.setTexture(env.specular, index: 4)
-            encoder.setTexture(env.lut, index: 5)
+            encoder.setTexture(env.diffuse, index: 2)
+            encoder.setTexture(env.specular, index: 3)
+            encoder.setTexture(env.lut, index: 4)
         }
 
-        encoder.setAccelerationStructure(accelerator, bufferIndex: 1)
+        encoder.setAccelerationStructure(accelerator, bufferIndex: 2)
 
         do {
             let buffer = Raytrace.Metal.bufferBuildable(instances).build(
@@ -158,7 +170,7 @@ extension Raytrace.Raytrace {
                 options: .storageModeShared
             )!
 
-            encoder.setBuffer(buffer, offset: 0, index: 2)
+            encoder.setBuffer(buffer, offset: 0, index: 3)
         }
 
         do {
@@ -171,7 +183,7 @@ extension Raytrace.Raytrace {
                 label: "Meshes?Count=\(meshes.count)"
             )!
 
-            encoder.setBuffer(buffer, offset: 0, index: 3)
+            encoder.setBuffer(buffer, offset: 0, index: 4)
         }
 
         do {
@@ -282,6 +294,40 @@ extension Raytrace.Raytrace.PipelineStates {
 }
 
 extension Raytrace.Raytrace {
+    struct Args {
+        var encoder: any MTLArgumentEncoder
+    }
+}
+
+extension Raytrace.Raytrace.Args {
+    static func make(for function: some MTLFunction) -> any MTLArgumentEncoder {
+        return function.makeArgumentEncoder(bufferIndex: 0)
+    }
+}
+
+extension Raytrace.Raytrace.Args {
+    func build(
+        target: some MTLTexture,
+        with encoder: some MTLComputeCommandEncoder
+    ) -> (any MTLBuffer)? {
+        guard let buffer = encoder.device.makeBuffer(
+            length: self.encoder.encodedLength
+        ) else { return nil }
+
+        buffer.label = "Raytrace/Args"
+
+        self.encoder.setArgumentBuffer(buffer, offset: 0)
+
+        do {
+            encoder.useResource(target, usage: .write)
+            self.encoder.setTexture(target, index: 0)
+        }
+
+        return buffer
+    }
+}
+
+extension Raytrace.Raytrace {
     struct ArgumentEncoders {
         var meshes: any MTLArgumentEncoder
     }
@@ -289,7 +335,7 @@ extension Raytrace.Raytrace {
 
 extension Raytrace.Raytrace.ArgumentEncoders {
     static func makeMeshes(for function: some MTLFunction) -> MTLArgumentEncoder {
-        return function.makeArgumentEncoder(bufferIndex: 3)
+        return function.makeArgumentEncoder(bufferIndex: 4)
     }
 }
 

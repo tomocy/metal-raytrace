@@ -17,6 +17,6 @@ public:
     }
 
 public:
-    metal::texturecube<float, metal::access::sample> texture [[texture(2)]];
+    metal::texturecube<float, metal::access::sample> texture [[texture(1)]];
 };
 }

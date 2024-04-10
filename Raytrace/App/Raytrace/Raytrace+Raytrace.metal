@@ -155,17 +155,22 @@ public:
 }
 
 namespace Raytrace {
-namespace Kernel {
+struct Args {
+public:
+    metal::texture2d<float, metal::access::write> target;
+};
+
 kernel void compute(
     const uint2 id [[thread_position_in_grid]],
-    const metal::texture2d<float, metal::access::write> target [[texture(0)]],
-    constant Frame& frame [[buffer(0)]],
-    const metal::texture2d<uint32_t> seeds [[texture(1)]],
+    // const metal::texture2d<float, metal::access::write> target [[texture(0)]],
+    constant Args& args [[buffer(0)]],
+    constant Frame& frame [[buffer(1)]],
+    const metal::texture2d<uint32_t> seeds [[texture(0)]],
     const Background background,
     const Env env,
-    const metal::raytracing::instance_acceleration_structure accelerator [[buffer(1)]],
-    constant Primitive::Instance* const instances [[buffer(2)]],
-    constant Mesh* const meshes [[buffer(3)]]
+    const metal::raytracing::instance_acceleration_structure accelerator [[buffer(2)]],
+    constant Primitive::Instance* const instances [[buffer(3)]],
+    constant Mesh* const meshes [[buffer(4)]]
 )
 {
     namespace raytracing = metal::raytracing;
@@ -228,7 +233,6 @@ kernel void compute(
 
     const auto color = tracer.trace(ray);
 
-    target.write(float4(color, 1), inScreen);
-}
+    args.target.write(float4(color, 1), inScreen);
 }
 }
