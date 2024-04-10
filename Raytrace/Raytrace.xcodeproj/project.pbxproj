@@ -80,7 +80,6 @@
 		F5006B842BC3158600A26DEF /* Texture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Texture.swift; sourceTree = "<group>"; };
 		F5006B882BC3A37F00A26DEF /* Sample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Sample.h; sourceTree = "<group>"; };
 		F5006B8A2BC3AADB00A26DEF /* Prelight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Prelight.h; sourceTree = "<group>"; };
-		F5006B8D2BC3AC0000A26DEF /* Texture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Texture.h; sourceTree = "<group>"; };
 		F5006B8E2BC3B32400A26DEF /* Coordinate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Coordinate.h; sourceTree = "<group>"; };
 		F5006B942BC3E10D00A26DEF /* Diffuse.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Diffuse.metal; sourceTree = "<group>"; };
 		F5006B962BC3E17900A26DEF /* Prelight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prelight.swift; sourceTree = "<group>"; };
@@ -99,6 +98,7 @@
 		F55BD0F12BC6A1650074EDFC /* PBR+CookTorrance.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PBR+CookTorrance.h"; sourceTree = "<group>"; };
 		F55BD0F22BC6A1960074EDFC /* PBR+Lambertian.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PBR+Lambertian.h"; sourceTree = "<group>"; };
 		F55BD0F32BC6A2EC0074EDFC /* PBR+IBL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PBR+IBL.h"; sourceTree = "<group>"; };
+		F55BD0F52BC6A5170074EDFC /* Texture+Cube.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Texture+Cube.h"; sourceTree = "<group>"; };
 		F5776A152BC168D600E9DFAF /* Shader+Background.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Background.h"; sourceTree = "<group>"; };
 		F5776A172BC171FB00E9DFAF /* Shader+Surface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Surface.h"; sourceTree = "<group>"; };
 		F5776A1C2BC2837600E9DFAF /* Prelight */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Prelight; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -172,6 +172,14 @@
 			path = PBR;
 			sourceTree = "<group>";
 		};
+		F55BD0F42BC6A5080074EDFC /* Texture */ = {
+			isa = PBXGroup;
+			children = (
+				F55BD0F52BC6A5170074EDFC /* Texture+Cube.h */,
+			);
+			path = Texture;
+			sourceTree = "<group>";
+		};
 		F5776A1D2BC2837600E9DFAF /* Prelight */ = {
 			isa = PBXGroup;
 			children = (
@@ -189,7 +197,6 @@
 				F5006B962BC3E17900A26DEF /* Prelight.swift */,
 				F5976B212BC41C6700ABEF37 /* Specular.metal */,
 				F5976B232BC41CDC00ABEF37 /* Specular.swift */,
-				F5006B8D2BC3AC0000A26DEF /* Texture.h */,
 				F5006B842BC3158600A26DEF /* Texture.swift */,
 			);
 			path = Prelight;
@@ -206,6 +213,7 @@
 				F5006B882BC3A37F00A26DEF /* Sample.h */,
 				F5006B752BC2F08600A26DEF /* Sequence.h */,
 				F5976B832BC56F0700ABEF37 /* ShaderX.h */,
+				F55BD0F42BC6A5080074EDFC /* Texture */,
 			);
 			path = ShaderX;
 			sourceTree = "<group>";

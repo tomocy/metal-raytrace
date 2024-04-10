@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "../ShaderX/Coordinate.h"
+#include "../Coordinate.h"
 #include <metal_stdlib>
 
+namespace ShaderX {
 namespace Texture {
 template <typename T, metal::access Access>
 struct Cube {
@@ -23,29 +24,30 @@ public:
     uint size() constant { return raw().get_width(); }
 
 public:
-    ShaderX::Coordinate::Face faceFor(const thread ShaderX::Coordinate::InScreen& coordinate) constant
+    Coordinate::Face faceFor(const thread Coordinate::InScreen& coordinate) constant
     {
-        return ShaderX::Coordinate::Face(coordinate.value().y / size());
+        return Coordinate::Face(coordinate.value().y / size());
     }
 
-    ShaderX::Coordinate::InFace coordinateInFace(const thread ShaderX::Coordinate::InScreen& coordinate) constant
+    Coordinate::InFace coordinateInFace(const thread Coordinate::InScreen& coordinate) constant
     {
-        return ShaderX::Coordinate::InFace::from(coordinate, size());
+        return Coordinate::InFace::from(coordinate, size());
     }
 
 public:
-    metal::vec<T, 4> readInFace(const thread ShaderX::Coordinate::InScreen& coordinate) constant
+    metal::vec<T, 4> readInFace(const thread Coordinate::InScreen& coordinate) constant
     {
         return raw().read(coordinateInFace(coordinate).value(), uint(faceFor(coordinate)));
     }
 
     void writeInFace(
         const thread metal::vec<T, 4>& color,
-        const thread ShaderX::Coordinate::InScreen& coordinate,
+        const thread Coordinate::InScreen& coordinate,
         const uint lod = 0
     ) constant
     {
         raw().write(color, coordinateInFace(coordinate).value(), uint(faceFor(coordinate)), lod);
     }
 };
+}
 }

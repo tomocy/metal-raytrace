@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../Geometry/Geometry+Normalized.h"
+#include "../Texture/Texture+Cube.h"
 #include "PBR+Material.h"
 
 namespace ShaderX {

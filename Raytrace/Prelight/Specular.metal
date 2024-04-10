@@ -47,7 +47,7 @@ public:
 
 public:
     uint sampleCount;
-    Texture::Cube<float, metal::access::sample> source;
+    ShaderX::Texture::Cube<float, metal::access::sample> source;
 };
 }
 }

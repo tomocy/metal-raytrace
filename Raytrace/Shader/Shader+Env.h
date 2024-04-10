@@ -5,6 +5,7 @@
 #include "../ShaderX/Geometry/Geometry+Normalized.h"
 #include "../ShaderX/PBR/PBR+IBL.h"
 #include "../ShaderX/PBR/PBR+Material.h"
+#include "../ShaderX/Texture/Texture+Cube.h"
 #include <metal_stdlib>
 
 struct Env {

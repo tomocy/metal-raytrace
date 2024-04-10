@@ -4,6 +4,7 @@
 #include "../ShaderX/Distribution.h"
 #include "../ShaderX/Geometry/Geometry+Normalized.h"
 #include "../ShaderX/Sample.h"
+#include "../ShaderX/Texture/Texture+Cube.h"
 #include "Prelight.h"
 #include <metal_stdlib>
 
@@ -37,7 +38,7 @@ public:
 
 public:
     uint sampleCount;
-    Texture::Cube<float, metal::access::sample> source;
+    ShaderX::Texture::Cube<float, metal::access::sample> source;
 };
 }
 }
