@@ -83,8 +83,8 @@ extension Raytrace.Echo.PipelineStates {
         do {
             let lib = device.makeDefaultLibrary()!
 
-            desc.vertexFunction = lib.makeFunction(name: "Echo::Vertex::compute")!
-            desc.fragmentFunction = lib.makeFunction(name: "Echo::Fragment::compute")!
+            desc.vertexFunction = lib.makeFunction(name: "Raytrace::Echo::Vertex::compute")!
+            desc.fragmentFunction = lib.makeFunction(name: "Raytrace::Echo::Fragment::compute")!
         }
 
         desc.colorAttachments[0].pixelFormat = format

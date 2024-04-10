@@ -51,6 +51,7 @@
 		F58FAA772BC7368400624537 /* Raytrace+Env.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58FAA762BC7368400624537 /* Raytrace+Env.swift */; };
 		F58FAA782BC7375300624537 /* Farm in Resources */ = {isa = PBXBuildFile; fileRef = F5B35B562BB5560200651A54 /* Farm */; };
 		F58FAA7B2BC7381600624537 /* Raytrace+Raytrace.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58FAA7A2BC7381600624537 /* Raytrace+Raytrace.swift */; };
+		F58FAA802BC73A0400624537 /* Raytrace+Shader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58FAA7F2BC73A0400624537 /* Raytrace+Shader.swift */; };
 		F5976B182BC40E0C00ABEF37 /* Kernel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B172BC40E0C00ABEF37 /* Kernel.swift */; };
 		F5976B222BC41C6700ABEF37 /* Specular.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5976B212BC41C6700ABEF37 /* Specular.metal */; };
 		F5976B242BC41CDC00ABEF37 /* Specular.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B232BC41CDC00ABEF37 /* Specular.swift */; };
@@ -168,6 +169,7 @@
 		F58FAA7C2BC738DF00624537 /* Raytrace+Background.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Raytrace+Background.h"; sourceTree = "<group>"; };
 		F58FAA7D2BC7392800624537 /* Raytrace+Intersect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Raytrace+Intersect.h"; sourceTree = "<group>"; };
 		F58FAA7E2BC7397900624537 /* Raytrace+Surface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Raytrace+Surface.h"; sourceTree = "<group>"; };
+		F58FAA7F2BC73A0400624537 /* Raytrace+Shader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+Shader.swift"; sourceTree = "<group>"; };
 		F595494F2BBBFCC7001BC8E1 /* Shader+Frame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Frame.h"; sourceTree = "<group>"; };
 		F5976B172BC40E0C00ABEF37 /* Kernel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Kernel.swift; sourceTree = "<group>"; };
 		F5976B212BC41C6700ABEF37 /* Specular.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Specular.metal; sourceTree = "<group>"; };
@@ -301,6 +303,7 @@
 				F55BD13C2BC732D40074EDFC /* Raytrace+Primitive.swift */,
 				F55BD13F2BC733190074EDFC /* Raytrace+Raytrace.metal */,
 				F58FAA7A2BC7381600624537 /* Raytrace+Raytrace.swift */,
+				F58FAA7F2BC73A0400624537 /* Raytrace+Shader.swift */,
 				F55BD12E2BC730DD0074EDFC /* Raytrace+SIMD.swift */,
 				F58FAA7E2BC7397900624537 /* Raytrace+Surface.h */,
 				F55BD1302BC731230074EDFC /* Raytrace+Texture.swift */,
@@ -578,6 +581,7 @@
 				F55BD1352BC731B20074EDFC /* Raytrace+Memory.swift in Sources */,
 				F55BD1262BC72F670074EDFC /* Engine+View.swift in Sources */,
 				F55BD1312BC731230074EDFC /* Raytrace+Texture.swift in Sources */,
+				F58FAA802BC73A0400624537 /* Raytrace+Shader.swift in Sources */,
 				F58FAA772BC7368400624537 /* Raytrace+Env.swift in Sources */,
 				F58FAA6F2BC734DA00624537 /* Raytrace+Echo.swift in Sources */,
 				F55BD12B2BC730630074EDFC /* Raytrace.swift in Sources */,

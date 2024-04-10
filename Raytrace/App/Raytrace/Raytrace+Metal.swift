@@ -67,3 +67,10 @@ extension Array: Raytrace.Metal.BufferBuildable {
         return buffer
     }
 }
+
+extension MTLCommandBuffer {
+    func commit(_ code: () -> Void) {
+        code()
+        commit()
+    }
+}
