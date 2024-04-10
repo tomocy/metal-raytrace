@@ -4,7 +4,7 @@
 
 #include "Geometry/Geometry.h"
 
-namespace ShaderX {
+namespace Shader {
 namespace Sample {
 struct CosineWeighted {
 public:
@@ -17,7 +17,7 @@ public:
         const auto y = r * metal::sin(phi);
         const auto z = metal::sqrt(1 - v.x);
 
-        return ShaderX::Geometry::alignFromTangent(float3(x, y, z), normal);
+        return Shader::Geometry::alignFromTangent(float3(x, y, z), normal);
     }
 };
 }
@@ -42,7 +42,7 @@ public:
         const auto y = theta.sin * metal::sin(phi);
         const auto z = theta.cos;
 
-        return ShaderX::Geometry::alignFromTangent(float3(x, y, z), normal);
+        return Shader::Geometry::alignFromTangent(float3(x, y, z), normal);
     }
 };
 }

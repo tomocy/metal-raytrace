@@ -4,7 +4,7 @@
 
 #include "Sequence/Sequence+VanDerCorput.h"
 
-namespace ShaderX {
+namespace Shader {
 namespace Distribution {
 struct Hammersley {
 public:

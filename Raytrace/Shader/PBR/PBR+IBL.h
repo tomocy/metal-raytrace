@@ -6,7 +6,7 @@
 #include "../Texture/Texture+Cube.h"
 #include "PBR+Material.h"
 
-namespace ShaderX {
+namespace Shader {
 namespace PBR {
 struct IBL {
 public:

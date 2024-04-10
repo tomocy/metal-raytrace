@@ -5,7 +5,7 @@
 #include "../Coordinate.h"
 #include <metal_stdlib>
 
-namespace ShaderX {
+namespace Shader {
 namespace Texture {
 template <typename T, metal::access Access>
 struct Cube {

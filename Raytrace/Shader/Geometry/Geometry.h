@@ -4,7 +4,7 @@
 
 #include "Geometry+Normalized.h"
 
-namespace ShaderX {
+namespace Shader {
 namespace Geometry {
 inline float3 alignAs(
     const thread float3& v,

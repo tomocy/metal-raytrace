@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace ShaderX {
+namespace Shader {
 namespace Coordinate {
 enum class Face : uint {
     right,

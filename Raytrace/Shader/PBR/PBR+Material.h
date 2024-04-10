@@ -5,7 +5,7 @@
 #include "../Interpolate.h"
 #include <metal_stdlib>
 
-namespace ShaderX {
+namespace Shader {
 namespace PBR {
 struct Material {
 public:

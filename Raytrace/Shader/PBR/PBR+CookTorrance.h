@@ -5,7 +5,7 @@
 #include "../Geometry/Geometry+Normalized.h"
 #include <metal_stdlib>
 
-namespace ShaderX {
+namespace Shader {
 namespace PBR {
 struct CookTorrance {
 public:
@@ -61,12 +61,12 @@ public:
 
             float k = 0;
             switch (usage) {
-                case Usage::analytic:
-                    k = metal::pow(alpha + 1, 2) / 8.0;
-                    break;
-                case Usage::holomorphic:
-                    k = metal::pow(alpha, 2) / 2;
-                    break;
+            case Usage::analytic:
+                k = metal::pow(alpha + 1, 2) / 8.0;
+                break;
+            case Usage::holomorphic:
+                k = metal::pow(alpha, 2) / 2;
+                break;
             }
 
             const auto dotNV = metal::saturate(

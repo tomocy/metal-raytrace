@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace ShaderX {
+namespace Shader {
 namespace PBR {
 struct Lambertian {
 public:

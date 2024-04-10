@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "../../ShaderX/Geometry/Geometry+Normalized.h"
-#include "../../ShaderX/Interpolate.h"
+#include "../../Shader/Geometry/Geometry+Normalized.h"
+#include "../../Shader/Interpolate.h"
 #include <metal_stdlib>
 
 namespace Raytrace {
@@ -27,8 +27,8 @@ public:
         Primitive primitive = {};
 
         {
-            primitive.normal = ShaderX::Geometry::normalize(
-                ShaderX::Interpolate::linear(
+            primitive.normal = Shader::Geometry::normalize(
+                Shader::Interpolate::linear(
                     float3(triangle.normals[0]),
                     float3(triangle.normals[1]),
                     float3(triangle.normals[2]),
@@ -38,7 +38,7 @@ public:
         }
 
         {
-            primitive.textureCoordinate = ShaderX::Interpolate::linear(
+            primitive.textureCoordinate = Shader::Interpolate::linear(
                 triangle.textureCoordinates[0],
                 triangle.textureCoordinates[1],
                 triangle.textureCoordinates[2],
@@ -52,7 +52,7 @@ public:
     }
 
 public:
-    ShaderX::Geometry::Normalized<float3> normal;
+    Shader::Geometry::Normalized<float3> normal;
     float2 textureCoordinate;
 };
 }

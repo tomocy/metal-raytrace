@@ -1,9 +1,9 @@
 // tomocy
 
-#include "../ShaderX/Coordinate.h"
-#include "../ShaderX/Sample.h"
-#include "../ShaderX/Distribution.h"
-#include "../ShaderX/PBR/PBR+CookTorrance.h"
+#include "../Shader/Coordinate.h"
+#include "../Shader/Distribution.h"
+#include "../Shader/PBR/PBR+CookTorrance.h"
+#include "../Shader/Sample.h"
 #include <metal_stdlib>
 
 namespace Prelight {
@@ -23,8 +23,8 @@ public:
         float2 brdf = 0;
 
         for (uint i = 0; i < sampleCount; i++) {
-            const auto v = ShaderX::Distribution::Hammersley::distribute(sampleCount, i);
-            const auto subject = ShaderX::Sample::GGX::sample(v, roughness, normal);
+            const auto v = Shader::Distribution::Hammersley::distribute(sampleCount, i);
+            const auto subject = Shader::Sample::GGX::sample(v, roughness, normal);
             const auto light = 2 * metal::dot(view, subject) * subject - view;
 
             const auto dotNL = metal::saturate(light.z);
@@ -35,10 +35,10 @@ public:
             const auto dotNS = metal::saturate(subject.z);
             const auto dotVS = metal::saturate(metal::dot(view, subject));
 
-            const auto occulusion = ShaderX::PBR::CookTorrance::G::compute(
+            const auto occulusion = Shader::PBR::CookTorrance::G::compute(
                 roughness,
                 normal, light, view,
-                ShaderX::PBR::CookTorrance::G::Usage::holomorphic
+                Shader::PBR::CookTorrance::G::Usage::holomorphic
             );
             const auto visibility = occulusion * dotVS / (dotNS * dotNV);
             const auto fresnel = metal::pow(1 - dotVS, 5);
@@ -69,12 +69,12 @@ kernel void compute(
 )
 {
     struct {
-        ShaderX::Coordinate::InScreen inScreen;
-        ShaderX::Coordinate::InUV inUV;
+        Shader::Coordinate::InScreen inScreen;
+        Shader::Coordinate::InUV inUV;
     } coordinates = {
-        .inScreen = ShaderX::Coordinate::InScreen(id),
+        .inScreen = Shader::Coordinate::InScreen(id),
     };
-    coordinates.inUV = ShaderX::Coordinate::InUV::from(
+    coordinates.inUV = Shader::Coordinate::InUV::from(
         coordinates.inScreen,
         uint2(args.target.get_width(), args.target.get_height())
     );

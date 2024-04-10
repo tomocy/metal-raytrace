@@ -1,8 +1,8 @@
 // tomocy
 
-#include "../ShaderX/Coordinate.h"
-#include "../ShaderX/Sample.h"
-#include "../ShaderX/Distribution.h"
+#include "../Shader/Coordinate.h"
+#include "../Shader/Distribution.h"
+#include "../Shader/Sample.h"
 #include "Prelight.h"
 #include <metal_stdlib>
 
@@ -19,8 +19,8 @@ public:
         float weight = 0;
 
         for (uint i = 0; i < sampleCount; i++) {
-            const auto v = ShaderX::Distribution::Hammersley::distribute(sampleCount, i);
-            const auto subject = ShaderX::Sample::GGX::sample(v, roughness, normal);
+            const auto v = Shader::Distribution::Hammersley::distribute(sampleCount, i);
+            const auto subject = Shader::Sample::GGX::sample(v, roughness, normal);
             const auto light = 2 * metal::dot(reflect, subject) * subject - reflect;
 
             const auto dotNL = metal::saturate(metal::dot(normal, light));
@@ -47,7 +47,7 @@ public:
 
 public:
     uint sampleCount;
-    ShaderX::Texture::Cube<float, metal::access::sample> source;
+    Shader::Texture::Cube<float, metal::access::sample> source;
 };
 }
 }
@@ -60,16 +60,16 @@ kernel void compute(
 )
 {
     struct {
-        ShaderX::Coordinate::InScreen inScreen;
-        ShaderX::Coordinate::InFace inFace;
-        ShaderX::Coordinate::InUV inUV;
-        ShaderX::Coordinate::InNDC inNDC;
+        Shader::Coordinate::InScreen inScreen;
+        Shader::Coordinate::InFace inFace;
+        Shader::Coordinate::InUV inUV;
+        Shader::Coordinate::InNDC inNDC;
     } coordinates = {
-        .inScreen = ShaderX::Coordinate::InScreen(id),
+        .inScreen = Shader::Coordinate::InScreen(id),
     };
     coordinates.inFace = args.source.coordinateInFace(coordinates.inScreen);
-    coordinates.inUV = ShaderX::Coordinate::InUV::from(coordinates.inFace, args.source.size());
-    coordinates.inNDC = ShaderX::Coordinate::InNDC::from(coordinates.inUV, args.source.faceFor(coordinates.inScreen));
+    coordinates.inUV = Shader::Coordinate::InUV::from(coordinates.inFace, args.source.size());
+    coordinates.inNDC = Shader::Coordinate::InNDC::from(coordinates.inUV, args.source.faceFor(coordinates.inScreen));
 
     const auto reflect = metal::normalize(coordinates.inNDC.value());
 

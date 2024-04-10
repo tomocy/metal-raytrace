@@ -4,7 +4,7 @@
 
 #include <metal_stdlib>
 
-namespace ShaderX {
+namespace Shader {
 namespace Interpolate {
 template <typename T>
 T linear(

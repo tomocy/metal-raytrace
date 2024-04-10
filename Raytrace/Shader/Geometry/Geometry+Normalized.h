@@ -4,7 +4,7 @@
 
 #include <metal_stdlib>
 
-namespace ShaderX {
+namespace Shader {
 namespace Geometry {
 template <typename T>
 struct Normalized {

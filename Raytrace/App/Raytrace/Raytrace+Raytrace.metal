@@ -1,10 +1,10 @@
 // tomocy
 
-#include "../../ShaderX/Distribution.h"
-#include "../../ShaderX/Geometry/Geometry+Normalized.h"
-#include "../../ShaderX/Geometry/Geometry.h"
-#include "../../ShaderX/Sample.h"
-#include "../../ShaderX/Sequence/Sequence+Halton.h"
+#include "../../Shader/Distribution.h"
+#include "../../Shader/Geometry/Geometry+Normalized.h"
+#include "../../Shader/Geometry/Geometry.h"
+#include "../../Shader/Sample.h"
+#include "../../Shader/Sequence/Sequence+Halton.h"
 #include "Raytrace+Background.h"
 #include "Raytrace+Env.h"
 #include "Raytrace+Frame.h"
@@ -90,11 +90,11 @@ private:
 
         {
             const struct {
-                ShaderX::Geometry::Normalized<float3> light;
-                ShaderX::Geometry::Normalized<float3> view;
+                Shader::Geometry::Normalized<float3> light;
+                Shader::Geometry::Normalized<float3> view;
             } dirs = {
                 .light = -directionalLight.direction.value(),
-                .view = ShaderX::Geometry::normalize(view.position - intersection.position()),
+                .view = Shader::Geometry::normalize(view.position - intersection.position()),
             };
 
             result.color = surface.colorWith(dirs.light, dirs.view);
@@ -115,10 +115,10 @@ private:
 
             if (!surface.material().isMetalicAt(surface.textureCoordinate())) {
                 const auto v = float2(
-                    ShaderX::Sequence::Halton::at(bounceCount * 5 + 5, seed + frame.id),
-                    ShaderX::Sequence::Halton::at(bounceCount * 5 + 6, seed + frame.id)
+                    Shader::Sequence::Halton::at(bounceCount * 5 + 5, seed + frame.id),
+                    Shader::Sequence::Halton::at(bounceCount * 5 + 6, seed + frame.id)
                 );
-                const auto subject = ShaderX::Sample::CosineWeighted::sample(v, surface.normal());
+                const auto subject = Shader::Sample::CosineWeighted::sample(v, surface.normal());
 
                 result.incidentRay.direction = subject;
             } else {
@@ -144,7 +144,7 @@ public:
     constant Mesh* meshes;
 
     struct {
-        ShaderX::Geometry::Normalized<float3> direction;
+        Shader::Geometry::Normalized<float3> direction;
         float3 color;
     } directionalLight;
 
@@ -181,9 +181,9 @@ kernel void compute(
 
     // We know the camera for now.
     const struct {
-        ShaderX::Geometry::Normalized<float3> forward;
-        ShaderX::Geometry::Normalized<float3> right;
-        ShaderX::Geometry::Normalized<float3> up;
+        Shader::Geometry::Normalized<float3> forward;
+        Shader::Geometry::Normalized<float3> right;
+        Shader::Geometry::Normalized<float3> up;
         float3 position;
     } camera = {
         .forward = float3(0, 0, 1),
@@ -210,7 +210,7 @@ kernel void compute(
         .instances = instances,
         .meshes = meshes,
         .directionalLight = {
-            .direction = ShaderX::Geometry::normalize(float3(-1, -1, 1)),
+            .direction = Shader::Geometry::normalize(float3(-1, -1, 1)),
             .color = float3(1) * M_PI_F,
         },
         .view = {
@@ -220,8 +220,8 @@ kernel void compute(
 
     const auto ray = raytracing::ray(
         camera.position,
-        ShaderX::Geometry::normalize(
-            ShaderX::Geometry::alignAs(float3(inNDC, 1), camera.forward, camera.right, camera.up)
+        Shader::Geometry::normalize(
+            Shader::Geometry::alignAs(float3(inNDC, 1), camera.forward, camera.right, camera.up)
         )
             .value()
     );

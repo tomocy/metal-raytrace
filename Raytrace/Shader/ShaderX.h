@@ -2,4 +2,5 @@
 
 #pragma once
 
-namespace ShaderX {}
+namespace Shader {
+}

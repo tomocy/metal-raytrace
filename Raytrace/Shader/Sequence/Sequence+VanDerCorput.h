@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace ShaderX {
+namespace Shader {
 namespace Sequence {
 struct VanDerCorput {
 public:

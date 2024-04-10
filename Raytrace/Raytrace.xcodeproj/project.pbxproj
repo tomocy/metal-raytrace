@@ -123,7 +123,7 @@
 		F5976B232BC41CDC00ABEF37 /* Specular.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Specular.swift; sourceTree = "<group>"; };
 		F5976B2F2BC449EB00ABEF37 /* Env.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Env.swift; sourceTree = "<group>"; };
 		F5976B312BC44A4A00ABEF37 /* Env.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Env.metal; sourceTree = "<group>"; };
-		F5976B832BC56F0700ABEF37 /* ShaderX.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderX.h; sourceTree = "<group>"; };
+		F5976B832BC56F0700ABEF37 /* Shader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
 		F5976B922BC5AA7900ABEF37 /* Geometry+Normalized.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Geometry+Normalized.h"; sourceTree = "<group>"; };
 		F5976B932BC5AD5400ABEF37 /* Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
 		F5B35B562BB5560200651A54 /* Farm */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Farm; sourceTree = "<group>"; };
@@ -253,7 +253,7 @@
 			path = Prelight;
 			sourceTree = "<group>";
 		};
-		F5976B7D2BC56DA100ABEF37 /* ShaderX */ = {
+		F5976B7D2BC56DA100ABEF37 /* Shader */ = {
 			isa = PBXGroup;
 			children = (
 				F5006B8E2BC3B32400A26DEF /* Coordinate.h */,
@@ -263,10 +263,10 @@
 				F55BD0F02BC6A1480074EDFC /* PBR */,
 				F5006B882BC3A37F00A26DEF /* Sample.h */,
 				F55BD0F62BC6A8880074EDFC /* Sequence */,
-				F5976B832BC56F0700ABEF37 /* ShaderX.h */,
+				F5976B832BC56F0700ABEF37 /* Shader.h */,
 				F55BD0F42BC6A5080074EDFC /* Texture */,
 			);
-			path = ShaderX;
+			path = Shader;
 			sourceTree = "<group>";
 		};
 		F5976B912BC5AA5500ABEF37 /* Geometry */ = {
@@ -285,7 +285,7 @@
 				F5776A1D2BC2837600E9DFAF /* Prelight */,
 				F5A7826D2BB2CC4E00415220 /* Products */,
 				F5B35B532BB555A800651A54 /* Resources */,
-				F5976B7D2BC56DA100ABEF37 /* ShaderX */,
+				F5976B7D2BC56DA100ABEF37 /* Shader */,
 			);
 			sourceTree = "<group>";
 		};
