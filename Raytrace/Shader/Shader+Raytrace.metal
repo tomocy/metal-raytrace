@@ -1,8 +1,10 @@
 // tomocy
 
+#include "../ShaderX/Distribution.h"
 #include "../ShaderX/Geometry/Geometry.h"
 #include "../ShaderX/Geometry/Geometry+Normalized.h"
 #include "../ShaderX/Sample.h"
+#include "../ShaderX/Sequence/Sequence+Halton.h"
 #include "Shader+Background.h"
 #include "Shader+Env.h"
 #include "Shader+Frame.h"
@@ -113,15 +115,13 @@ private:
             result.incidentRay.max_distance = INFINITY;
 
             if (!surface.material().isMetalicAt(surface.textureCoordinate())) {
-                const auto random = float2(
-                    Random::Halton::generate(bounceCount * 5 + 5, seed + frame.id),
-                    Random::Halton::generate(bounceCount * 5 + 6, seed + frame.id)
+                const auto v = float2(
+                    ShaderX::Sequence::Halton::at(bounceCount * 5 + 5, seed + frame.id),
+                    ShaderX::Sequence::Halton::at(bounceCount * 5 + 6, seed + frame.id)
                 );
+                const auto subject = ShaderX::Sample::CosineWeighted::sample(v, surface.normal());
 
-                result.incidentRay.direction = ShaderX::Geometry::alignFromTangent(
-                    ShaderX::Sample::CosineWeighted::sample(random, surface.normal()),
-                    surface.normal()
-                );
+                result.incidentRay.direction = subject;
             } else {
                 result.incidentRay.direction = metal::reflect(ray.direction, surface.normal().value());
             }

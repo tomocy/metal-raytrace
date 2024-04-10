@@ -18,9 +18,9 @@ public:
 
         for (uint i = 0; i < sampleCount; i++) {
             const auto v = ShaderX::Distribution::Hammersley::distribute(sampleCount, i);
-            const auto direction = ShaderX::Sample::CosineWeighted::sample(v, normal);
+            const auto subject = ShaderX::Sample::CosineWeighted::sample(v, normal);
 
-            color += colorFor(direction).rgb;
+            color += colorFor(subject).rgb;
         }
 
         return color / float(sampleCount);

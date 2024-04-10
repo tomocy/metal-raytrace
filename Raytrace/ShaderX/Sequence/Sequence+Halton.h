@@ -1,6 +1,9 @@
 // tomocy
 
-namespace Random {
+#pragma once
+
+namespace ShaderX {
+namespace Sequence {
 struct Halton {
 private:
     static constexpr constant uint32_t primes[] = {
@@ -12,7 +15,7 @@ private:
     static constexpr constant uint32_t primeCount = sizeof(primes) / sizeof(primes[0]);
 
 public:
-    static float generate(const uint32_t dimension, uint32_t i)
+    static float at(const uint32_t dimension, uint32_t i)
     {
         const auto base = primes[dimension % primeCount];
         const float invBase = 1.0 / base;
@@ -29,4 +32,5 @@ public:
         return r;
     }
 };
+}
 }

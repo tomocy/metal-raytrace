@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Sequence.h"
+#include "Sequence/Sequence+VanDerCorput.h"
 
 namespace ShaderX {
 namespace Distribution {
