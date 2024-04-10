@@ -68,9 +68,21 @@ extension Array: Raytrace.Metal.BufferBuildable {
     }
 }
 
+extension MTLTexture {
+    func encode(with encoder: MTLComputeArgumentEncoder, at index: Int, usage: MTLResourceUsage) {
+        encoder.compute.useResource(self, usage: usage)
+        encoder.argument.setTexture(self, index: index)
+    }
+}
+
 extension MTLCommandBuffer {
     func commit(_ code: () -> Void) {
         code()
         commit()
     }
+}
+
+struct MTLComputeArgumentEncoder {
+    var compute: any MTLComputeCommandEncoder
+    var argument: any MTLArgumentEncoder
 }

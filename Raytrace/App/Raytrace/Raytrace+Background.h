@@ -13,10 +13,10 @@ public:
             metal::filter::linear
         );
 
-        return texture.sample(sampler, ray.direction).rgb;
+        return source.sample(sampler, ray.direction).rgb;
     }
 
 public:
-    metal::texturecube<float, metal::access::sample> texture [[texture(1)]];
+    metal::texturecube<float, metal::access::sample> source;
 };
 }

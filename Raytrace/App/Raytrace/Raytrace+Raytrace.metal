@@ -160,12 +160,12 @@ public:
     metal::texture2d<float, metal::access::write> target;
     Frame frame;
     metal::texture2d<uint32_t> seeds;
+    Background background;
 };
 
 kernel void compute(
     const uint2 id [[thread_position_in_grid]],
     constant Args& args [[buffer(0)]],
-    const Background background,
     const Env env,
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(2)]],
     constant Primitive::Instance* const instances [[buffer(3)]],
@@ -208,7 +208,7 @@ kernel void compute(
         .maxTraceCount = 3,
         .frame = args.frame,
         .seed = seed,
-        .background = background,
+        .background = args.background,
         .env = env,
         .intersector = Intersector(accelerator),
         .instances = instances,

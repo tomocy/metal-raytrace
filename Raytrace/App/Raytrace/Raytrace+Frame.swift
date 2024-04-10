@@ -9,8 +9,8 @@ extension Raytrace {
 }
 
 extension Raytrace.Frame {
-    func encode(with encoder: some MTLArgumentEncoder, at index: Int) {
-        let buffer = encoder.constantData(at: index)
+    func encode(with encoder: MTLComputeArgumentEncoder, at index: Int) {
+        let buffer = encoder.argument.constantData(at: index)
         Raytrace.IO.writable(self).write(to: buffer)
     }
 }

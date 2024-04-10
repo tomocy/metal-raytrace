@@ -12,7 +12,7 @@ extension Raytrace {
 
         var target: Target
         var seeds: any MTLTexture
-        var background: any MTLTexture
+        var background: Background
         var env: Env
     }
 }
@@ -37,7 +37,7 @@ extension Raytrace.Raytrace {
         target = Self.make(with: device, resolution: resolution)!
         seeds = Self.makeSeeds(with: device, resolution: resolution)!
 
-        background = try Self.makeBackground(with: device)
+        background = try .init(device: device)
         env = try .init(device: device)
     }
 }
@@ -137,12 +137,12 @@ extension Raytrace.Raytrace {
                 target: target.texture,
                 frame: frame,
                 seeds: seeds,
+                background: background,
                 with: encoder
             )!
 
             encoder.setBuffer(buffer, offset: 0, index: 0)
         }
-        // encoder.setTexture(target.texture, index: 0)
 
         do {
             let buffer = Raytrace.Metal.bufferBuildable(frame).build(
@@ -154,9 +154,6 @@ extension Raytrace.Raytrace {
             encoder.setBuffer(buffer, offset: 0, index: 1)
         }
 
-        // encoder.setTexture(seeds, index: 0)
-
-        encoder.setTexture(background, index: 1)
         do {
             encoder.setTexture(env.diffuse, index: 2)
             encoder.setTexture(env.specular, index: 3)
@@ -312,30 +309,26 @@ extension Raytrace.Raytrace.Args {
         target: some MTLTexture,
         frame: Raytrace.Frame,
         seeds: some MTLTexture,
+        background: Raytrace.Background,
         with encoder: some MTLComputeCommandEncoder
     ) -> (any MTLBuffer)? {
-        guard let buffer = encoder.device.makeBuffer(
+        let encoder = MTLComputeArgumentEncoder.init(
+            compute: encoder,
+            argument: self.encoder
+        )
+
+        guard let buffer = encoder.compute.device.makeBuffer(
             length: self.encoder.encodedLength
         ) else { return nil }
 
         buffer.label = "Raytrace/Args"
 
-        self.encoder.setArgumentBuffer(buffer, offset: 0)
+        encoder.argument.setArgumentBuffer(buffer, offset: 0)
 
-        // target
-        do {
-            encoder.useResource(target, usage: .write)
-            self.encoder.setTexture(target, index: 0)
-        }
-
-        // frame
-        frame.encode(with: self.encoder, at: 1)
-
-        // seeds
-        do {
-            encoder.useResource(seeds, usage: .read)
-            self.encoder.setTexture(seeds, index: 2)
-        }
+        target.encode(with: encoder, at: 0, usage: .write)
+        frame.encode(with: encoder, at: 1)
+        seeds.encode(with: encoder, at: 2, usage: .read)
+        background.encode(with: encoder, at: 3, usage: .read)
 
         return buffer
     }
