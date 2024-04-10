@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../ShaderX/Interpolate.h"
 #include <metal_stdlib>
 
 struct Material {
@@ -18,8 +19,8 @@ public:
         const auto raw = rawAlbedoAt(coordinate).rgb;
 
         return {
-            .diffuse = metal::mix(0, raw, 1 - metalness),
-            .specular = metal::mix(0.04, raw, metalness),
+            .diffuse = ShaderX::Interpolate::linear(float3(0), raw, 1.0 - metalness),
+            .specular = ShaderX::Interpolate::linear(float3(0.04), raw, metalness),
         };
     }
 

@@ -7,7 +7,6 @@
 #include "Shader+Env.h"
 #include "Shader+Frame.h"
 #include "Shader+Intersection.h"
-#include "Shader+Math.h"
 #include "Shader+Mesh.h"
 #include "Shader+PBR.h"
 #include "Shader+Primitive.h"

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "../ShaderX/Geometry/Geometry+Normalized.h"
-#include "Shader+Math.h"
+#include "../ShaderX/Interpolate.h"
 #include <metal_stdlib>
 
 struct Primitive {
@@ -27,7 +27,7 @@ public:
 
         {
             primitive.normal = ShaderX::Geometry::normalize(
-                mix(
+                ShaderX::Interpolate::linear(
                     float3(triangle.normals[0]),
                     float3(triangle.normals[1]),
                     float3(triangle.normals[2]),
@@ -37,7 +37,7 @@ public:
         }
 
         {
-            primitive.textureCoordinate = mix(
+            primitive.textureCoordinate = ShaderX::Interpolate::linear(
                 triangle.textureCoordinates[0],
                 triangle.textureCoordinates[1],
                 triangle.textureCoordinates[2],
