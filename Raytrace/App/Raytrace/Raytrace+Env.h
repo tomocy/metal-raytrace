@@ -25,8 +25,8 @@ public:
     }
 
 public:
-    metal::texturecube<float, metal::access::sample> diffuse [[texture(2)]];
-    metal::texturecube<float, metal::access::sample> specular [[texture(3)]];
-    metal::texture2d<float, metal::access::sample> lut [[texture(4)]];
+    metal::texturecube<float, metal::access::sample> diffuse /* [[texture(2)]] */;
+    metal::texturecube<float, metal::access::sample> specular /* [[texture(3)]] */;
+    metal::texture2d<float, metal::access::sample> lut /* [[texture(4)]] */;
 };
 }

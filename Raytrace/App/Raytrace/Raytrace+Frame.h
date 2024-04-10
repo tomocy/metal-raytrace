@@ -5,6 +5,6 @@
 namespace Raytrace {
 struct Frame {
 public:
-    uint32_t id;
+    uint32_t id [[id(0)]];
 };
 }

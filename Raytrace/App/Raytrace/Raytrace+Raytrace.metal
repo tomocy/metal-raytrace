@@ -158,15 +158,15 @@ namespace Raytrace {
 struct Args {
 public:
     metal::texture2d<float, metal::access::write> target;
-    Frame frame;
+    constant Frame& frame;
     metal::texture2d<uint32_t> seeds;
-    Background background;
+    constant Background& background;
+    constant Env& env;
 };
 
 kernel void compute(
     const uint2 id [[thread_position_in_grid]],
     constant Args& args [[buffer(0)]],
-    const Env env,
     const metal::raytracing::instance_acceleration_structure accelerator [[buffer(2)]],
     constant Primitive::Instance* const instances [[buffer(3)]],
     constant Mesh* const meshes [[buffer(4)]]
@@ -209,7 +209,7 @@ kernel void compute(
         .frame = args.frame,
         .seed = seed,
         .background = args.background,
-        .env = env,
+        .env = args.env,
         .intersector = Intersector(accelerator),
         .instances = instances,
         .meshes = meshes,

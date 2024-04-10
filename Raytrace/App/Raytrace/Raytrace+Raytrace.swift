@@ -138,26 +138,11 @@ extension Raytrace.Raytrace {
                 frame: frame,
                 seeds: seeds,
                 background: background,
+                env: env,
                 with: encoder
             )!
 
             encoder.setBuffer(buffer, offset: 0, index: 0)
-        }
-
-        do {
-            let buffer = Raytrace.Metal.bufferBuildable(frame).build(
-                with: encoder.device,
-                label: "Frame",
-                options: .storageModeShared
-            )!
-
-            encoder.setBuffer(buffer, offset: 0, index: 1)
-        }
-
-        do {
-            encoder.setTexture(env.diffuse, index: 2)
-            encoder.setTexture(env.specular, index: 3)
-            encoder.setTexture(env.lut, index: 4)
         }
 
         encoder.setAccelerationStructure(accelerator, bufferIndex: 2)
@@ -310,6 +295,7 @@ extension Raytrace.Raytrace.Args {
         frame: Raytrace.Frame,
         seeds: some MTLTexture,
         background: Raytrace.Background,
+        env: Raytrace.Env,
         with encoder: some MTLComputeCommandEncoder
     ) -> (any MTLBuffer)? {
         let encoder = MTLComputeArgumentEncoder.init(
@@ -326,9 +312,10 @@ extension Raytrace.Raytrace.Args {
         encoder.argument.setArgumentBuffer(buffer, offset: 0)
 
         target.encode(with: encoder, at: 0, usage: .write)
-        frame.encode(with: encoder, at: 1)
+        frame.encode(with: encoder, at: 1, label: "\(buffer.label!)/Frame", usage: .read)
         seeds.encode(with: encoder, at: 2, usage: .read)
-        background.encode(with: encoder, at: 3, usage: .read)
+        background.encode(with: encoder, at: 3, label: "\(buffer.label!)/Background", usage: .read)
+        env.encode(with: encoder, at: 4, label: "\(buffer.label!)/Env", usage: .read)
 
         return buffer
     }
