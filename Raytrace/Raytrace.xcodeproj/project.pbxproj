@@ -133,7 +133,7 @@
 		F5B35B512BB54FEA00651A54 /* Shader+Debug.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = "Shader+Debug.metal"; sourceTree = "<group>"; };
 		F5B35B562BB5560200651A54 /* Farm */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Farm; sourceTree = "<group>"; };
 		F5B35B5C2BB5660700651A54 /* Shader+Transform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Transform.swift"; sourceTree = "<group>"; };
-		F5CF69602BBE803B00CEF5B0 /* Shader+Intersection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Intersection.h"; sourceTree = "<group>"; };
+		F5CF69602BBE803B00CEF5B0 /* Shader+Intersect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Shader+Intersect.h"; sourceTree = "<group>"; };
 		F5CF69622BBE9E8000CEF5B0 /* Shader+IO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+IO.swift"; sourceTree = "<group>"; };
 		F5CF69642BBE9EB100CEF5B0 /* Shader+Memory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Memory.swift"; sourceTree = "<group>"; };
 		F5CF69662BBE9FD000CEF5B0 /* Shader+Metal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shader+Metal.swift"; sourceTree = "<group>"; };
@@ -285,7 +285,7 @@
 				F5976B352BC46D3200ABEF37 /* Shader+Env.swift */,
 				F595494F2BBBFCC7001BC8E1 /* Shader+Frame.h */,
 				F552BDE02BBBFD3A00734E33 /* Shader+Frame.swift */,
-				F5CF69602BBE803B00CEF5B0 /* Shader+Intersection.h */,
+				F5CF69602BBE803B00CEF5B0 /* Shader+Intersect.h */,
 				F5CF69622BBE9E8000CEF5B0 /* Shader+IO.swift */,
 				F57A1B432BB938F800F20794 /* Shader+Material.swift */,
 				F53A73932BB30967003C899A /* Shader+Math.swift */,

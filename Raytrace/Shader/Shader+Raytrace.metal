@@ -8,10 +8,9 @@
 #include "Shader+Background.h"
 #include "Shader+Env.h"
 #include "Shader+Frame.h"
-#include "Shader+Intersection.h"
+#include "Shader+Intersect.h"
 #include "Shader+Mesh.h"
 #include "Shader+Primitive.h"
-#include "Shader+Random.h"
 #include "Shader+Surface.h"
 #include <metal_stdlib>
 
