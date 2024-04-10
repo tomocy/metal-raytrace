@@ -1,8 +1,8 @@
 // tomocy
 
-#include "../ShaderX/ShaderX.h"
 #include "../ShaderX/Geometry/Geometry.h"
 #include "../ShaderX/Geometry/Geometry+Normalized.h"
+#include "../ShaderX/Sample.h"
 #include "Shader+Background.h"
 #include "Shader+Env.h"
 #include "Shader+Frame.h"
@@ -11,7 +11,6 @@
 #include "Shader+PBR.h"
 #include "Shader+Primitive.h"
 #include "Shader+Random.h"
-#include "Shader+Sample.h"
 #include "Shader+Surface.h"
 #include <metal_stdlib>
 
@@ -121,7 +120,7 @@ private:
                 );
 
                 result.incidentRay.direction = ShaderX::Geometry::alignFromTangent(
-                    Sample::CosineWeightedHemisphere::sample(random),
+                    ShaderX::Sample::CosineWeighted::sample(random, surface.normal()),
                     surface.normal()
                 );
             } else {

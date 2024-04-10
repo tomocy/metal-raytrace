@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "../ShaderX/Geometry/Geometry.h"
+#include "Geometry/Geometry.h"
 
+namespace ShaderX {
 namespace Sample {
 struct CosineWeighted {
 public:
-    static float3 sample(const thread float2& v, const thread float3& normal)
+    static float3 sample(const thread float2& v, const thread Geometry::Normalized<float3>& normal)
     {
         const auto r = metal::sqrt(v.x);
         const auto phi = 2.0 * M_PI_F * v.y;
@@ -24,7 +25,7 @@ public:
 namespace Sample {
 struct GGX {
 public:
-    static float3 sample(const thread float2& v, const float roughness, const thread float3& normal)
+    static float3 sample(const thread float2& v, const float roughness, const thread Geometry::Normalized<float3>& normal)
     {
         const auto alpha = roughness * roughness;
         const auto alpha2 = metal::pow(alpha, 2);
@@ -44,4 +45,6 @@ public:
         return ShaderX::Geometry::alignFromTangent(float3(x, y, z), normal);
     }
 };
+}
+
 }

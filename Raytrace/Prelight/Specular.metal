@@ -1,9 +1,9 @@
 // tomocy
 
 #include "../ShaderX/Coordinate.h"
+#include "../ShaderX/Sample.h"
 #include "Distribution.h"
 #include "Prelight.h"
-#include "Sample.h"
 #include <metal_stdlib>
 
 namespace Prelight {
@@ -20,7 +20,7 @@ public:
 
         for (uint i = 0; i < sampleCount; i++) {
             const auto v = Distribution::Hammersley::distribute(sampleCount, i);
-            const auto subject = Sample::GGX::sample(v, roughness, normal);
+            const auto subject = ShaderX::Sample::GGX::sample(v, roughness, normal);
             const auto light = 2 * metal::dot(reflect, subject) * subject - reflect;
 
             const auto dotNL = metal::saturate(metal::dot(normal, light));

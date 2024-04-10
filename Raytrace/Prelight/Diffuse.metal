@@ -1,22 +1,23 @@
 // tomocy
 
 #include "../ShaderX/Coordinate.h"
+#include "../ShaderX/Geometry/Geometry+Normalized.h"
+#include "../ShaderX/Sample.h"
 #include "Distribution.h"
 #include "Prelight.h"
-#include "Sample.h"
 #include <metal_stdlib>
 
 namespace Prelight {
 namespace Diffuse {
 struct Integral {
 public:
-    float3 integrate(const thread float3& normal) const
+    float3 integrate(const thread ShaderX::Geometry::Normalized<float3>& normal) const
     {
         float3 color = 0;
 
         for (uint i = 0; i < sampleCount; i++) {
             const auto v = Distribution::Hammersley::distribute(sampleCount, i);
-            const auto direction = Sample::CosineWeighted::sample(v, normal);
+            const auto direction = ShaderX::Sample::CosineWeighted::sample(v, normal);
 
             color += colorFor(direction).rgb;
         }
@@ -25,13 +26,13 @@ public:
     }
 
 public:
-    float4 colorFor(const thread float3& direction) const
+    float4 colorFor(const thread ShaderX::Geometry::Normalized<float3>& direction) const
     {
         constexpr auto sampler = metal::sampler(
             metal::filter::nearest
         );
 
-        return source.raw().sample(sampler, direction) * M_PI_F;
+        return source.raw().sample(sampler, direction.value()) * M_PI_F;
     }
 
 public:
