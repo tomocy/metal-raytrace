@@ -2,9 +2,11 @@
 
 #pragma once
 
-#include "../ShaderX/Interpolate.h"
+#include "../Interpolate.h"
 #include <metal_stdlib>
 
+namespace ShaderX {
+namespace PBR {
 struct Material {
 public:
     struct Albedo {
@@ -19,8 +21,8 @@ public:
         const auto raw = rawAlbedoAt(coordinate).rgb;
 
         return {
-            .diffuse = ShaderX::Interpolate::linear(float3(0), raw, 1.0 - metalness),
-            .specular = ShaderX::Interpolate::linear(float3(0.04), raw, metalness),
+            .diffuse = Interpolate::linear(float3(0), raw, 1.0 - metalness),
+            .specular = Interpolate::linear(float3(0.04), raw, metalness),
         };
     }
 
@@ -65,3 +67,6 @@ public:
     // R for metalness, G for roughness.
     metal::texture2d<float> metalRoughness;
 };
+
+}
+}

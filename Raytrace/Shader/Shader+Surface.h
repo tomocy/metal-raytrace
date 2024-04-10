@@ -3,6 +3,8 @@
 #pragma once
 
 #include "../ShaderX/Geometry/Geometry+Normalized.h"
+#include "../ShaderX/PBR/PBR+CookTorrance.h"
+#include "../ShaderX/PBR/PBR+Lambertian.h"
 #include "Shader+Mesh.h"
 #include "Shader+Primitive.h"
 #include <metal_stdlib>
@@ -31,11 +33,11 @@ public:
         );
 
         const auto albedo = this->albedo();
-        const auto fresnel = PBR::CookTorrance::F::compute(albedo.specular, view, halfway);
+        const auto fresnel = ShaderX::PBR::CookTorrance::F::compute(albedo.specular, view, halfway);
 
         // Diffuse
         {
-            const auto diffuse = PBR::Lambertian::compute(albedo.diffuse);
+            const auto diffuse = ShaderX::PBR::Lambertian::compute(albedo.diffuse);
             color += (1 - fresnel) * diffuse * dotNL;
         }
 
@@ -43,10 +45,14 @@ public:
         {
             const auto roughness = this->roughness();
 
-            const auto distribution = PBR::CookTorrance::D::compute(roughness, normal, halfway);
-            const auto occulusion = PBR::CookTorrance::G::compute(roughness, normal, light, view);
+            const auto distribution = ShaderX::PBR::CookTorrance::D::compute(roughness, normal, halfway);
+            const auto occulusion = ShaderX::PBR::CookTorrance::G::compute(
+                roughness,
+                normal, light, view,
+                ShaderX::PBR::CookTorrance::G::Usage::analytic
+            );
 
-            const auto specular = PBR::CookTorrance::compute(
+            const auto specular = ShaderX::PBR::CookTorrance::compute(
                 distribution, occulusion, fresnel,
                 normal, light, view
             );
@@ -68,9 +74,9 @@ public:
     const thread float2& textureCoordinate() const { return primitive().textureCoordinate; }
 
 public:
-    const thread Material& material() const { return piece().material; }
+    const thread ShaderX::PBR::Material& material() const { return piece().material; }
 
-    Material::Albedo albedo() const { return material().albedoAt(textureCoordinate()); }
+    ShaderX::PBR::Material::Albedo albedo() const { return material().albedoAt(textureCoordinate()); }
 
     bool isMetallic() const { return material().isMetalicAt(textureCoordinate()); }
 

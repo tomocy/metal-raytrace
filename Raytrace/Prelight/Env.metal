@@ -3,7 +3,7 @@
 #include "../ShaderX/Coordinate.h"
 #include "../ShaderX/Sample.h"
 #include "../ShaderX/Distribution.h"
-#include "PBR.h"
+#include "../ShaderX/PBR/PBR+CookTorrance.h"
 #include <metal_stdlib>
 
 namespace Prelight {
@@ -35,7 +35,11 @@ public:
             const auto dotNS = metal::saturate(subject.z);
             const auto dotVS = metal::saturate(metal::dot(view, subject));
 
-            const auto occulusion = PBR::CookTorrance::G::compute(roughness, normal, light, view);
+            const auto occulusion = ShaderX::PBR::CookTorrance::G::compute(
+                roughness,
+                normal, light, view,
+                ShaderX::PBR::CookTorrance::G::Usage::holomorphic
+            );
             const auto visibility = occulusion * dotVS / (dotNS * dotNV);
             const auto fresnel = metal::pow(1 - dotVS, 5);
 

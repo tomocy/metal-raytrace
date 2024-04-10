@@ -2,14 +2,14 @@
 
 #pragma once
 
-#include "Shader+Material.h"
+#include "../ShaderX/PBR/PBR+Material.h"
 #include <metal_stdlib>
 
 struct Mesh {
 public:
     struct Piece {
     public:
-        Material material;
+        ShaderX::PBR::Material material;
     };
 
 public:

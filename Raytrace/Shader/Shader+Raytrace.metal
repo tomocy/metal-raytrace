@@ -8,7 +8,6 @@
 #include "Shader+Frame.h"
 #include "Shader+Intersection.h"
 #include "Shader+Mesh.h"
-#include "Shader+PBR.h"
 #include "Shader+Primitive.h"
 #include "Shader+Random.h"
 #include "Shader+Surface.h"
