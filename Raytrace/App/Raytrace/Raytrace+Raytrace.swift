@@ -8,7 +8,6 @@ extension Raytrace {
     struct Raytrace {
         var pipelineStates: PipelineStates
         var args: Args
-        var argumentEncoders: ArgumentEncoders
 
         var target: Target
         var seeds: any MTLTexture
@@ -29,9 +28,6 @@ extension Raytrace.Raytrace {
 
         args = .init(
             encoder: Args.make(for: fn)
-        )
-        argumentEncoders = .init(
-            meshes: ArgumentEncoders.makeMeshes(for: fn)
         )
 
         target = Self.make(with: device, resolution: resolution)!
@@ -133,41 +129,21 @@ extension Raytrace.Raytrace {
         encoder.setComputePipelineState(pipelineStates.compute)
 
         do {
-            let buffer = args.build(
+            let buffer = args.encode(
                 target: target.texture,
                 frame: frame,
                 seeds: seeds,
                 background: background,
                 env: env,
+                acceleration: .init(
+                    structure: accelerator,
+                    meshes: meshes,
+                    instances: instances
+                ),
                 with: encoder
             )!
 
             encoder.setBuffer(buffer, offset: 0, index: 0)
-        }
-
-        encoder.setAccelerationStructure(accelerator, bufferIndex: 2)
-
-        do {
-            let buffer = Raytrace.Metal.bufferBuildable(instances).build(
-                with: encoder.device,
-                label: "Instances?Count=\(instances.count)",
-                options: .storageModeShared
-            )!
-
-            encoder.setBuffer(buffer, offset: 0, index: 3)
-        }
-
-        do {
-            let buffer = build(
-                with: .init(
-                    compute: encoder,
-                    argument: argumentEncoders.meshes
-                ),
-                for: meshes,
-                label: "Meshes?Count=\(meshes.count)"
-            )!
-
-            encoder.setBuffer(buffer, offset: 0, index: 4)
         }
 
         do {
@@ -183,76 +159,6 @@ extension Raytrace.Raytrace {
                 threadsPerThreadgroup: threadsSizePerGroup
             )
         }
-    }
-
-    private func build(with encoder: BuildArgumentEncoder, for meshes: [Raytrace.Mesh], label: String) -> (any MTLBuffer)? {
-        guard let buffer = encoder.compute.device.makeBuffer(
-            length: encoder.argument.encodedLength * meshes.count
-        ) else { return nil }
-
-        buffer.label = label
-
-        encoder.compute.useResource(buffer, usage: .read)
-
-        meshes.enumerated().forEach { i, mesh in
-            encoder.argument.setArgumentBuffer(
-                buffer,
-                offset: encoder.argument.encodedLength * i
-            )
-
-            do {
-                let buffer = build(
-                    with: .init(
-                        compute: encoder.compute,
-                        argument: encoder.argument.makeArgumentEncoderForBuffer(atIndex: 0)!
-                    ),
-                    for: mesh.pieces,
-                    of: i,
-                    label: "Pieces?Mesh=\(i)&Count=\(mesh.pieces.count)"
-                )
-
-                encoder.argument.setBuffer(buffer, offset: 0, index: 0)
-            }
-        }
-
-        return buffer
-    }
-
-    private func build(
-        with encoder: BuildArgumentEncoder,
-        for pieces: [Raytrace.Mesh.Piece], of meshID: Int,
-        label: String
-    ) -> (any MTLBuffer)? {
-        guard let buffer = encoder.compute.device.makeBuffer(
-            length: encoder.argument.encodedLength * pieces.count
-        ) else { return nil }
-
-        buffer.label = label
-
-        encoder.compute.useResource(buffer, usage: .read)
-
-        pieces.enumerated().forEach { i, piece in
-            encoder.argument.setArgumentBuffer(
-                buffer,
-                offset: encoder.argument.encodedLength * i
-            )
-
-            if let texture = piece.material?.albedo {
-                texture.label = "Albedo?Mesh=\(meshID)&Piece=\(i)"
-
-                encoder.compute.useResource(texture, usage: .read)
-                encoder.argument.setTexture(texture, index: 0)
-            }
-
-            if let texture = piece.material?.metalRoughness {
-                texture.label = "MetalRoughness?Mesh=\(meshID)&Piece=\(i)"
-
-                encoder.compute.useResource(texture, usage: .read)
-                encoder.argument.setTexture(texture, index: 1)
-            }
-        }
-
-        return buffer
     }
 }
 
@@ -290,12 +196,13 @@ extension Raytrace.Raytrace.Args {
 }
 
 extension Raytrace.Raytrace.Args {
-    func build(
+    func encode(
         target: some MTLTexture,
         frame: Raytrace.Frame,
         seeds: some MTLTexture,
         background: Raytrace.Background,
         env: Raytrace.Env,
+        acceleration: Raytrace.Acceleration,
         with encoder: some MTLComputeCommandEncoder
     ) -> (any MTLBuffer)? {
         let encoder = MTLComputeArgumentEncoder.init(
@@ -316,26 +223,8 @@ extension Raytrace.Raytrace.Args {
         seeds.encode(with: encoder, at: 2, usage: .read)
         background.encode(with: encoder, at: 3, label: "\(buffer.label!)/Background", usage: .read)
         env.encode(with: encoder, at: 4, label: "\(buffer.label!)/Env", usage: .read)
+        acceleration.encode(with: encoder, at: 5, label: "\(buffer.label!)/Acceleration", usage: .read)
 
         return buffer
-    }
-}
-
-extension Raytrace.Raytrace {
-    struct ArgumentEncoders {
-        var meshes: any MTLArgumentEncoder
-    }
-}
-
-extension Raytrace.Raytrace.ArgumentEncoders {
-    static func makeMeshes(for function: some MTLFunction) -> MTLArgumentEncoder {
-        return function.makeArgumentEncoder(bufferIndex: 4)
-    }
-}
-
-extension Raytrace.Raytrace {
-    struct BuildArgumentEncoder {
-        var compute: any MTLComputeCommandEncoder
-        var argument: any MTLArgumentEncoder
     }
 }

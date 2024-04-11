@@ -68,13 +68,6 @@ extension Array: Raytrace.Metal.BufferBuildable {
     }
 }
 
-extension MTLTexture {
-    func encode(with encoder: MTLComputeArgumentEncoder, at index: Int, usage: MTLResourceUsage) {
-        encoder.compute.useResource(self, usage: usage)
-        encoder.argument.setTexture(self, index: index)
-    }
-}
-
 extension MTLCommandBuffer {
     func commit(_ code: () -> Void) {
         code()
@@ -107,5 +100,26 @@ extension MTLComputeArgumentEncoder {
         buffer.label = label
 
         return buffer
+    }
+}
+
+extension MTLBuffer {
+    func encode(with encoder: MTLComputeArgumentEncoder, at index: Int, by offset: Int = 0, usage: MTLResourceUsage) {
+        encoder.compute.useResource(self, usage: usage)
+        encoder.argument.setBuffer(self, offset: offset, index: index)
+    }
+}
+
+extension MTLTexture {
+    func encode(with encoder: MTLComputeArgumentEncoder, at index: Int, usage: MTLResourceUsage) {
+        encoder.compute.useResource(self, usage: usage)
+        encoder.argument.setTexture(self, index: index)
+    }
+}
+
+extension MTLAccelerationStructure {
+    func encode(with encoder: MTLComputeArgumentEncoder, at index: Int, usage: MTLResourceUsage) {
+        encoder.compute.useResource(self, usage: usage)
+        encoder.argument.setAccelerationStructure(self, index: index)
     }
 }

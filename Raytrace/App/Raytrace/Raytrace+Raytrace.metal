@@ -5,6 +5,7 @@
 #include "../../Shader/Geometry/Geometry.h"
 #include "../../Shader/Sample.h"
 #include "../../Shader/Sequence/Sequence+Halton.h"
+#include "Raytrace+Acceleration.h"
 #include "Raytrace+Background.h"
 #include "Raytrace+Env.h"
 #include "Raytrace+Frame.h"
@@ -162,14 +163,12 @@ public:
     metal::texture2d<uint32_t> seeds;
     constant Background& background;
     constant Env& env;
+    constant Acceleration& acceleration;
 };
 
 kernel void compute(
     const uint2 id [[thread_position_in_grid]],
-    constant Args& args [[buffer(0)]],
-    const metal::raytracing::instance_acceleration_structure accelerator [[buffer(2)]],
-    constant Primitive::Instance* const instances [[buffer(3)]],
-    constant Mesh* const meshes [[buffer(4)]]
+    constant Args& args [[buffer(0)]]
 )
 {
     namespace raytracing = metal::raytracing;
@@ -210,9 +209,9 @@ kernel void compute(
         .seed = seed,
         .background = args.background,
         .env = args.env,
-        .intersector = Intersector(accelerator),
-        .instances = instances,
-        .meshes = meshes,
+        .intersector = Intersector(args.acceleration.structure),
+        .instances = args.acceleration.instances,
+        .meshes = args.acceleration.meshes,
         .directionalLight = {
             .direction = Shader::Geometry::normalize(float3(-1, -1, 1)),
             .color = float3(1) * M_PI_F,
