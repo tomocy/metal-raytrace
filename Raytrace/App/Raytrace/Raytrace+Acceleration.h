@@ -11,6 +11,6 @@ struct Acceleration {
 public:
     metal::raytracing::instance_acceleration_structure structure;
     constant Mesh* meshes;
-    constant Primitive::Instance* instances;
+    constant Primitive::Instance* primitives;
 };
 }

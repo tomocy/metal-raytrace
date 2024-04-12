@@ -6,7 +6,7 @@ extension Raytrace {
     struct Acceleration {
         var structure: any MTLAccelerationStructure
         var meshes: [Mesh]
-        var instances: [Primitive.Instance]
+        var primitives: [Primitive.Instance]
     }
 }
 
@@ -47,9 +47,9 @@ extension Raytrace.Acceleration {
         }
 
         do {
-            let buffer = Raytrace.Metal.bufferBuildable(instances).build(
+            let buffer = Raytrace.Metal.bufferBuildable(primitives).build(
                 with: encoder.compute.device,
-                label: "Instances?Count=\(instances.count)",
+                label: "Primitives?Count=\(primitives.count)",
                 options: .storageModeShared
             )!
 

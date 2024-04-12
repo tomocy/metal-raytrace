@@ -191,7 +191,7 @@ extension Engine.View: MTKViewDelegate {
                     to: command,
                     frame: renderFrame!,
                     accelerator: shader.accelerator.instanced.target!,
-                    instances: shader.accelerator.instanced.instances!
+                    primitives: shader.accelerator.instanced.primitives!
                 )
 
                 shader.echo.encode(

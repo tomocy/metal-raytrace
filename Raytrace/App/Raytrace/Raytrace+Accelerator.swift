@@ -89,7 +89,7 @@ extension Raytrace.Accelerator.Primitive {
 extension Raytrace.Accelerator {
     struct Instanced {
         var target: (any MTLAccelerationStructure)?
-        var instances: [Raytrace.Primitive.Instance]?
+        var primitives: [Raytrace.Primitive.Instance]?
     }
 }
 
@@ -114,11 +114,11 @@ extension Raytrace.Accelerator.Instanced {
         target = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
 
         do {
-            instances = []
+            primitives = []
 
             meshes.enumerated().forEach { i, mesh in
                 mesh.instances.forEach { instance in
-                    instances!.append(
+                    primitives!.append(
                         .init(meshID: .init(i))
                     )
                 }

@@ -121,7 +121,7 @@ extension Raytrace.Raytrace {
         to buffer: some MTLCommandBuffer,
         frame: Raytrace.Frame,
         accelerator: some MTLAccelerationStructure,
-        instances: [Raytrace.Primitive.Instance]
+        primitives: [Raytrace.Primitive.Instance]
     ) {
         let encoder = buffer.makeComputeCommandEncoder()!
         defer { encoder.endEncoding() }
@@ -138,7 +138,7 @@ extension Raytrace.Raytrace {
                 acceleration: .init(
                     structure: accelerator,
                     meshes: meshes,
-                    instances: instances
+                    primitives: primitives
                 ),
                 with: encoder
             )!
