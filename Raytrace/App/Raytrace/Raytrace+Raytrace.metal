@@ -84,7 +84,7 @@ private:
 
         const auto surface = Surface(
             intersection.toPrimitive(),
-            *intersection.pieceIn(instances, meshes)
+            *intersection.pieceIn(intersector.acceleration)
         );
 
         TraceResult result = {};
@@ -119,9 +119,8 @@ private:
                     Shader::Sequence::Halton::at(bounceCount * 5 + 5, seed + frame.id),
                     Shader::Sequence::Halton::at(bounceCount * 5 + 6, seed + frame.id)
                 );
-                const auto subject = Shader::Sample::CosineWeighted::sample(v, surface.normal());
 
-                result.incidentRay.direction = subject;
+                result.incidentRay.direction = Shader::Sample::CosineWeighted::sample(v, surface.normal());
             } else {
                 result.incidentRay.direction = metal::reflect(ray.direction, surface.normal().value());
             }
@@ -140,9 +139,6 @@ public:
     Env env;
 
     Intersector intersector;
-
-    constant Primitive::Instance* instances;
-    constant Mesh* meshes;
 
     struct {
         Shader::Geometry::Normalized<float3> direction;
@@ -174,13 +170,7 @@ kernel void compute(
     namespace raytracing = metal::raytracing;
 
     // We know size of the target texture for now.
-    const struct {
-        float width;
-        float height;
-    } size = {
-        .width = 1600,
-        .height = 1200,
-    };
+    const auto size = uint2(1600, 1200);
 
     // We know the camera for now.
     const struct {
@@ -199,9 +189,9 @@ kernel void compute(
 
     // Map Screen (0...width, 0...height) to UV (0...1, 0...1),
     // then UV to NDC (-1...1, 1...-1).
-    const auto inScreen = id;
-    const auto inUV = float2(inScreen) / float2(size.width, size.height);
-    const auto inNDC = float2(inUV.x * 2 - 1, inUV.y * -2 + 1);
+    const auto inScreen = Shader::Coordinate::InScreen(id);
+    const auto inUV = Shader::Coordinate::InUV::from(inScreen, size);
+    const auto inNDC = Shader::Coordinate::InNDC::from(inUV, 1);
 
     const auto tracer = Tracer {
         .maxTraceCount = 3,
@@ -209,9 +199,7 @@ kernel void compute(
         .seed = seed,
         .background = args.background,
         .env = args.env,
-        .intersector = Intersector(args.acceleration.structure),
-        .instances = args.acceleration.instances,
-        .meshes = args.acceleration.meshes,
+        .intersector = Intersector(args.acceleration),
         .directionalLight = {
             .direction = Shader::Geometry::normalize(float3(-1, -1, 1)),
             .color = float3(1) * M_PI_F,
@@ -224,13 +212,13 @@ kernel void compute(
     const auto ray = raytracing::ray(
         camera.position,
         Shader::Geometry::normalize(
-            Shader::Geometry::alignAs(float3(inNDC, 1), camera.forward, camera.right, camera.up)
+            Shader::Geometry::alignAs(inNDC.value(), camera.forward, camera.right, camera.up)
         )
             .value()
     );
 
     const auto color = tracer.trace(ray);
 
-    args.target.write(float4(color, 1), inScreen);
+    args.target.write(float4(color, 1), inScreen.value());
 }
 }

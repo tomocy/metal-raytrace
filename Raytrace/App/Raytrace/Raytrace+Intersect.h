@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Raytrace+Acceleration.h"
 #include "Raytrace+Mesh.h"
 #include "Raytrace+Primitive.h"
 #include <metal_stdlib>
@@ -42,10 +43,10 @@ public:
     }
 
 public:
-    constant Mesh::Piece* pieceIn(constant Primitive::Instance* const instances, constant Mesh* const meshes) const
+    constant Mesh::Piece* pieceIn(const thread Acceleration& acceleration) const
     {
-        const auto instance = instances[raw_.instance_id];
-        const auto mesh = meshes[instance.meshID];
+        const auto instance = acceleration.instances[raw_.instance_id];
+        const auto mesh = acceleration.meshes[instance.meshID];
 
         return &mesh.pieces[raw_.geometry_id];
     }
@@ -67,20 +68,20 @@ public:
     using Accelerator = metal::raytracing::instance_acceleration_structure;
 
 public:
-    Intersector(const Accelerator accelerator)
-        : accelerator(accelerator)
+    Intersector(const Acceleration acceleration)
+        : acceleration(acceleration)
     {
     }
 
 public:
     Intersection intersectAlong(const thread metal::raytracing::ray& ray, const uint32_t mask = 0) const
     {
-        const auto intersection = raw_.intersect(ray, accelerator, mask);
+        const auto intersection = raw_.intersect(ray, acceleration.structure, mask);
         return { ray, intersection };
     }
 
 public:
-    metal::raytracing::instance_acceleration_structure accelerator;
+    Acceleration acceleration;
 
 private:
     Raw raw_;
