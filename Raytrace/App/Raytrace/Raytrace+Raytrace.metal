@@ -165,6 +165,7 @@ public:
 struct ArgsX {
 public:
     metal::texture2d<float, metal::access::write> target;
+    constant Frame& frame;
 };
 
 
@@ -202,7 +203,8 @@ kernel void compute(
 
     const auto tracer = Tracer {
         .maxTraceCount = 3,
-        .frame = args.frame,
+        // .frame = args.frame,
+        .frame = argsx.frame,
         .seed = seed,
         .background = args.background,
         .env = args.env,

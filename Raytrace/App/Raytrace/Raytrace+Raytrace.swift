@@ -147,11 +147,21 @@ extension Raytrace.Raytrace {
         }
 
         do {
-            args.encodeX(
+            let forGPU = Args.ForGPU.init(
+                encoder: encoder,
                 target: target.texture,
-                with: encoder,
-                at: 1
+                frame: frame
             )
+
+            let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
+                with: encoder.device,
+                label: "Raytrace.ArgsX",
+                options: .storageModeShared
+            )!
+
+            Raytrace.IO.writable(forGPU).write(to: buffer)
+
+            encoder.setBuffer(buffer, offset: 0, index: 1)
         }
 
         do {
@@ -227,7 +237,7 @@ extension Raytrace.Raytrace.Args {
         encoder.argument.setArgumentBuffer(buffer, offset: 0)
 
         // target.encode(with: encoder, at: 0, usage: .write)
-        frame.encode(with: encoder, at: 1, label: "\(buffer.label!)/Frame", usage: .read)
+        // frame.encode(with: encoder, at: 1, label: "\(buffer.label!)/Frame", usage: .read)
         seeds.encode(with: encoder, at: 2, usage: .read)
         background.encode(with: encoder, at: 3, label: "\(buffer.label!)/Background", usage: .read)
         env.encode(with: encoder, at: 4, label: "\(buffer.label!)/Env", usage: .read)
@@ -235,28 +245,34 @@ extension Raytrace.Raytrace.Args {
 
         return buffer
     }
+}
 
+extension Raytrace.Raytrace.Args {
     fileprivate struct ForGPU {
         var target: MTLResourceID
+        var frame: UInt64
     }
+}
 
-    func encodeX(
+extension Raytrace.Raytrace.Args.ForGPU {
+    init(
+        encoder: some MTLComputeCommandEncoder,
         target: some MTLTexture,
-        with encoder: some MTLComputeCommandEncoder,
-        at index: Int
+        frame: Raytrace.Frame
     ) {
-        let forGPU = ForGPU.init(
-            target: target.gpuResourceID
-        )
+        self.target = target.gpuResourceID
 
-        let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
-            with: encoder.device,
-            label: "ArgsX",
-            options: .storageModeShared
-        )!
+        do {
+            let buffer = Raytrace.Metal.bufferBuildable(frame).build(
+                with: encoder.device,
+                label: "Raytrace/Args/Frame",
+                options: .storageModeShared
+            )!
 
-        Raytrace.IO.writable(forGPU).write(to: buffer)
+            Raytrace.IO.writable(frame).write(to: buffer)
 
-        encoder.setBuffer(buffer, offset: 0, index: index)
+            self.frame = buffer.gpuAddress
+            encoder.useResource(buffer, usage: .read)
+        }
     }
 }
