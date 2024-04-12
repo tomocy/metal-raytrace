@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "../AddressSpace.h"
 #include "../Interpolate.h"
 #include <metal_stdlib>
 
@@ -17,13 +18,7 @@ public:
 
     Albedo albedoAt(const thread float2& coordinate) const constant
     {
-        const auto metalness = metalnessAt(coordinate);
-        const auto raw = rawAlbedoAt(coordinate).rgb;
-
-        return {
-            .diffuse = Interpolate::linear(float3(0), raw, 1.0 - metalness),
-            .specular = Interpolate::linear(float3(0.04), raw, metalness),
-        };
+        return AddressSpace::Thread::from(*this).albedoAt(coordinate);
     }
 
     Albedo albedoAt(const thread float2& coordinate) const thread
@@ -39,11 +34,7 @@ public:
 
     float4 rawAlbedoAt(const thread float2& coordinate) const constant
     {
-        constexpr auto sampler = metal::sampler(
-            metal::filter::linear
-        );
-
-        return albedo.sample(sampler, coordinate);
+        return AddressSpace::Thread::from(*this).rawAlbedoAt(coordinate);
     }
 
     float4 rawAlbedoAt(const thread float2& coordinate) const thread
@@ -61,7 +52,7 @@ public:
 public:
     bool isMetalicAt(const thread float2& coordinate) const constant
     {
-        return metalnessAt(coordinate) == 1;
+        return AddressSpace::Thread::from(*this).isMetalicAt(coordinate);
     }
 
     bool isMetalicAt(const thread float2& coordinate) const thread
@@ -71,11 +62,7 @@ public:
 
     float metalnessAt(const thread float2& coordinate) const constant
     {
-        constexpr auto sampler = metal::sampler(
-            metal::filter::linear
-        );
-
-        return metalRoughness.sample(sampler, coordinate).r;
+        return AddressSpace::Thread::from(*this).metalnessAt(coordinate);
     }
 
     float metalnessAt(const thread float2& coordinate) const thread
@@ -90,11 +77,7 @@ public:
 public:
     float roughnessAt(const thread float2& coordinate) const constant
     {
-        constexpr auto sampler = metal::sampler(
-            metal::filter::linear
-        );
-
-        return metal::max(metalRoughness.sample(sampler, coordinate).g, 0.04);
+        return AddressSpace::Thread::from(*this).roughnessAt(coordinate);
     }
 
     float roughnessAt(const thread float2& coordinate) const thread

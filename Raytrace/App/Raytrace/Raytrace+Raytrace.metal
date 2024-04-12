@@ -1,5 +1,6 @@
 // tomocy
 
+#include "../../Shader/AddressSpace.h"
 #include "../../Shader/Distribution.h"
 #include "../../Shader/Geometry/Geometry+Normalized.h"
 #include "../../Shader/Geometry/Geometry.h"
