@@ -162,21 +162,9 @@ public:
     constant Acceleration& acceleration;
 };
 
-struct ArgsX {
-public:
-    metal::texture2d<float, metal::access::write> target;
-    constant Frame& frame;
-    metal::texture2d<uint32_t> seeds;
-    constant Background& background;
-    constant Env& env;
-    constant Acceleration& acceleration;
-};
-
-
 kernel void compute(
     const uint2 id [[thread_position_in_grid]],
-    constant Args& args [[buffer(0)]],
-    constant ArgsX& argsx [[buffer(1)]]
+    constant Args& args [[buffer(0)]]
 )
 {
     namespace raytracing = metal::raytracing;
@@ -197,8 +185,7 @@ kernel void compute(
         .position = float3(0, 0.5, -2),
     };
 
-    // const auto seed = args.seeds.read(id).r;
-    const auto seed = argsx.seeds.read(id).r;
+    const auto seed = args.seeds.read(id).r;
 
     // Map Screen (0...width, 0...height) to UV (0...1, 0...1),
     // then UV to NDC (-1...1, 1...-1).
@@ -208,19 +195,11 @@ kernel void compute(
 
     const auto tracer = Tracer {
         .maxTraceCount = 3,
-        // .frame = args.frame,
-        .frame = argsx.frame,
+        .frame = args.frame,
         .seed = seed,
-        // .background = args.background,
-        .background = argsx.background,
-        // .env = args.env,
-        .env = argsx.env,
-        // .intersector = Intersector(args.acceleration),
-        .intersector = Intersector((Acceleration) {
-            .structure = argsx.acceleration.structure,
-            .meshes = args.acceleration.meshes,
-            .primitives = argsx.acceleration.primitives,
-        }),
+        .background = args.background,
+        .env = args.env,
+        .intersector = Intersector(args.acceleration),
         .directionalLight = {
             .direction = Shader::Geometry::normalize(float3(-1, -1, 1)),
             .color = float3(1) * M_PI_F,
@@ -240,7 +219,6 @@ kernel void compute(
 
     const auto color = tracer.trace(ray);
 
-    // args.target.write(float4(color, 1), inScreen.value());
-    argsx.target.write(float4(color, 1), inScreen.value());
+    args.target.write(float4(color, 1), inScreen.value());
 }
 }

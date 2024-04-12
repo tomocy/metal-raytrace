@@ -67,7 +67,7 @@ public:
 public:
     const thread Primitive& primitive() const { return primitive_; }
 
-    const thread Mesh::Piece& piece() const { return piece_; }
+    const thread Mesh::Piece& piece() const thread { return piece_; }
 
 public:
     const thread Shader::Geometry::Normalized<float3>& normal() const { return primitive().normal; }
@@ -75,7 +75,7 @@ public:
     const thread float2& textureCoordinate() const { return primitive().textureCoordinate; }
 
 public:
-    const thread Shader::PBR::Material& material() const { return piece().material; }
+    constant Shader::PBR::Material& material() const thread { return piece().material; }
 
     Shader::PBR::Material::Albedo albedo() const { return material().albedoAt(textureCoordinate()); }
 
