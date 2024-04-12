@@ -166,6 +166,7 @@ struct ArgsX {
 public:
     metal::texture2d<float, metal::access::write> target;
     constant Frame& frame;
+    metal::texture2d<uint32_t> seeds;
 };
 
 
@@ -193,7 +194,8 @@ kernel void compute(
         .position = float3(0, 0.5, -2),
     };
 
-    const auto seed = args.seeds.read(id).r;
+    // const auto seed = args.seeds.read(id).r;
+    const auto seed = argsx.seeds.read(id).r;
 
     // Map Screen (0...width, 0...height) to UV (0...1, 0...1),
     // then UV to NDC (-1...1, 1...-1).
