@@ -134,7 +134,7 @@ extension Raytrace.Raytrace {
                 // frame: frame,
                 // seeds: seeds,
                 // background: background,
-                env: env,
+                // env: env,
                 acceleration: .init(
                     structure: accelerator,
                     meshes: meshes,
@@ -152,7 +152,8 @@ extension Raytrace.Raytrace {
                 target: target.texture,
                 frame: frame,
                 seeds: seeds,
-                background: background
+                background: background,
+                env: env
             )
 
             let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
@@ -221,7 +222,7 @@ extension Raytrace.Raytrace.Args {
         // frame: Raytrace.Frame,
         // seeds: some MTLTexture,
         // background: Raytrace.Background,
-        env: Raytrace.Env,
+        // env: Raytrace.Env,
         acceleration: Raytrace.Acceleration,
         with encoder: some MTLComputeCommandEncoder
     ) -> (any MTLBuffer)? {
@@ -242,7 +243,7 @@ extension Raytrace.Raytrace.Args {
         // frame.encode(with: encoder, at: 1, label: "\(buffer.label!)/Frame", usage: .read)
         // seeds.encode(with: encoder, at: 2, usage: .read)
         // background.encode(with: encoder, at: 3, label: "\(buffer.label!)/Background", usage: .read)
-        env.encode(with: encoder, at: 4, label: "\(buffer.label!)/Env", usage: .read)
+        // env.encode(with: encoder, at: 4, label: "\(buffer.label!)/Env", usage: .read)
         acceleration.encode(with: encoder, at: 5, label: "\(buffer.label!)/Acceleration", usage: .read)
 
         return buffer
@@ -255,6 +256,7 @@ extension Raytrace.Raytrace.Args {
         var frame: UInt64
         var seeds: MTLResourceID
         var background: UInt64
+        var env: UInt64
     }
 }
 
@@ -263,12 +265,19 @@ extension Raytrace.Raytrace.Args.ForGPU {
         var source: MTLResourceID
     }
 
+    fileprivate struct Env {
+        var diffuse: MTLResourceID
+        var specular: MTLResourceID
+        var lut: MTLResourceID
+    }
+
     init(
         encoder: some MTLComputeCommandEncoder,
         target: some MTLTexture,
         frame: Raytrace.Frame,
         seeds: some MTLTexture,
-        background: Raytrace.Background
+        background: Raytrace.Background,
+        env: Raytrace.Env
     ) {
         self.target = target.gpuResourceID
 
@@ -304,6 +313,25 @@ extension Raytrace.Raytrace.Args.ForGPU {
             Raytrace.IO.writable(forGPU).write(to: buffer)
 
             self.background = buffer.gpuAddress
+            encoder.useResource(buffer, usage: .read)
+        }
+
+        do {
+            let forGPU = Env.init(
+                diffuse: env.diffuse.gpuResourceID,
+                specular: env.specular.gpuResourceID,
+                lut: env.lut.gpuResourceID
+            )
+
+            let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
+                with: encoder.device,
+                label: "Raytrace/Args/Env",
+                options: .storageModeShared
+            )!
+
+            Raytrace.IO.writable(forGPU).write(to: buffer)
+
+            self.env = buffer.gpuAddress
             encoder.useResource(buffer, usage: .read)
         }
     }
