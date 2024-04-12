@@ -153,6 +153,20 @@ extension Engine {
             }
 
             renderFrame = .init(id: 0)
+
+            do {
+                let command = shader!.commandQueue.makeCommandBuffer()!
+
+                command.commit {
+                    for i in 0..<meshes!.count {
+                        shader!.accelerator.primitive.encode(&meshes![i], to: command)
+                    }
+
+                    shader!.accelerator.instanced.encode(meshes!, to: command)
+                }
+
+                command.waitUntilCompleted()
+            }
         }
 
         var shader: Raytrace.Shader?
@@ -166,21 +180,7 @@ extension Engine.View: MTKViewDelegate {
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 
     func draw(in view: MTKView) {
-        guard var shader = shader else { return }
-
-        do {
-            let command = shader.commandQueue.makeCommandBuffer()!
-
-            command.commit {
-                for i in 0..<meshes!.count {
-                    shader.accelerator.primitive.encode(&meshes![i], to: command)
-                }
-
-                shader.accelerator.instanced.encode(meshes!, to: command)
-            }
-
-            command.waitUntilCompleted()
-        }
+        guard let shader = shader else { return }
 
         do {
             let command = shader.commandQueue.makeCommandBuffer()!
