@@ -169,6 +169,7 @@ public:
     metal::texture2d<uint32_t> seeds;
     constant Background& background;
     constant Env& env;
+    constant Acceleration& acceleration;
 };
 
 
@@ -214,7 +215,12 @@ kernel void compute(
         .background = argsx.background,
         // .env = args.env,
         .env = argsx.env,
-        .intersector = Intersector(args.acceleration),
+        // .intersector = Intersector(args.acceleration),
+        .intersector = Intersector((Acceleration) {
+            .structure = argsx.acceleration.structure,
+            .meshes = args.acceleration.meshes,
+            .primitives = argsx.acceleration.primitives,
+        }),
         .directionalLight = {
             .direction = Shader::Geometry::normalize(float3(-1, -1, 1)),
             .color = float3(1) * M_PI_F,
