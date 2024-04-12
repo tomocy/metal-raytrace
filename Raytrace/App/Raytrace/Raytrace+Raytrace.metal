@@ -162,9 +162,16 @@ public:
     constant Acceleration& acceleration;
 };
 
+struct ArgsX {
+public:
+    metal::texture2d<float, metal::access::write> target;
+};
+
+
 kernel void compute(
     const uint2 id [[thread_position_in_grid]],
-    constant Args& args [[buffer(0)]]
+    constant Args& args [[buffer(0)]],
+    constant ArgsX& argsx [[buffer(1)]]
 )
 {
     namespace raytracing = metal::raytracing;
@@ -219,6 +226,7 @@ kernel void compute(
 
     const auto color = tracer.trace(ray);
 
-    args.target.write(float4(color, 1), inScreen.value());
+    // args.target.write(float4(color, 1), inScreen.value());
+    argsx.target.write(float4(color, 1), inScreen.value());
 }
 }

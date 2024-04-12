@@ -130,7 +130,7 @@ extension Raytrace.Raytrace {
 
         do {
             let buffer = args.encode(
-                target: target.texture,
+                // target: target.texture,
                 frame: frame,
                 seeds: seeds,
                 background: background,
@@ -144,6 +144,14 @@ extension Raytrace.Raytrace {
             )!
 
             encoder.setBuffer(buffer, offset: 0, index: 0)
+        }
+
+        do {
+            args.encodeX(
+                target: target.texture,
+                with: encoder,
+                at: 1
+            )
         }
 
         do {
@@ -197,7 +205,7 @@ extension Raytrace.Raytrace.Args {
 
 extension Raytrace.Raytrace.Args {
     func encode(
-        target: some MTLTexture,
+        // target: some MTLTexture,
         frame: Raytrace.Frame,
         seeds: some MTLTexture,
         background: Raytrace.Background,
@@ -218,7 +226,7 @@ extension Raytrace.Raytrace.Args {
 
         encoder.argument.setArgumentBuffer(buffer, offset: 0)
 
-        target.encode(with: encoder, at: 0, usage: .write)
+        // target.encode(with: encoder, at: 0, usage: .write)
         frame.encode(with: encoder, at: 1, label: "\(buffer.label!)/Frame", usage: .read)
         seeds.encode(with: encoder, at: 2, usage: .read)
         background.encode(with: encoder, at: 3, label: "\(buffer.label!)/Background", usage: .read)
@@ -226,5 +234,29 @@ extension Raytrace.Raytrace.Args {
         acceleration.encode(with: encoder, at: 5, label: "\(buffer.label!)/Acceleration", usage: .read)
 
         return buffer
+    }
+
+    fileprivate struct ForGPU {
+        var target: MTLResourceID
+    }
+
+    func encodeX(
+        target: some MTLTexture,
+        with encoder: some MTLComputeCommandEncoder,
+        at index: Int
+    ) {
+        let forGPU = ForGPU.init(
+            target: target.gpuResourceID
+        )
+
+        let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
+            with: encoder.device,
+            label: "ArgsX",
+            options: .storageModeShared
+        )!
+
+        Raytrace.IO.writable(forGPU).write(to: buffer)
+
+        encoder.setBuffer(buffer, offset: 0, index: index)
     }
 }

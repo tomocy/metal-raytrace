@@ -32,7 +32,6 @@
 		F57151B52BC75DA9006F3F60 /* Raytrace+Acceleration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F57151B42BC75DA9006F3F60 /* Raytrace+Acceleration.swift */; };
 		F5776A1F2BC2837600E9DFAF /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A1E2BC2837600E9DFAF /* main.swift */; };
 		F5776A272BC28A2300E9DFAF /* Diffuse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A262BC28A2300E9DFAF /* Diffuse.swift */; };
-		F5776A2B2BC2933100E9DFAF /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A2A2BC2933100E9DFAF /* Math.swift */; };
 		F5776A2D2BC295D800E9DFAF /* Metal.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A2C2BC295D800E9DFAF /* Metal.swift */; };
 		F5776A362BC2B34700E9DFAF /* CG.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5776A352BC2B34700E9DFAF /* CG.swift */; };
 		F58FAA672BC7336900624537 /* Raytrace+Mesh.swift in Sources */ = {isa = PBXBuildFile; fileRef = F58FAA662BC7336900624537 /* Raytrace+Mesh.swift */; };
@@ -106,7 +105,6 @@
 		F5776A1C2BC2837600E9DFAF /* Prelight */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Prelight; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5776A1E2BC2837600E9DFAF /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		F5776A262BC28A2300E9DFAF /* Diffuse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Diffuse.swift; sourceTree = "<group>"; };
-		F5776A2A2BC2933100E9DFAF /* Math.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = SOURCE_ROOT; };
 		F5776A2C2BC295D800E9DFAF /* Metal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Metal.swift; sourceTree = "<group>"; };
 		F5776A352BC2B34700E9DFAF /* CG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CG.swift; sourceTree = "<group>"; };
 		F58FAA662BC7336900624537 /* Raytrace+Mesh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+Mesh.swift"; sourceTree = "<group>"; };
@@ -128,7 +126,6 @@
 		F5976B232BC41CDC00ABEF37 /* Specular.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Specular.swift; sourceTree = "<group>"; };
 		F5976B2F2BC449EB00ABEF37 /* Env.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Env.swift; sourceTree = "<group>"; };
 		F5976B312BC44A4A00ABEF37 /* Env.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Env.metal; sourceTree = "<group>"; };
-		F5976B832BC56F0700ABEF37 /* Shader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Shader.h; sourceTree = "<group>"; };
 		F5976B922BC5AA7900ABEF37 /* Geometry+Normalized.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Geometry+Normalized.h"; sourceTree = "<group>"; };
 		F5976B932BC5AD5400ABEF37 /* Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
 		F5B35B562BB5560200651A54 /* Farm */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Farm; sourceTree = "<group>"; };
@@ -250,7 +247,6 @@
 				F5976B2F2BC449EB00ABEF37 /* Env.swift */,
 				F5976B172BC40E0C00ABEF37 /* Kernel.swift */,
 				F5776A1E2BC2837600E9DFAF /* main.swift */,
-				F5776A2A2BC2933100E9DFAF /* Math.swift */,
 				F5776A2C2BC295D800E9DFAF /* Metal.swift */,
 				F5006B8A2BC3AADB00A26DEF /* Prelight.h */,
 				F5006B962BC3E17900A26DEF /* Prelight.swift */,
@@ -271,7 +267,6 @@
 				F55BD0F02BC6A1480074EDFC /* PBR */,
 				F5006B882BC3A37F00A26DEF /* Sample.h */,
 				F55BD0F62BC6A8880074EDFC /* Sequence */,
-				F5976B832BC56F0700ABEF37 /* Shader.h */,
 				F55BD0F42BC6A5080074EDFC /* Texture */,
 			);
 			path = Shader;
@@ -450,7 +445,6 @@
 				F5776A272BC28A2300E9DFAF /* Diffuse.swift in Sources */,
 				F5776A2D2BC295D800E9DFAF /* Metal.swift in Sources */,
 				F5776A1F2BC2837600E9DFAF /* main.swift in Sources */,
-				F5776A2B2BC2933100E9DFAF /* Math.swift in Sources */,
 				F5976B242BC41CDC00ABEF37 /* Specular.swift in Sources */,
 				F5006B732BC2D2A000A26DEF /* App.swift in Sources */,
 				F5006B972BC3E17900A26DEF /* Prelight.swift in Sources */,
