@@ -167,6 +167,7 @@ public:
     metal::texture2d<float, metal::access::write> target;
     constant Frame& frame;
     metal::texture2d<uint32_t> seeds;
+    constant Background& background;
 };
 
 
@@ -208,7 +209,8 @@ kernel void compute(
         // .frame = args.frame,
         .frame = argsx.frame,
         .seed = seed,
-        .background = args.background,
+        // .background = args.background,
+        .background = argsx.background,
         .env = args.env,
         .intersector = Intersector(args.acceleration),
         .directionalLight = {
