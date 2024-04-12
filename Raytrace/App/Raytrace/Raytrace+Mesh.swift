@@ -7,19 +7,11 @@ import MetalKit
 
 extension Raytrace {
     struct Mesh {
-        var positions: Positions
+        var accelerationStructure: (any MTLAccelerationStructure)?
         var pieces: [Piece]
-        var accelerator: (any MTLAccelerationStructure)?
+        var positions: Positions
 
         var instances: [Instance]
-    }
-}
-
-extension Raytrace.Mesh {
-    struct Positions {
-        var buffer: any MTLBuffer
-        var format: MTLAttributeFormat
-        var stride: Int
     }
 }
 
@@ -29,6 +21,14 @@ extension Raytrace.Mesh {
         var indices: Indices
         var data: Raytrace.Primitive.Data
         var material: Raytrace.Material?
+    }
+}
+
+extension Raytrace.Mesh {
+    struct Positions {
+        var buffer: any MTLBuffer
+        var format: MTLAttributeFormat
+        var stride: Int
     }
 }
 
@@ -117,6 +117,10 @@ extension MDLMesh {
 
         let vertices: [Layout.PNT] = vertexBuffers.first!.contents().toArray(count: vertexCount)
 
+        let pieces = try defaultSubmeshes!.map {
+            try $0.toPiece(with: device, vertices: vertices)
+        }
+
         let positions = Raytrace.Mesh.Positions.init(
             buffer: Raytrace.Metal.bufferBuildable(vertices.map { $0.position }).build(
                 with: device,
@@ -126,55 +130,9 @@ extension MDLMesh {
             stride: MemoryLayout<SIMD3<Float>.Packed>.stride
         )
 
-        let pieces = try defaultSubmeshes!.enumerated().map { i, submesh in
-            assert(submesh.geometryType == .triangles)
-            assert(submesh.indexType == .uint16)
-
-            let indices: [UInt16] = submesh.indexBuffer.contents().toArray(count: submesh.indexCount)
-
-            var data: [Raytrace.Primitive.Triangle] = []
-            let primitiveCount = indices.count / 3
-            for primitiveI in 0..<primitiveCount {
-                var datum = Raytrace.Primitive.Datum.init(
-                    normals: [],
-                    textureCoordinates: []
-                )
-
-                for vertexI in 0..<3 {
-                    let i = Int(indices[primitiveI * 3 + vertexI])
-                    let v = vertices[i]
-
-                    datum.normals.append(v.normal)
-                    datum.textureCoordinates.append(v.textureCoordinate)
-                }
-
-                data.append(.init(datum))
-            }
-
-            return Raytrace.Mesh.Piece.init(
-                type: .triangle,
-                indices: .init(
-                    buffer: Raytrace.Metal.bufferBuildable(indices).build(
-                        with: device,
-                        options: .storageModeShared
-                    )!,
-                    type: .uint16,
-                    count: indices.count
-                ),
-                data: .init(
-                    buffer: Raytrace.Metal.bufferBuildable(data).build(
-                        with: device,
-                        options: .storageModeShared
-                    )!,
-                    stride: MemoryLayout<Raytrace.Primitive.Triangle>.stride
-                ),
-                material: try .init(submesh.material, device: device)
-            )
-        }
-
         return .init(
-            positions: positions,
             pieces: pieces,
+            positions: positions,
             instances: instances
         )
     }
@@ -215,6 +173,54 @@ extension MDLSubmesh {
             indexType: .init(other.indexType)!,
             geometryType: .init(other.primitiveType)!,
             material: nil
+        )
+    }
+}
+
+extension MDLSubmesh {
+    func toPiece(with device: some MTLDevice, vertices: [MDLMesh.Layout.PNT]) throws -> Raytrace.Mesh.Piece {
+        assert(geometryType == .triangles)
+        assert(indexType == .uint16)
+
+        let indices: [UInt16] = indexBuffer.contents().toArray(count: indexCount)
+
+        var data: [Raytrace.Primitive.Triangle] = []
+        let primitiveCount = indices.count / 3
+        for primitiveI in 0..<primitiveCount {
+            var datum = Raytrace.Primitive.Datum.init(
+                normals: [],
+                textureCoordinates: []
+            )
+
+            for vertexI in 0..<3 {
+                let i = Int(indices[primitiveI * 3 + vertexI])
+                let v = vertices[i]
+
+                datum.normals.append(v.normal)
+                datum.textureCoordinates.append(v.textureCoordinate)
+            }
+
+            data.append(.init(datum))
+        }
+
+        return Raytrace.Mesh.Piece.init(
+            type: .triangle,
+            indices: .init(
+                buffer: Raytrace.Metal.bufferBuildable(indices).build(
+                    with: device,
+                    options: .storageModeShared
+                )!,
+                type: .uint16,
+                count: indices.count
+            ),
+            data: .init(
+                buffer: Raytrace.Metal.bufferBuildable(data).build(
+                    with: device,
+                    options: .storageModeShared
+                )!,
+                stride: MemoryLayout<Raytrace.Primitive.Triangle>.stride
+            ),
+            material: try .init(material, device: device)
         )
     }
 }

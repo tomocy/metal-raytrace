@@ -26,10 +26,10 @@ extension Raytrace.Accelerator.Primitive {
         )
         let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
 
-        mesh.accelerator = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
+        mesh.accelerationStructure = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
 
         encoder.build(
-            accelerationStructure: mesh.accelerator!,
+            accelerationStructure: mesh.accelerationStructure!,
             descriptor: desc,
             scratchBuffer: encoder.device.makeBuffer(
                 length: sizes.buildScratchBufferSize,
@@ -102,7 +102,7 @@ extension Raytrace.Accelerator.Instanced {
         defer { encoder.endEncoding() }
 
         meshes.forEach { primitive in
-            encoder.useResource(primitive.accelerator!, usage: .read)
+            encoder.useResource(primitive.accelerationStructure!, usage: .read)
         }
 
         let desc: MTLInstanceAccelerationStructureDescriptor = describe(
@@ -142,7 +142,7 @@ extension Raytrace.Accelerator.Instanced {
     ) -> MTLInstanceAccelerationStructureDescriptor {
         let desc = MTLInstanceAccelerationStructureDescriptor.init()
 
-        desc.instancedAccelerationStructures = meshes.map { $0.accelerator! }
+        desc.instancedAccelerationStructures = meshes.map { $0.accelerationStructure! }
 
         let instances = meshes.enumerated().reduce(
             into: []
