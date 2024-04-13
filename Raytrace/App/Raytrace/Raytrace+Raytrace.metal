@@ -168,6 +168,7 @@ public:
     constant Frame& frame;
     metal::texture2d<uint32_t> seeds;
     constant Background& background;
+    constant Env& env;
 };
 
 kernel void compute(
@@ -210,7 +211,8 @@ kernel void compute(
         .seed = seed,
         // .background = args.background,
         .background = context.background,
-        .env = args.env,
+        // .env = args.env,
+        .env = context.env,
         .intersector = Intersector(args.acceleration),
         .directionalLight = {
             .direction = Shader::Geometry::normalize(float3(-1, -1, 1)),

@@ -45,3 +45,11 @@ extension Raytrace.Env {
         )
     }
 }
+
+extension Raytrace.Env {
+    struct ForGPU {
+        var diffuse: MTLResourceID
+        var specular: MTLResourceID
+        var lut: MTLResourceID
+    }
+}

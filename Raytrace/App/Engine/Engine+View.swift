@@ -190,7 +190,8 @@ extension Engine.View: MTKViewDelegate {
                     to: command,
                     frame: renderFrame!,
                     seeds: shader.raytrace.seeds,
-                    background: shader.raytrace.background
+                    background: shader.raytrace.background,
+                    env: shader.raytrace.env
                 )
 
                 shader.raytrace.encode(
