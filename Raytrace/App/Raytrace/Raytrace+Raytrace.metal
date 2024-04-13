@@ -155,28 +155,23 @@ public:
 namespace Raytrace {
 struct Args {
 public:
-    metal::texture2d<float, metal::access::write> target;
-    constant Frame& frame;
-    metal::texture2d<uint32_t> seeds;
-    constant Background& background;
-    constant Env& env;
-    constant Acceleration& acceleration;
-};
+    struct Context {
+    public:
+        constant Frame& frame;
+        metal::texture2d<uint32_t> seeds;
+        constant Background& background;
+        constant Env& env;
+        constant Acceleration& acceleration;
+    };
 
-struct Context {
 public:
-    constant Frame& frame;
-    metal::texture2d<uint32_t> seeds;
-    constant Background& background;
-    constant Env& env;
-    constant Mesh* meshes;
-    constant Primitive::Instance* primitives;
+    metal::texture2d<float, metal::access::write> target;
+    constant Context& context;
 };
 
 kernel void compute(
     const uint2 id [[thread_position_in_grid]],
-    constant Args& args [[buffer(0)]],
-    constant Context& context [[buffer(1)]]
+    constant Args& args [[buffer(0)]]
 )
 {
     namespace raytracing = metal::raytracing;
@@ -198,7 +193,7 @@ kernel void compute(
     };
 
     // const auto seed = args.seeds.read(id).r;
-    const auto seed = context.seeds.read(id).r;
+    const auto seed = args.context.seeds.read(id).r;
 
     // Map Screen (0...width, 0...height) to UV (0...1, 0...1),
     // then UV to NDC (-1...1, 1...-1).
@@ -208,19 +203,11 @@ kernel void compute(
 
     const auto tracer = Tracer {
         .maxTraceCount = 3,
-        // .frame = args.frame,
-        .frame = context.frame,
+        .frame = args.context.frame,
         .seed = seed,
-        // .background = args.background,
-        .background = context.background,
-        // .env = args.env,
-        .env = context.env,
-        // .intersector = Intersector(args.acceleration),
-        .intersector = Intersector((Acceleration) {
-            .structure = args.acceleration.structure,
-            .meshes = context.meshes,
-            .primitives = context.primitives,
-        }),
+        .background = args.context.background,
+        .env = args.context.env,
+        .intersector = Intersector(args.context.acceleration),
         .directionalLight = {
             .direction = Shader::Geometry::normalize(float3(-1, -1, 1)),
             .color = float3(1) * M_PI_F,

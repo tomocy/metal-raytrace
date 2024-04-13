@@ -182,32 +182,26 @@ extension Engine.View: MTKViewDelegate {
     func draw(in view: MTKView) {
         guard let shader = shader else { return }
 
-        let acceleration = Raytrace.Acceleration.init(
-            structure: shader.accelerator.instanced.target!,
-            meshes: meshes!,
-            primitives: shader.accelerator.instanced.primitives!
-        )
-
         do {
             let command = shader.commandQueue.makeCommandBuffer()!
 
             command.commit {
-                let (heap, context) = shader.raytrace.buildContext(
+                let context = shader.raytrace.buildContext(
                     to: command,
                     frame: renderFrame!,
                     seeds: shader.raytrace.seeds,
                     background: shader.raytrace.background,
                     env: shader.raytrace.env,
-                    acceleration: acceleration
+                    acceleration: .init(
+                        structure: shader.accelerator.instanced.target!,
+                        meshes: meshes!,
+                        primitives: shader.accelerator.instanced.primitives!
+                    )
                 )
 
                 shader.raytrace.encode(
-                    meshes!,
                     to: command,
-                    heap: heap,
-                    context: context,
-                    frame: renderFrame!,
-                    acceleration: acceleration
+                    context: context
                 )
 
                 shader.echo.encode(

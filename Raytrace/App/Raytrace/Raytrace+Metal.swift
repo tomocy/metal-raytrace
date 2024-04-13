@@ -68,6 +68,11 @@ extension Array: Raytrace.Metal.BufferBuildable {
     }
 }
 
+struct MTLOnHeap<T> {
+    var value: T
+    var heap: any MTLHeap
+}
+
 extension MTLTexture {
     var descriptor: MTLTextureDescriptor {
         let desc = MTLTextureDescriptor.init()
@@ -98,10 +103,7 @@ struct MTLComputeArgumentEncoder {
 }
 
 extension MTLSizeAndAlign {
-    var aligned: Self {
-        .init(
-            size: size.align(by: align),
-            align: align
-        )
+    var aligned: Int {
+        size.align(by: align)
     }
 }

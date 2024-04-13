@@ -101,17 +101,29 @@ extension Raytrace.Accelerator.Instanced {
         let encoder = buffer.makeAccelerationStructureCommandEncoder()!
         defer { encoder.endEncoding() }
 
-        meshes.forEach { primitive in
-            encoder.useResource(primitive.accelerationStructure!, usage: .read)
-        }
-
         let desc: MTLInstanceAccelerationStructureDescriptor = describe(
             meshes,
             with: encoder.device
         )
-        let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
+        let sizes = ({
+            var sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
 
-        target = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
+            sizes.accelerationStructureSize = encoder.device.heapAccelerationStructureSizeAndAlign(
+                descriptor: desc
+            ).aligned
+
+            return sizes
+        }) ()
+
+        let heap = ({
+            let heapDesc = MTLHeapDescriptor.init()
+
+            heapDesc.size = sizes.accelerationStructureSize
+
+            return encoder.device.makeHeap(descriptor: heapDesc)
+        }) ()!
+
+        target = heap.makeAccelerationStructure(size: sizes.accelerationStructureSize)
 
         do {
             primitives = []

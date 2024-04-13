@@ -121,10 +121,7 @@ extension Raytrace.Raytrace {
         background: Raytrace.Background,
         env: Raytrace.Env,
         acceleration: Raytrace.Acceleration
-    ) -> (
-        heap: some MTLHeap,
-        context: some MTLBuffer
-    ) {
+    ) -> MTLOnHeap<some MTLBuffer> {
         let encoder = buffer.makeBlitCommandEncoder()!
         defer { encoder.endEncoding() }
 
@@ -139,14 +136,14 @@ extension Raytrace.Raytrace {
             // Seeds
             do {
                 let sizeAlign = encoder.device.heapTextureSizeAndAlign(descriptor: seeds.descriptor)
-                desc.size += sizeAlign.aligned.size
+                desc.size += sizeAlign.aligned
             }
 
             // Background
             do {
                 do {
                     let sizeAlign = encoder.device.heapTextureSizeAndAlign(descriptor: background.source.descriptor)
-                    desc.size += sizeAlign.aligned.size
+                    desc.size += sizeAlign.aligned
                 }
 
                 desc.size += MemoryLayout<Raytrace.Background.ForGPU>.stride
@@ -156,61 +153,63 @@ extension Raytrace.Raytrace {
             do {
                 do {
                     let sizeAlign = encoder.device.heapTextureSizeAndAlign(descriptor: env.diffuse.descriptor)
-                    desc.size += sizeAlign.aligned.size
+                    desc.size += sizeAlign.aligned
                 }
                 do {
                     let sizeAlign = encoder.device.heapTextureSizeAndAlign(descriptor: env.specular.descriptor)
-                    desc.size += sizeAlign.aligned.size
+                    desc.size += sizeAlign.aligned
                 }
                 do {
                     let sizeAlign = encoder.device.heapTextureSizeAndAlign(descriptor: env.lut.descriptor)
-                    desc.size += sizeAlign.aligned.size
+                    desc.size += sizeAlign.aligned
                 }
 
                 desc.size += MemoryLayout<Raytrace.Env.ForGPU>.stride
             }
 
-            // Meshes
+            // Acceleration
             do {
-                acceleration.meshes.forEach { mesh in
-                    do {
-                        mesh.pieces.forEach { piece in
-                            do {
-                                if let texture = piece.material?.albedo {
-                                    let sizeAlign = encoder.device.heapTextureSizeAndAlign(descriptor: texture.descriptor)
-                                    desc.size += sizeAlign.aligned.size
-                                }
-                                if let texture = piece.material?.metalRoughness {
-                                    let sizeAlign = encoder.device.heapTextureSizeAndAlign(descriptor: texture.descriptor)
-                                    desc.size += sizeAlign.aligned.size
-                                }
+                do {
+                    acceleration.meshes.forEach { mesh in
+                        do {
+                            mesh.pieces.forEach { piece in
+                                do {
+                                    if let texture = piece.material?.albedo {
+                                        let sizeAlign = encoder.device.heapTextureSizeAndAlign(descriptor: texture.descriptor)
+                                        desc.size += sizeAlign.aligned
+                                    }
+                                    if let texture = piece.material?.metalRoughness {
+                                        let sizeAlign = encoder.device.heapTextureSizeAndAlign(descriptor: texture.descriptor)
+                                        desc.size += sizeAlign.aligned
+                                    }
 
-                                desc.size += MemoryLayout<Raytrace.Material.ForGPU>.stride
+                                    desc.size += MemoryLayout<Raytrace.Material.ForGPU>.stride
+                                }
                             }
-                        }
 
-                        desc.size += MemoryLayout<Raytrace.Mesh.Piece.ForGPU>.stride * mesh.pieces.count
+                            desc.size += MemoryLayout<Raytrace.Mesh.Piece.ForGPU>.stride * mesh.pieces.count
+                        }
                     }
+
+                    desc.size += MemoryLayout<Raytrace.Mesh.ForGPU>.stride * acceleration.meshes.count
                 }
 
-                desc.size += MemoryLayout<Raytrace.Mesh.ForGPU>.stride * acceleration.meshes.count
+                desc.size += MemoryLayout<Raytrace.Primitive.Instance>.stride * acceleration.primitives.count
+
+                desc.size += MemoryLayout<Raytrace.Acceleration.ForGPU>.stride
             }
 
-            // Primitives
-            desc.size += MemoryLayout<Raytrace.Primitive.Instance>.stride * acceleration.primitives.count
-
-            desc.size += MemoryLayout<Context.ForGPU>.stride
+            desc.size += MemoryLayout<Args.Context.ForGPU>.stride
 
             return encoder.device.makeHeap(descriptor: desc)
         }) ()!
 
-        var context = Context.ForGPU.init(
+        var context = Args.Context.ForGPU.init(
             frame: 0,
             seeds: .init(),
             background: 0,
             env: .init(),
-            meshes: 0,
-            primitives: 0
+            acceleration: 0
         )
 
         // Frame
@@ -359,101 +358,155 @@ extension Raytrace.Raytrace {
             )
         }
 
-        // Meshes
+        // Acceleration
         do {
-            let forGPU = acceleration.meshes.map { mesh in
-                let pieces = ({
-                    let forGPU = mesh.pieces.map { piece in
-                        let material = ({
-                            var forGPU = Raytrace.Material.ForGPU.init()
+            let meshes = ({
+                let forGPU = acceleration.meshes.map { mesh in
+                    let pieces = ({
+                        let forGPU = mesh.pieces.map { piece in
+                            let material = ({
+                                var forGPU = Raytrace.Material.ForGPU.init()
 
-                            if let texture = piece.material?.albedo {
-                                let desc = texture.descriptor
-                                desc.storageMode = .private
+                                if let texture = piece.material?.albedo {
+                                    let desc = texture.descriptor
+                                    desc.storageMode = .private
 
-                                let onHeap = heap.makeTexture(descriptor: desc)!
-                                onHeap.label = texture.label
+                                    let onHeap = heap.makeTexture(descriptor: desc)!
+                                    onHeap.label = texture.label
 
-                                forGPU.albedo = onHeap.gpuResourceID
+                                    forGPU.albedo = onHeap.gpuResourceID
 
-                                encoder.copy(from: texture, to: onHeap)
-                            }
+                                    encoder.copy(from: texture, to: onHeap)
+                                }
 
-                            if let texture = piece.material?.metalRoughness {
-                                let desc = texture.descriptor
-                                desc.storageMode = .private
+                                if let texture = piece.material?.metalRoughness {
+                                    let desc = texture.descriptor
+                                    desc.storageMode = .private
 
-                                let onHeap = heap.makeTexture(descriptor: desc)!
-                                onHeap.label = texture.label
+                                    let onHeap = heap.makeTexture(descriptor: desc)!
+                                    onHeap.label = texture.label
 
-                                forGPU.metalRoughness = onHeap.gpuResourceID
+                                    forGPU.metalRoughness = onHeap.gpuResourceID
 
-                                encoder.copy(from: texture, to: onHeap)
-                            }
+                                    encoder.copy(from: texture, to: onHeap)
+                                }
 
-                            let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
-                                with: encoder.device,
-                                label: "Raytrace/Context/Acceleration/Mesh/Piece/Material",
-                                options: .storageModeShared
-                            )!
+                                let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
+                                    with: encoder.device,
+                                    label: "Raytrace/Context/Acceleration/Mesh/Piece/Material",
+                                    options: .storageModeShared
+                                )!
 
-                            let onHeap = withUnsafeBytes(of: forGPU) { bytes in
-                                heap.makeBuffer(
-                                    length: bytes.count,
-                                    options: .storageModePrivate
+                                let onHeap = withUnsafeBytes(of: forGPU) { bytes in
+                                    heap.makeBuffer(
+                                        length: bytes.count,
+                                        options: .storageModePrivate
+                                    )
+                                }!
+                                onHeap.label = onDevice.label
+
+                                encoder.copy(
+                                    from: onDevice, sourceOffset: 0,
+                                    to: onHeap, destinationOffset: 0,
+                                    size: onHeap.length
                                 )
-                            }!
-                            onHeap.label = onDevice.label
 
-                            encoder.copy(
-                                from: onDevice, sourceOffset: 0,
-                                to: onHeap, destinationOffset: 0,
-                                size: onHeap.length
+                                return onHeap
+                            }) ()
+
+                            return Raytrace.Mesh.Piece.ForGPU.init(
+                                material: material.gpuAddress
                             )
+                        }
 
-                            return onHeap
-                        }) ()
+                        let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
+                            with: encoder.device,
+                            label: "Raytrace/Context/Acceleration/Mesh/Pieces",
+                            options: .storageModeShared
+                        )!
 
-                        return Raytrace.Mesh.Piece.ForGPU.init(
-                            material: material.gpuAddress
+                        let onHeap = forGPU.withUnsafeBytes { bytes in
+                            heap.makeBuffer(
+                                length: bytes.count,
+                                options: .storageModePrivate
+                            )
+                        }!
+                        onHeap.label = onDevice.label
+
+                        encoder.copy(
+                            from: onDevice, sourceOffset: 0,
+                            to: onHeap, destinationOffset: 0,
+                            size: onHeap.length
                         )
-                    }
 
-                    let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
-                        with: encoder.device,
-                        label: "Raytrace/Context/Acceleration/Mesh/Pieces",
-                        options: .storageModeShared
-                    )!
+                        return onHeap
+                    }) ()
 
-                    let onHeap = forGPU.withUnsafeBytes { bytes in
-                        heap.makeBuffer(
-                            length: bytes.count,
-                            options: .storageModePrivate
-                        )
-                    }!
-                    onHeap.label = onDevice.label
-
-                    encoder.copy(
-                        from: onDevice, sourceOffset: 0,
-                        to: onHeap, destinationOffset: 0,
-                        size: onHeap.length
+                    return Raytrace.Mesh.ForGPU.init(
+                        pieces: pieces.gpuAddress
                     )
+                }
 
-                    return onHeap
-                }) ()
+                let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
+                    with: encoder.device,
+                    label: "Raytrace/Context/Acceleration/Meshes",
+                    options: .storageModeShared
+                )!
 
-                return Raytrace.Mesh.ForGPU.init(
-                    pieces: pieces.gpuAddress
+                let onHeap = forGPU.withUnsafeBytes { bytes in
+                    heap.makeBuffer(
+                        length: bytes.count,
+                        options: .storageModePrivate
+                    )
+                }!
+                onHeap.label = onDevice.label
+
+                encoder.copy(
+                    from: onDevice, sourceOffset: 0,
+                    to: onHeap, destinationOffset: 0,
+                    size: onHeap.length
                 )
-            }
 
-            let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
+                return onHeap
+            }) ()
+
+            let primitives = ({
+                let onDevice = Raytrace.Metal.bufferBuildable(acceleration.primitives).build(
+                    with: encoder.device,
+                    label: "Raytrace/Context/Acceleration/Primitives",
+                    options: .storageModeShared
+                )!
+
+                let onHeap = acceleration.primitives.withUnsafeBytes { bytes in
+                    heap.makeBuffer(
+                        length: bytes.count,
+                        options: .storageModePrivate
+                    )
+                }!
+                onHeap.label = onDevice.label
+
+                encoder.copy(
+                    from: onDevice, sourceOffset: 0,
+                    to: onHeap, destinationOffset: 0,
+                    size: onHeap.length
+                )
+
+                return onHeap
+            }) ()
+
+            let acceleration = Raytrace.Acceleration.ForGPU.init(
+                structure: acceleration.structure.gpuResourceID,
+                meshes: meshes.gpuAddress,
+                primitives: primitives.gpuAddress
+            )
+
+            let onDevice = Raytrace.Metal.bufferBuildable(acceleration).build(
                 with: encoder.device,
                 label: "Raytrace/Context/Acceleration/Meshes",
                 options: .storageModeShared
             )!
 
-            let onHeap = forGPU.withUnsafeBytes { bytes in
+            let onHeap = withUnsafeBytes(of: acceleration) { bytes in
                 heap.makeBuffer(
                     length: bytes.count,
                     options: .storageModePrivate
@@ -461,32 +514,7 @@ extension Raytrace.Raytrace {
             }!
             onHeap.label = onDevice.label
 
-            context.meshes = onHeap.gpuAddress
-
-            encoder.copy(
-                from: onDevice, sourceOffset: 0,
-                to: onHeap, destinationOffset: 0,
-                size: onHeap.length
-            )
-        }
-
-        // Primitives
-        do {
-            let onDevice = Raytrace.Metal.bufferBuildable(acceleration.primitives).build(
-                with: encoder.device,
-                label: "Raytrace/Context/Acceleration/Primitives",
-                options: .storageModeShared
-            )!
-
-            let onHeap = acceleration.primitives.withUnsafeBytes { bytes in
-                heap.makeBuffer(
-                    length: bytes.count,
-                    options: .storageModePrivate
-                )
-            }!
-            onHeap.label = onDevice.label
-
-            context.primitives = onHeap.gpuAddress
+            context.acceleration = onHeap.gpuAddress
 
             encoder.copy(
                 from: onDevice, sourceOffset: 0,
@@ -515,36 +543,27 @@ extension Raytrace.Raytrace {
             size: onHeap.length
         )
 
-        return (heap: heap, context: onHeap)
+        return .init(value: onHeap, heap: heap)
     }
 
     func encode(
-        _ meshes: [Raytrace.Mesh],
         to buffer: some MTLCommandBuffer,
-        heap: some MTLHeap,
-        context: some MTLBuffer,
-        frame: Raytrace.Frame,
-        acceleration: Raytrace.Acceleration
+        context: MTLOnHeap<some MTLBuffer>
     ) {
         let encoder = buffer.makeComputeCommandEncoder()!
         defer { encoder.endEncoding() }
 
-        encoder.useHeap(heap)
-
         encoder.setComputePipelineState(pipelineStates.compute)
 
         do {
-            let forGPU = Args.ForGPU.init(
-                encoder: encoder,
-                target: target.texture,
-                frame: frame,
-                seeds: seeds,
-                background: background,
-                env: env,
-                acceleration: acceleration
+            encoder.useHeap(context.heap)
+
+            let args = Args.ForGPU.init(
+                target: target.texture.gpuResourceID,
+                context: context.value.gpuAddress
             )
 
-            let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
+            let buffer = Raytrace.Metal.bufferBuildable(args).build(
                 with: encoder.device,
                 label: "Raytrace/Args",
                 options: .storageModeShared
@@ -552,8 +571,6 @@ extension Raytrace.Raytrace {
 
             encoder.setBuffer(buffer, offset: 0, index: 0)
         }
-
-        encoder.setBuffer(context, offset: 0, index: 1)
 
         do {
             let threadsSizePerGroup = MTLSize.init(width: 8, height: 8, depth: 1)
@@ -597,197 +614,42 @@ extension Raytrace.Raytrace {
 }
 
 extension Raytrace.Raytrace.Args {
-    fileprivate struct ForGPU {
+    struct ForGPU {
         var target: MTLResourceID
+        var context: UInt64
+    }
+}
+
+extension Raytrace.Raytrace.Args.ForGPU {
+    init(
+        encoder: some MTLComputeCommandEncoder,
+        target: some MTLTexture,
+        context: Raytrace.Raytrace.Args.Context.ForGPU
+    ) {
+        self.target = target.gpuResourceID
+
+        do {
+            let buffer = Raytrace.Metal.bufferBuildable(context).build(
+                with: encoder.device,
+                label: "Raytrace/Args/Context",
+                options: .storageModeShared
+            )!
+
+            self.context = buffer.gpuAddress
+        }
+    }
+}
+
+extension Raytrace.Raytrace.Args {
+    struct Context {}
+}
+
+extension Raytrace.Raytrace.Args.Context {
+    struct ForGPU {
         var frame: UInt64
         var seeds: MTLResourceID
         var background: UInt64
         var env: UInt64
         var acceleration: UInt64
-    }
-}
-
-extension Raytrace.Raytrace.Args.ForGPU {
-    fileprivate struct Acceleration {
-        var structure: MTLResourceID
-        var meshes: UInt64
-        var primitives: UInt64
-    }
-
-    fileprivate struct Mesh {
-        var pieces: UInt64
-    }
-
-    fileprivate struct Piece {
-        var material: UInt64 = 0
-    }
-
-    fileprivate struct Material {
-        var albedo: MTLResourceID = .init()
-        var metalRoughness: MTLResourceID = .init()
-    }
-
-    init(
-        encoder: some MTLComputeCommandEncoder,
-        target: some MTLTexture,
-        frame: Raytrace.Frame,
-        seeds: some MTLTexture,
-        background: Raytrace.Background,
-        env: Raytrace.Env,
-        acceleration: Raytrace.Acceleration
-    ) {
-        self.target = target.gpuResourceID
-
-        do {
-            let buffer = Raytrace.Metal.bufferBuildable(frame).build(
-                with: encoder.device,
-                label: "Raytrace/Args/Frame",
-                options: .storageModeShared
-            )!
-
-            encoder.useResource(buffer, usage: .read)
-
-            self.frame = buffer.gpuAddress
-        }
-
-        do {
-            encoder.useResource(seeds, usage: .read)
-            self.seeds = seeds.gpuResourceID
-        }
-
-        do {
-            let forGPU = Raytrace.Background.ForGPU.init(
-                source: background.source.gpuResourceID
-            )
-
-            let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
-                with: encoder.device,
-                label: "Raytrace/Args/Background",
-                options: .storageModeShared
-            )!
-
-            encoder.useResource(buffer, usage: .read)
-
-            self.background = buffer.gpuAddress
-        }
-
-        do {
-            let forGPU = Raytrace.Env.ForGPU.init(
-                diffuse: env.diffuse.gpuResourceID,
-                specular: env.specular.gpuResourceID,
-                lut: env.lut.gpuResourceID
-            )
-
-            let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
-                with: encoder.device,
-                label: "Raytrace/Args/Env",
-                options: .storageModeShared
-            )!
-
-            encoder.useResource(buffer, usage: .read)
-
-            self.env = buffer.gpuAddress
-        }
-
-        do {
-            let meshes = ({
-                let forGPU = acceleration.meshes.map { mesh in
-                    let pieces = ({
-                        let forGPU = mesh.pieces.map { piece in
-                            let material = ({
-                                var forGPU = Material.init()
-
-                                if let texture = piece.material?.albedo {
-                                    forGPU.albedo = texture.gpuResourceID
-                                    encoder.useResource(texture, usage: .read)
-                                }
-
-                                if let texture = piece.material?.metalRoughness {
-                                    forGPU.metalRoughness = texture.gpuResourceID
-                                    encoder.useResource(texture, usage: .read)
-                                }
-
-                                let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
-                                    with: encoder.device,
-                                    label: "Raytrace/Args/Acceleration/Mesh/Piece/Material",
-                                    options: .storageModeShared
-                                )!
-
-                                return buffer
-                            }) ()
-
-                            encoder.useResource(material, usage: .read)
-
-                            return Piece.init(
-                                material: material.gpuAddress
-                            )
-                        }
-
-                        let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
-                            with: encoder.device,
-                            label: "Raytrace/Args/Acceleration/Mesh/Pieces",
-                            options: .storageModeShared
-                        )!
-
-                        return buffer
-                    }) ()
-
-                    encoder.useResource(pieces, usage: .read)
-
-                    return Mesh.init(
-                        pieces: pieces.gpuAddress
-                    )
-                }
-
-                let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
-                    with: encoder.device,
-                    label: "Raytrace/Args/Acceleration/Meshes",
-                    options: .storageModeShared
-                )!
-
-                return buffer
-            }) ()
-
-            encoder.useResource(meshes, usage: .read)
-
-            let primitives = Raytrace.Metal.bufferBuildable(acceleration.primitives).build(
-                with: encoder.device,
-                label: "Raytrace/Args/Acceleration/Primitives",
-                options: .storageModeShared
-            )!
-
-            encoder.useResource(primitives, usage: .read)
-
-            let forGPU = Acceleration.init(
-                structure: acceleration.structure.gpuResourceID,
-                meshes: meshes.gpuAddress,
-                primitives: primitives.gpuAddress
-            )
-
-            let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
-                with: encoder.device,
-                label: "Raytrace/Args/Acceleration",
-                options: .storageModeShared
-            )!
-
-            encoder.useResource(buffer, usage: .read)
-
-            self.acceleration = buffer.gpuAddress
-        }
-    }
-}
-
-extension Raytrace.Raytrace {
-    struct Context {}
-}
-
-extension Raytrace.Raytrace.Context {
-    fileprivate struct ForGPU {
-        var frame: UInt64
-        var seeds: MTLResourceID
-        var background: UInt64
-        var env: UInt64
-        var meshes: UInt64
-        var primitives: UInt64
     }
 }

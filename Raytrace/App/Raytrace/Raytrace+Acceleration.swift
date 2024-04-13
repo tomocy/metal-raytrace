@@ -9,3 +9,11 @@ extension Raytrace {
         var primitives: [Primitive.Instance]
     }
 }
+
+extension Raytrace.Acceleration {
+    struct ForGPU {
+        var structure: MTLResourceID
+        var meshes: UInt64
+        var primitives: UInt64
+    }
+}
