@@ -252,8 +252,6 @@ extension Raytrace.Raytrace.Args.ForGPU {
                 options: .storageModeShared
             )!
 
-            Raytrace.IO.writable(frame).write(to: buffer)
-
             self.frame = buffer.gpuAddress
             encoder.useResource(buffer, usage: .read)
         }
@@ -274,8 +272,6 @@ extension Raytrace.Raytrace.Args.ForGPU {
                 options: .storageModeShared
             )!
 
-            Raytrace.IO.writable(forGPU).write(to: buffer)
-
             self.background = buffer.gpuAddress
             encoder.useResource(buffer, usage: .read)
         }
@@ -292,8 +288,6 @@ extension Raytrace.Raytrace.Args.ForGPU {
                 label: "Raytrace/Args/Env",
                 options: .storageModeShared
             )!
-
-            Raytrace.IO.writable(forGPU).write(to: buffer)
 
             self.env = buffer.gpuAddress
             encoder.useResource(buffer, usage: .read)
@@ -323,8 +317,6 @@ extension Raytrace.Raytrace.Args.ForGPU {
                                     options: .storageModeShared
                                 )!
 
-                                Raytrace.IO.writable(forGPU).write(to: buffer)
-
                                 return buffer
                             }) ()
                             encoder.useResource(material, usage: .read)
@@ -340,8 +332,6 @@ extension Raytrace.Raytrace.Args.ForGPU {
                             options: .storageModeShared
                         )!
 
-                        Raytrace.IO.writable(forGPU).write(to: buffer)
-
                         return buffer
                     }) ()
                     encoder.useResource(pieces, usage: .read)
@@ -356,8 +346,6 @@ extension Raytrace.Raytrace.Args.ForGPU {
                     label: "Raytrace/Args/Acceleration/Meshes",
                     options: .storageModeShared
                 )!
-
-                Raytrace.IO.writable(forGPU).write(to: buffer)
 
                 return buffer
             }) ()
@@ -381,8 +369,6 @@ extension Raytrace.Raytrace.Args.ForGPU {
                 label: "Raytrace/Args/Acceleration",
                 options: .storageModeShared
             )!
-
-            Raytrace.IO.writable(forGPU).write(to: buffer)
 
             self.acceleration = buffer.gpuAddress
             encoder.useResource(buffer, usage: .read)
