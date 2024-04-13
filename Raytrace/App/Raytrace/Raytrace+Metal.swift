@@ -77,49 +77,4 @@ extension MTLCommandBuffer {
 
 struct MTLComputeArgumentEncoder {
     var compute: any MTLComputeCommandEncoder
-    var argument: any MTLArgumentEncoder
-}
-
-extension MTLComputeArgumentEncoder {
-    func make(for index: Int) -> Self? {
-        guard let argument = argument.makeArgumentEncoderForBuffer(atIndex: index) else { return nil }
-
-        return .init(
-            compute: compute,
-            argument: argument
-        )
-    }
-}
-
-extension MTLComputeArgumentEncoder {
-    func make(label: String? = nil, count: Int = 1) -> (any MTLBuffer)? {
-        guard let buffer = compute.device.makeBuffer(
-            length: argument.encodedLength * count
-        ) else { return nil }
-
-        buffer.label = label
-
-        return buffer
-    }
-}
-
-extension MTLBuffer {
-    func encode(with encoder: MTLComputeArgumentEncoder, at index: Int, by offset: Int = 0, usage: MTLResourceUsage) {
-        encoder.compute.useResource(self, usage: usage)
-        encoder.argument.setBuffer(self, offset: offset, index: index)
-    }
-}
-
-extension MTLTexture {
-    func encode(with encoder: MTLComputeArgumentEncoder, at index: Int, usage: MTLResourceUsage) {
-        encoder.compute.useResource(self, usage: usage)
-        encoder.argument.setTexture(self, index: index)
-    }
-}
-
-extension MTLAccelerationStructure {
-    func encode(with encoder: MTLComputeArgumentEncoder, at index: Int, usage: MTLResourceUsage) {
-        encoder.compute.useResource(self, usage: usage)
-        encoder.argument.setAccelerationStructure(self, index: index)
-    }
 }

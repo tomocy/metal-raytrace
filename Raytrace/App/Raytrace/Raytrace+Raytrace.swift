@@ -26,9 +26,7 @@ extension Raytrace.Raytrace {
             compute: try PipelineStates.make(with: device, for: fn)
         )
 
-        args = .init(
-            encoder: Args.make(for: fn)
-        )
+        args = .init()
 
         target = Self.make(with: device, resolution: resolution)!
         seeds = Self.makeSeeds(with: device, resolution: resolution)!
@@ -192,15 +190,7 @@ extension Raytrace.Raytrace.PipelineStates {
 }
 
 extension Raytrace.Raytrace {
-    struct Args {
-        var encoder: any MTLArgumentEncoder
-    }
-}
-
-extension Raytrace.Raytrace.Args {
-    static func make(for function: some MTLFunction) -> any MTLArgumentEncoder {
-        return function.makeArgumentEncoder(bufferIndex: 0)
-    }
+    struct Args {}
 }
 
 extension Raytrace.Raytrace.Args {
