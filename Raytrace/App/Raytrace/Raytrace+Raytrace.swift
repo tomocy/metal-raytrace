@@ -252,13 +252,14 @@ extension Raytrace.Raytrace.Args.ForGPU {
                 options: .storageModeShared
             )!
 
-            self.frame = buffer.gpuAddress
             encoder.useResource(buffer, usage: .read)
+
+            self.frame = buffer.gpuAddress
         }
 
         do {
-            self.seeds = seeds.gpuResourceID
             encoder.useResource(seeds, usage: .read)
+            self.seeds = seeds.gpuResourceID
         }
 
         do {
@@ -272,8 +273,9 @@ extension Raytrace.Raytrace.Args.ForGPU {
                 options: .storageModeShared
             )!
 
-            self.background = buffer.gpuAddress
             encoder.useResource(buffer, usage: .read)
+
+            self.background = buffer.gpuAddress
         }
 
         do {
@@ -289,8 +291,9 @@ extension Raytrace.Raytrace.Args.ForGPU {
                 options: .storageModeShared
             )!
 
-            self.env = buffer.gpuAddress
             encoder.useResource(buffer, usage: .read)
+
+            self.env = buffer.gpuAddress
         }
 
         do {
@@ -319,6 +322,7 @@ extension Raytrace.Raytrace.Args.ForGPU {
 
                                 return buffer
                             }) ()
+
                             encoder.useResource(material, usage: .read)
 
                             return Piece.init(
@@ -334,6 +338,7 @@ extension Raytrace.Raytrace.Args.ForGPU {
 
                         return buffer
                     }) ()
+
                     encoder.useResource(pieces, usage: .read)
 
                     return Mesh.init(
@@ -349,6 +354,7 @@ extension Raytrace.Raytrace.Args.ForGPU {
 
                 return buffer
             }) ()
+
             encoder.useResource(meshes, usage: .read)
 
             let primitives = Raytrace.Metal.bufferBuildable(acceleration.primitives).build(
@@ -356,6 +362,7 @@ extension Raytrace.Raytrace.Args.ForGPU {
                 label: "Raytrace/Args/Acceleration/Primitives",
                 options: .storageModeShared
             )!
+
             encoder.useResource(primitives, usage: .read)
 
             let forGPU = Acceleration.init(
@@ -370,8 +377,9 @@ extension Raytrace.Raytrace.Args.ForGPU {
                 options: .storageModeShared
             )!
 
-            self.acceleration = buffer.gpuAddress
             encoder.useResource(buffer, usage: .read)
+
+            self.acceleration = buffer.gpuAddress
         }
     }
 }
