@@ -114,15 +114,89 @@ extension Raytrace.Raytrace {
 }
 
 extension Raytrace.Raytrace {
+    func build(
+        to buffer: some MTLCommandBuffer,
+        frame: Raytrace.Frame
+    ) -> (
+        heap: some MTLHeap,
+        context: some MTLBuffer
+    ) {
+        let encoder = buffer.makeBlitCommandEncoder()!
+        defer { encoder.endEncoding() }
+
+        let heap = ({
+            let desc = MTLHeapDescriptor.init()
+
+            desc.storageMode = .private
+
+            desc.size += MemoryLayout<Raytrace.Frame>.stride
+            desc.size += MemoryLayout<Context.ForGPU>.stride
+
+            return encoder.device.makeHeap(descriptor: desc)
+        }) ()!
+
+        var context = Context.ForGPU.init(
+            frame: 0
+        )
+
+        do {
+            let onDevice = Raytrace.Metal.bufferBuildable(frame).build(
+                with: encoder.device,
+                label: "Raytrace/Context/Frame",
+                options: .storageModeShared
+            )!
+
+            let onHeap = withUnsafeBytes(of: frame) { bytes in
+                heap.makeBuffer(
+                    length: bytes.count,
+                    options: .storageModePrivate
+                )
+            }!
+
+            context.frame = onHeap.gpuAddress
+
+            encoder.copy(
+                from: onDevice, sourceOffset: 0,
+                to: onHeap, destinationOffset: 0,
+                size: onHeap.length
+            )
+        }
+
+        let onDevice = Raytrace.Metal.bufferBuildable(context).build(
+            with: encoder.device,
+            label: "Raytrace/Context",
+            options: .storageModeShared
+        )!
+
+        let onHeap = withUnsafeBytes(of: context) { bytes in
+            heap.makeBuffer(
+                length: bytes.count,
+                options: .storageModePrivate
+            )
+        }!
+
+        encoder.copy(
+            from: onDevice, sourceOffset: 0,
+            to: onHeap, destinationOffset: 0,
+            size: onHeap.length
+        )
+
+        return (heap: heap, context: onHeap)
+    }
+
     func encode(
         _ meshes: [Raytrace.Mesh],
         to buffer: some MTLCommandBuffer,
+        heap: some MTLHeap,
+        context: some MTLBuffer,
         frame: Raytrace.Frame,
         accelerator: some MTLAccelerationStructure,
         primitives: [Raytrace.Primitive.Instance]
     ) {
         let encoder = buffer.makeComputeCommandEncoder()!
         defer { encoder.endEncoding() }
+
+        encoder.useHeap(heap)
 
         encoder.setComputePipelineState(pipelineStates.compute)
 
@@ -143,14 +217,14 @@ extension Raytrace.Raytrace {
 
             let buffer = Raytrace.Metal.bufferBuildable(forGPU).build(
                 with: encoder.device,
-                label: "Raytrace.ArgsX",
+                label: "Raytrace.Args",
                 options: .storageModeShared
             )!
 
-            Raytrace.IO.writable(forGPU).write(to: buffer)
-
             encoder.setBuffer(buffer, offset: 0, index: 0)
         }
+
+        encoder.setBuffer(context, offset: 0, index: 1)
 
         do {
             let threadsSizePerGroup = MTLSize.init(width: 8, height: 8, depth: 1)
@@ -381,5 +455,15 @@ extension Raytrace.Raytrace.Args.ForGPU {
 
             self.acceleration = buffer.gpuAddress
         }
+    }
+}
+
+extension Raytrace.Raytrace {
+    struct Context {}
+}
+
+extension Raytrace.Raytrace.Context {
+    fileprivate struct ForGPU {
+        var frame: UInt64
     }
 }

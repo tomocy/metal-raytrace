@@ -186,9 +186,16 @@ extension Engine.View: MTKViewDelegate {
             let command = shader.commandQueue.makeCommandBuffer()!
 
             command.commit {
+                let (heap, context) = shader.raytrace.build(
+                    to: command,
+                    frame: renderFrame!
+                )
+
                 shader.raytrace.encode(
                     meshes!,
                     to: command,
+                    heap: heap,
+                    context: context,
                     frame: renderFrame!,
                     accelerator: shader.accelerator.instanced.target!,
                     primitives: shader.accelerator.instanced.primitives!

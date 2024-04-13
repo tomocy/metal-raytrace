@@ -163,9 +163,15 @@ public:
     constant Acceleration& acceleration;
 };
 
+struct Context {
+public:
+    constant Frame& frame;
+};
+
 kernel void compute(
     const uint2 id [[thread_position_in_grid]],
-    constant Args& args [[buffer(0)]]
+    constant Args& args [[buffer(0)]],
+    constant Context& context [[buffer(1)]]
 )
 {
     namespace raytracing = metal::raytracing;
@@ -196,7 +202,8 @@ kernel void compute(
 
     const auto tracer = Tracer {
         .maxTraceCount = 3,
-        .frame = args.frame,
+        // .frame = args.frame,
+        .frame = context.frame,
         .seed = seed,
         .background = args.background,
         .env = args.env,
