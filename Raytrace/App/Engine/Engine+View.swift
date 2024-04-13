@@ -182,6 +182,12 @@ extension Engine.View: MTKViewDelegate {
     func draw(in view: MTKView) {
         guard let shader = shader else { return }
 
+        let acceleration = Raytrace.Acceleration.init(
+            structure: shader.accelerator.instanced.target!,
+            meshes: meshes!,
+            primitives: shader.accelerator.instanced.primitives!
+        )
+
         do {
             let command = shader.commandQueue.makeCommandBuffer()!
 
@@ -191,7 +197,8 @@ extension Engine.View: MTKViewDelegate {
                     frame: renderFrame!,
                     seeds: shader.raytrace.seeds,
                     background: shader.raytrace.background,
-                    env: shader.raytrace.env
+                    env: shader.raytrace.env,
+                    acceleration: acceleration
                 )
 
                 shader.raytrace.encode(
@@ -200,8 +207,7 @@ extension Engine.View: MTKViewDelegate {
                     heap: heap,
                     context: context,
                     frame: renderFrame!,
-                    accelerator: shader.accelerator.instanced.target!,
-                    primitives: shader.accelerator.instanced.primitives!
+                    acceleration: acceleration
                 )
 
                 shader.echo.encode(

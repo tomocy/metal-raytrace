@@ -16,11 +16,23 @@ extension Raytrace {
 }
 
 extension Raytrace.Mesh {
+    struct ForGPU {
+        var pieces: UInt64
+    }
+}
+
+extension Raytrace.Mesh {
     struct Piece {
         var type: MTLPrimitiveType
         var indices: Indices
         var data: Raytrace.Primitive.Data
         var material: Raytrace.Material?
+    }
+}
+
+extension Raytrace.Mesh.Piece {
+    struct ForGPU {
+        var material: UInt64 = 0
     }
 }
 

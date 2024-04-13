@@ -22,3 +22,10 @@ extension Raytrace.Material {
         }
     }
 }
+
+extension Raytrace.Material {
+    struct ForGPU {
+        var albedo: MTLResourceID = .init()
+        var metalRoughness: MTLResourceID = .init()
+    }
+}
