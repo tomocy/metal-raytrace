@@ -116,7 +116,8 @@ extension Raytrace.Raytrace {
 extension Raytrace.Raytrace {
     func build(
         to buffer: some MTLCommandBuffer,
-        frame: Raytrace.Frame
+        frame: Raytrace.Frame,
+        seeds: some MTLTexture
     ) -> (
         heap: some MTLHeap,
         context: some MTLBuffer
@@ -130,13 +131,20 @@ extension Raytrace.Raytrace {
             desc.storageMode = .private
 
             desc.size += MemoryLayout<Raytrace.Frame>.stride
+
+            do {
+                let sizeAlign = encoder.device.heapTextureSizeAndAlign(descriptor: seeds.descriptor)
+                desc.size += sizeAlign.aligned.size
+            }
+
             desc.size += MemoryLayout<Context.ForGPU>.stride
 
             return encoder.device.makeHeap(descriptor: desc)
         }) ()!
 
         var context = Context.ForGPU.init(
-            frame: 0
+            frame: 0,
+            seeds: .init()
         )
 
         do {
@@ -152,6 +160,7 @@ extension Raytrace.Raytrace {
                     options: .storageModePrivate
                 )
             }!
+            onHeap.label = onDevice.label
 
             context.frame = onHeap.gpuAddress
 
@@ -160,6 +169,18 @@ extension Raytrace.Raytrace {
                 to: onHeap, destinationOffset: 0,
                 size: onHeap.length
             )
+        }
+
+        do {
+            let desc = seeds.descriptor
+            desc.storageMode = .private
+
+            let onHeap = heap.makeTexture(descriptor: desc)!
+            onHeap.label = seeds.label
+
+            context.seeds = onHeap.gpuResourceID
+
+            encoder.copy(from: seeds, to: onHeap)
         }
 
         let onDevice = Raytrace.Metal.bufferBuildable(context).build(
@@ -174,6 +195,7 @@ extension Raytrace.Raytrace {
                 options: .storageModePrivate
             )
         }!
+        onHeap.label = onDevice.label
 
         encoder.copy(
             from: onDevice, sourceOffset: 0,
@@ -465,5 +487,6 @@ extension Raytrace.Raytrace {
 extension Raytrace.Raytrace.Context {
     fileprivate struct ForGPU {
         var frame: UInt64
+        var seeds: MTLResourceID
     }
 }

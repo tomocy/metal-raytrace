@@ -68,6 +68,24 @@ extension Array: Raytrace.Metal.BufferBuildable {
     }
 }
 
+extension MTLTexture {
+    var descriptor: MTLTextureDescriptor {
+        let desc = MTLTextureDescriptor.init()
+
+        desc.textureType = textureType
+        desc.pixelFormat = pixelFormat
+        desc.width = width
+        desc.height = height
+        desc.depth = depth
+        desc.mipmapLevelCount = mipmapLevelCount
+        desc.arrayLength = arrayLength
+        desc.sampleCount = sampleCount
+        desc.storageMode = storageMode
+
+        return desc
+    }
+}
+
 extension MTLCommandBuffer {
     func commit(_ code: () -> Void) {
         code()
@@ -77,4 +95,13 @@ extension MTLCommandBuffer {
 
 struct MTLComputeArgumentEncoder {
     var compute: any MTLComputeCommandEncoder
+}
+
+extension MTLSizeAndAlign {
+    var aligned: Self {
+        .init(
+            size: size.align(by: align),
+            align: align
+        )
+    }
 }

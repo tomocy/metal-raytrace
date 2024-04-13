@@ -188,7 +188,8 @@ extension Engine.View: MTKViewDelegate {
             command.commit {
                 let (heap, context) = shader.raytrace.build(
                     to: command,
-                    frame: renderFrame!
+                    frame: renderFrame!,
+                    seeds: shader.raytrace.seeds
                 )
 
                 shader.raytrace.encode(

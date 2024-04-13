@@ -166,6 +166,7 @@ public:
 struct Context {
 public:
     constant Frame& frame;
+    metal::texture2d<uint32_t> seeds;
 };
 
 kernel void compute(
@@ -192,7 +193,8 @@ kernel void compute(
         .position = float3(0, 0.5, -2),
     };
 
-    const auto seed = args.seeds.read(id).r;
+    // const auto seed = args.seeds.read(id).r;
+    const auto seed = context.seeds.read(id).r;
 
     // Map Screen (0...width, 0...height) to UV (0...1, 0...1),
     // then UV to NDC (-1...1, 1...-1).
