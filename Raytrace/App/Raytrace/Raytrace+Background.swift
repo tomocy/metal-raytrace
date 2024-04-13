@@ -23,3 +23,9 @@ extension Raytrace.Background {
         )
     }
 }
+
+extension Raytrace.Background {
+    struct ForGPU {
+        var source: MTLResourceID
+    }
+}

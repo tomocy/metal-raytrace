@@ -167,6 +167,7 @@ struct Context {
 public:
     constant Frame& frame;
     metal::texture2d<uint32_t> seeds;
+    constant Background& background;
 };
 
 kernel void compute(
@@ -207,7 +208,8 @@ kernel void compute(
         // .frame = args.frame,
         .frame = context.frame,
         .seed = seed,
-        .background = args.background,
+        // .background = args.background,
+        .background = context.background,
         .env = args.env,
         .intersector = Intersector(args.acceleration),
         .directionalLight = {
