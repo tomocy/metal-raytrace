@@ -16,6 +16,52 @@ extension Raytrace {
 }
 
 extension Raytrace.Mesh {
+    func measureHeapSize(with device: some MTLDevice) -> Int {
+        var size = 0
+
+        size += pieces.reduce(0) { size, piece in
+            size + piece.measureHeapSize(with: device)
+        }
+
+        size += MemoryLayout<ForGPU>.stride
+
+        return size
+    }
+}
+
+extension Array where Element == Raytrace.Mesh {
+    func build(
+        with encoder: some MTLBlitCommandEncoder,
+        on heap: some MTLHeap,
+        label: String
+    ) -> some MTLBuffer {
+        let forGPU = enumerated().map { i, mesh in
+            let forGPU = Element.ForGPU.init(
+                pieces: mesh.pieces.build(
+                    with: encoder,
+                    on: heap,
+                    label: "\(label)/\(i)/Pieces"
+                ).gpuAddress
+            )
+
+            return forGPU
+        }
+
+        let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
+            with: encoder.device,
+            label: label,
+            options: .storageModeShared
+        )!
+
+        let onHeap = onDevice.copy(with: encoder, to: heap)
+
+        encoder.copy(from: onDevice, to: onHeap)
+
+        return onHeap
+    }
+}
+
+extension Raytrace.Mesh {
     struct ForGPU {
         var pieces: UInt64
     }
@@ -27,6 +73,48 @@ extension Raytrace.Mesh {
         var indices: Indices
         var data: Raytrace.Primitive.Data
         var material: Raytrace.Material?
+    }
+}
+
+extension Raytrace.Mesh.Piece {
+    func measureHeapSize(with device: some MTLDevice) -> Int {
+        var size = 0
+
+        size += material?.measureHeapSize(with: device) ?? 0
+
+        size += MemoryLayout<ForGPU>.stride
+
+        return size
+    }
+}
+
+extension Array where Element == Raytrace.Mesh.Piece {
+    func build(
+        with encoder: some MTLBlitCommandEncoder,
+        on heap: some MTLHeap,
+        label: String
+    ) -> some MTLBuffer {
+        let forGPU = enumerated().map { i, piece in
+            Element.ForGPU.init(
+                material: piece.material?.build(
+                    with: encoder,
+                    on: heap,
+                    label: "\(label)/\(i)/Material"
+                ).gpuAddress ?? 0
+            )
+        }
+
+        let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
+            with: encoder.device,
+            label: label,
+            options: .storageModeShared
+        )!
+
+        let onHeap = onDevice.copy(with: encoder, to: heap)
+
+        encoder.copy(from: onDevice, to: onHeap)
+
+        return onHeap
     }
 }
 

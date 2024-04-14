@@ -7,7 +7,6 @@ extension Raytrace {
         var commandQueue: MTLCommandQueue
 
         var accelerator: Accelerator
-
         var raytrace: Raytrace
         var echo: Echo
     }

@@ -186,22 +186,14 @@ extension Engine.View: MTKViewDelegate {
             let command = shader.commandQueue.makeCommandBuffer()!
 
             command.commit {
-                let context = shader.raytrace.buildContext(
+                shader.raytrace.encode(
                     to: command,
                     frame: renderFrame!,
-                    seeds: shader.raytrace.seeds,
-                    background: shader.raytrace.background,
-                    env: shader.raytrace.env,
                     acceleration: .init(
                         structure: shader.accelerator.instanced.target!,
                         meshes: meshes!,
                         primitives: shader.accelerator.instanced.primitives!
                     )
-                )
-
-                shader.raytrace.encode(
-                    to: command,
-                    context: context
                 )
 
                 shader.echo.encode(

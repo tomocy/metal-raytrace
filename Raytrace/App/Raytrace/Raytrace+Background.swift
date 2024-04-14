@@ -25,6 +25,43 @@ extension Raytrace.Background {
 }
 
 extension Raytrace.Background {
+    func measureHeapSize(with device: some MTLDevice) -> Int {
+        var size = 0
+
+        size += source.measureHeapSize(with: device)
+
+        size += MemoryLayout<ForGPU>.stride
+
+        return size
+    }
+
+    func build(
+        with encoder: some MTLBlitCommandEncoder,
+        on heap: some MTLHeap,
+        label: String
+    ) -> some MTLBuffer {
+        let forGPU = Raytrace.Background.ForGPU.init(
+            source: source.copy(
+                with: encoder,
+                to: heap
+            ).gpuResourceID
+        )
+
+        let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
+            with: encoder.device,
+            label: label,
+            options: .storageModeShared
+        )!
+
+        let onHeap = onDevice.copy(with: encoder, to: heap)
+
+        encoder.copy(from: onDevice, to: onHeap)
+
+        return onHeap
+    }
+}
+
+extension Raytrace.Background {
     struct ForGPU {
         var source: MTLResourceID
     }

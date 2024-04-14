@@ -11,6 +11,56 @@ extension Raytrace {
 }
 
 extension Raytrace.Acceleration {
+    func measureHeapSize(with device: some MTLDevice) -> Int {
+        var size = 0
+
+        size += meshes.reduce(0) { size, mesh in
+            size + mesh.measureHeapSize(with: device)
+        }
+
+        size += MemoryLayout<Raytrace.Primitive.Instance>.stride * primitives.count
+
+        size += MemoryLayout<ForGPU>.stride
+
+        return size
+    }
+
+    func build(
+        with encoder: some MTLBlitCommandEncoder,
+        on heap: some MTLHeap,
+        label: String
+    ) -> some MTLBuffer {
+        let forGPU = Raytrace.Acceleration.ForGPU.init(
+            structure: structure.gpuResourceID,
+
+            meshes: meshes.build(
+                with: encoder,
+                on: heap,
+                label: "\(label)/Meshes"
+            ).gpuAddress,
+
+            primitives: primitives.build(
+                with: encoder,
+                on: heap,
+                label: "\(label)/Primitives"
+            ).gpuAddress
+        )
+
+        let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
+            with: encoder.device,
+            label: label,
+            options: .storageModeShared
+        )!
+
+        let onHeap = onDevice.copy(with: encoder, to: heap)
+
+        encoder.copy(from: onDevice, to: onHeap)
+
+        return onHeap
+    }
+}
+
+extension Raytrace.Acceleration {
     struct ForGPU {
         var structure: MTLResourceID
         var meshes: UInt64
