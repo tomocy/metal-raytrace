@@ -28,6 +28,11 @@ extension Raytrace.Metal.BufferBuildable {
     func build(with device: some MTLDevice, label: String? = nil, options: MTLResourceOptions = []) -> (any MTLBuffer)? {
         return build(with: device, label: label, options: options)
     }
+
+    func build(with encoder: some MTLBlitCommandEncoder, on heap: some MTLHeap, label: String? = nil) -> (any MTLBuffer)? {
+        let onDevice = build(with: encoder.device, label: label, options: .storageModeShared)
+        return onDevice?.copy(with: encoder, to: heap)
+    }
 }
 
 extension Raytrace.Metal {
@@ -153,17 +158,11 @@ extension Array {
         on heap: some MTLHeap,
         label: String
     ) -> some MTLBuffer {
-        let onDevice = Raytrace.Metal.bufferBuildable(self).build(
-            with: encoder.device,
-            label: label,
-            options: .storageModeShared
+        return Raytrace.Metal.bufferBuildable(self).build(
+            with: encoder,
+            on: heap,
+            label: label
         )!
-
-        let onHeap = onDevice.copy(with: encoder, to: heap)
-
-        encoder.copy(from: onDevice, to: onHeap)
-
-        return onHeap
     }
 }
 

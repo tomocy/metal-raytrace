@@ -26,9 +26,9 @@ extension Texture {
         desc.usage = usage
         desc.storageMode = storageMode
 
-        guard let texture = device.makeTexture(descriptor: desc) else { return nil }
+        let texture = device.makeTexture(descriptor: desc)
 
-        texture.label = label
+        texture?.label = label
 
         return texture
     }
@@ -51,9 +51,9 @@ extension Texture {
         desc.usage = usage
         desc.storageMode = storageMode
 
-        guard let texture = device.makeTexture(descriptor: desc) else { return nil }
+        let texture = device.makeTexture(descriptor: desc)
 
-        texture.label = label
+        texture?.label = label
 
         return texture
     }

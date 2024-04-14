@@ -47,17 +47,11 @@ extension Array where Element == Raytrace.Mesh {
             return forGPU
         }
 
-        let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
-            with: encoder.device,
-            label: label,
-            options: .storageModeShared
+        return Raytrace.Metal.bufferBuildable(forGPU).build(
+            with: encoder,
+            on: heap,
+            label: label
         )!
-
-        let onHeap = onDevice.copy(with: encoder, to: heap)
-
-        encoder.copy(from: onDevice, to: onHeap)
-
-        return onHeap
     }
 }
 
@@ -104,17 +98,11 @@ extension Array where Element == Raytrace.Mesh.Piece {
             )
         }
 
-        let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
-            with: encoder.device,
-            label: label,
-            options: .storageModeShared
+        return Raytrace.Metal.bufferBuildable(forGPU).build(
+            with: encoder,
+            on: heap,
+            label: label
         )!
-
-        let onHeap = onDevice.copy(with: encoder, to: heap)
-
-        encoder.copy(from: onDevice, to: onHeap)
-
-        return onHeap
     }
 }
 

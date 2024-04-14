@@ -24,6 +24,8 @@ extension Engine {
             colorPixelFormat = .rgba8Unorm_srgb
             shader = try! .init(device: device, resolution: drawableSize, format: colorPixelFormat)
 
+            renderFrame = .init(id: 0)
+
             do {
                 meshes = []
 
@@ -51,7 +53,8 @@ extension Engine {
                             albedo: mesh.pieces[0].material?.albedo,
                             metalRoughness: try! Raytrace.Texture.fill(
                                 .init(red: 1, green: 0.5, blue: 0, alpha: 0),
-                                with: device
+                                with: device,
+                                usage: [.shaderRead]
                             )
                         )
 
@@ -73,7 +76,8 @@ extension Engine {
                             albedo: mesh.pieces[0].material?.albedo,
                             metalRoughness: try! Raytrace.Texture.fill(
                                 .init(red: 0, green: 1, blue: 0, alpha: 0),
-                                with: device
+                                with: device,
+                                usage: [.shaderRead]
                             )
                         )
 
@@ -106,11 +110,13 @@ extension Engine {
                     mesh.pieces[0].material = .init(
                         albedo: try! Raytrace.Texture.fill(
                             .init(red: 1, green: 0.75, blue: 0.25, alpha: 1),
-                            with: device
+                            with: device,
+                            usage: [.shaderRead]
                         ),
                         metalRoughness: try! Raytrace.Texture.fill(
                             .init(red: 1, green: 0.5, blue: 0, alpha: 0),
-                            with: device
+                            with: device,
+                            usage: [.shaderRead]
                         )
                     )
 
@@ -144,7 +150,8 @@ extension Engine {
                         ),
                         metalRoughness: try! Raytrace.Texture.fill(
                             .init(red: 0, green: 1, blue: 0, alpha: 0),
-                            with: device
+                            with: device,
+                            usage: [.shaderRead]
                         )
                     )
 
@@ -152,7 +159,8 @@ extension Engine {
                 }
             }
 
-            renderFrame = .init(id: 0)
+            background = try! .init(device: device)
+            env = try! .init(device: device)
 
             do {
                 let command = shader!.commandQueue.makeCommandBuffer()!
@@ -170,9 +178,11 @@ extension Engine {
         }
 
         var shader: Raytrace.Shader?
-        var meshes: [Raytrace.Mesh]?
 
         var renderFrame: Raytrace.Frame?
+        var meshes: [Raytrace.Mesh]?
+        var background: Raytrace.Background?
+        var env: Raytrace.Env?
     }
 }
 
@@ -189,6 +199,8 @@ extension Engine.View: MTKViewDelegate {
                 shader.raytrace.encode(
                     to: command,
                     frame: renderFrame!,
+                    background: background!,
+                    env: env!,
                     acceleration: .init(
                         structure: shader.accelerator.instanced.target!,
                         meshes: meshes!,

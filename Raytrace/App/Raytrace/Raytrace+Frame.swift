@@ -14,20 +14,10 @@ extension Raytrace.Frame {
         on heap: some MTLHeap,
         label: String
     ) -> some MTLBuffer {
-        let onDevice = Raytrace.Metal.bufferBuildable(self).build(
-            with: encoder.device,
-            label: label,
-            options: .storageModeShared
+        return Raytrace.Metal.bufferBuildable(self).build(
+            with: encoder,
+            on: heap,
+            label: label
         )!
-
-        let onHeap = onDevice.copy(with: encoder, to: heap)
-
-        encoder.copy(
-            from: onDevice, sourceOffset: 0,
-            to: onHeap, destinationOffset: 0,
-            size: onHeap.length
-        )
-
-        return onHeap
     }
 }

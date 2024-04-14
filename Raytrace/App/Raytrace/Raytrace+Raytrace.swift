@@ -10,16 +10,16 @@ extension Raytrace {
 
         var target: Target
         var seeds: any MTLTexture
-        var background: Background
-        var env: Env
     }
 }
 
 extension Raytrace.Raytrace {
-    init(device: some MTLDevice, resolution: CGSize) throws {
+    init(
+        device: some MTLDevice,
+        resolution: CGSize
+    ) throws {
         let lib = device.makeDefaultLibrary()!
         let fn = lib.makeFunction(name: "Raytrace::compute")!
-
 
         pipelineStates = .init(
             compute: try PipelineStates.make(with: device, for: fn)
@@ -27,9 +27,6 @@ extension Raytrace.Raytrace {
 
         target = Self.make(with: device, resolution: resolution)!
         seeds = Self.makeSeeds(with: device, resolution: resolution)!
-
-        background = try .init(device: device)
-        env = try .init(device: device)
     }
 }
 
@@ -38,18 +35,18 @@ extension Raytrace.Raytrace {
         with device: some MTLDevice,
         resolution: CGSize
     ) -> Target? {
-        let desc = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .bgra8Unorm,
-            width: .init(resolution.width), height: .init(resolution.height),
+        guard let texture = Raytrace.Texture.make2D(
+            with: device,
+            label: "Target",
+            format: .bgra8Unorm,
+            size: .init(
+                .init(resolution.width),
+                .init(resolution.height)
+            ),
+            usage: [.shaderRead, .shaderWrite],
+            storageMode: .private,
             mipmapped: false
-        )
-
-        desc.storageMode = .private
-        desc.usage = [.shaderRead, .shaderWrite]
-
-        guard let texture = device.makeTexture(descriptor: desc) else { return nil }
-
-        texture.label = "Target"
+        ) else { return nil }
 
         return .init(resolution: resolution, texture: texture)
     }
@@ -60,20 +57,20 @@ extension Raytrace.Raytrace {
         with device: some MTLDevice,
         resolution: CGSize
     ) -> (any MTLTexture)? {
-        let desc = MTLTextureDescriptor.texture2DDescriptor(
-            pixelFormat: .r32Uint,
-            width: .init(resolution.width), height: .init(resolution.height),
+        guard let texture = Raytrace.Texture.make2D(
+            with: device,
+            label: "Seeds",
+            format: .r32Uint,
+            size: .init(
+                .init(resolution.width),
+                .init(resolution.height)
+            ),
+            usage: [.shaderRead, .shaderWrite],
+            storageMode: .managed,
             mipmapped: false
-        )
+        ) else { return nil }
 
-        desc.storageMode = .managed
-        desc.usage = [.shaderRead, .shaderWrite]
-
-        guard let texture = device.makeTexture(descriptor: desc) else { return nil }
-
-        texture.label = "Seeds"
-
-        let count = desc.width * desc.height
+        let count = texture.width * texture.height
 
         var seeds: [UInt32] = []
         seeds.reserveCapacity(count)
@@ -84,10 +81,10 @@ extension Raytrace.Raytrace {
 
         seeds.withUnsafeBytes { bytes in
             texture.replace(
-                region: MTLRegionMake2D(0, 0, desc.width, desc.height),
+                region: MTLRegionMake2D(0, 0, texture.width, texture.height),
                 mipmapLevel: 0,
                 withBytes: bytes.baseAddress!,
-                bytesPerRow: MemoryLayout<UInt32>.stride * desc.width
+                bytesPerRow: MemoryLayout<UInt32>.stride * texture.width
             )
         }
 
@@ -96,24 +93,11 @@ extension Raytrace.Raytrace {
 }
 
 extension Raytrace.Raytrace {
-    static func makeBackground(with device: some MTLDevice) throws -> any MTLTexture {
-        // We know the background texture for now.
-        return try MTKTextureLoader.init(device: device).newTexture(
-            URL: Bundle.main.url(forResource: "Env", withExtension: "png", subdirectory: "Farm/Env")!,
-            options: [
-                .textureUsage: MTLTextureUsage.shaderRead.rawValue,
-                .textureStorageMode: MTLStorageMode.private.rawValue,
-                .cubeLayout: MTKTextureLoader.CubeLayout.vertical.rawValue,
-                .generateMipmaps: true,
-            ]
-        )
-    }
-}
-
-extension Raytrace.Raytrace {
     func encode(
         to buffer: some MTLCommandBuffer,
         frame: Raytrace.Frame,
+        background: Raytrace.Background,
+        env: Raytrace.Env,
         acceleration: Raytrace.Acceleration
     ) {
         let context = Args.Context.init(
@@ -160,13 +144,6 @@ extension Raytrace.Raytrace {
 }
 
 extension Raytrace.Raytrace {
-    struct Target {
-        var resolution: CGSize
-        var texture: any MTLTexture
-    }
-}
-
-extension Raytrace.Raytrace {
     struct PipelineStates {
         var compute: any MTLComputePipelineState
     }
@@ -177,6 +154,13 @@ extension Raytrace.Raytrace.PipelineStates {
         return try device.makeComputePipelineState(
             function: function
         )
+    }
+}
+
+extension Raytrace.Raytrace {
+    struct Target {
+        var resolution: CGSize
+        var texture: any MTLTexture
     }
 }
 
@@ -246,15 +230,15 @@ extension Raytrace.Raytrace.Args.Context {
             let desc = MTLHeapDescriptor.init()
 
             desc.storageMode = .private
-
             desc.size = measureHeapSize(with: encoder.device)
 
             return encoder.device.makeHeap(descriptor: desc)
         }) ()!
 
-        let onHeap = build(with: encoder, on: heap, label: label)
-
-        return .init(value: onHeap, heap: heap)
+        return .init(
+            value: build(with: encoder, on: heap, label: label),
+            heap: heap
+        )
     }
 
     func build(
@@ -294,17 +278,11 @@ extension Raytrace.Raytrace.Args.Context {
             ).gpuAddress
         )
 
-        let onDevice = Raytrace.Metal.bufferBuildable(forGPU).build(
-            with: encoder.device,
-            label: label,
-            options: .storageModeShared
+        return Raytrace.Metal.bufferBuildable(forGPU).build(
+            with: encoder,
+            on: heap,
+            label: label
         )!
-
-        let onHeap = onDevice.copy(with: encoder, to: heap)
-
-        encoder.copy(from: onDevice, to: onHeap)
-
-        return onHeap
     }
 }
 
