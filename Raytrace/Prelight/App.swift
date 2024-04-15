@@ -42,7 +42,7 @@ extension App {
     func preLight() async throws {
         do {
             let command = commandQueue.makeCommandBuffer()!
-            command.label = "Prelight/Diffuse"
+            command.label = "Diffuse"
 
             try await process(label: "Prelight: Diffuse") {
                 try await command.complete {
@@ -55,7 +55,7 @@ extension App {
 
         do {
             let command = commandQueue.makeCommandBuffer()!
-            command.label = "Prelight/Specular"
+            command.label = "Specular"
 
             try await process(label: "Prelight: Specular") {
                 try await command.complete {
@@ -68,7 +68,7 @@ extension App {
 
         do {
             let command = commandQueue.makeCommandBuffer()!
-            command.label = "Prelight/Env"
+            command.label = "Env"
 
             try await process(label: "Prelight: Env") {
                 try await command.complete {

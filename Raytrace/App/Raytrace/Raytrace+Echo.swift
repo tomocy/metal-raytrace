@@ -25,6 +25,8 @@ extension Raytrace.Echo {
         let encoder = buffer.makeRenderCommandEncoder(descriptor: descriptor)!
         defer { encoder.endEncoding() }
 
+        encoder.label = "Echo"
+
         encoder.setRenderPipelineState(pipelineStates.render)
 
         encoder.setFragmentTexture(source, index: 0)

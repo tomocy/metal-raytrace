@@ -27,12 +27,12 @@ extension Prelight.Kernel {
 
         do {
             self.source = source
-            source.label!.append(",Prelight/\(label)/Source")
+            source.label!.append(",\(label)/Source")
         }
 
         target = Texture.make2D(
             with: device,
-            label: "Prelight/\(label)/Target",
+            label: "\(label)/Target",
             format: .bgra8Unorm,
             size: .init(source.width, source.height * 6 /* face count in a cube */),
             usage: [.shaderRead, .shaderWrite],
@@ -47,10 +47,12 @@ extension Prelight.Kernel {
         let encoder = buffer.makeComputeCommandEncoder()!
         defer { encoder.endEncoding() }
 
+        encoder.label = label
+
         encoder.setComputePipelineState(pipelineStates.compute)
 
         do {
-            let buffer = args.build(source, target, with: encoder, label: "Prelight/\(label)/Args")!
+            let buffer = args.build(source, target, with: encoder, label: "\(label)/Args")!
             encoder.setBuffer(buffer, offset: 0, index: 0)
         }
 

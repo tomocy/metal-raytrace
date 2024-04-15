@@ -20,6 +20,8 @@ extension Raytrace.Accelerator.Primitive {
         let encoder = buffer.makeAccelerationStructureCommandEncoder()!
         defer { encoder.endEncoding() }
 
+        encoder.label = "Accelerator/Primitive"
+
         let desc: MTLPrimitiveAccelerationStructureDescriptor = describe(
             mesh,
             with: encoder.device
@@ -100,6 +102,8 @@ extension Raytrace.Accelerator.Instanced {
     ) {
         let encoder = buffer.makeAccelerationStructureCommandEncoder()!
         defer { encoder.endEncoding() }
+
+        encoder.label = "Accelerator/Instanced"
 
         let desc: MTLInstanceAccelerationStructureDescriptor = describe(
             meshes,

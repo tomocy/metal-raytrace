@@ -25,7 +25,7 @@ extension Prelight.Env {
 
         target = Texture.make2D(
             with: device,
-            label: "Prelight/Env/Target",
+            label: "Env/Target",
             format: .bgra8Unorm,
             size: .init(128, 128),
             usage: [.shaderRead, .shaderWrite],
@@ -40,10 +40,12 @@ extension Prelight.Env {
         let encoder = buffer.makeComputeCommandEncoder()!
         defer { encoder.endEncoding() }
 
+        encoder.label = "Env"
+
         encoder.setComputePipelineState(pipelineStates.compute)
 
         do {
-            let buffer = args.build(target, with: encoder, label: "Prelight/Env/Args")!
+            let buffer = args.build(target, with: encoder, label: "Env/Args")!
             encoder.setBuffer(buffer, offset: 0, index: 0)
         }
 

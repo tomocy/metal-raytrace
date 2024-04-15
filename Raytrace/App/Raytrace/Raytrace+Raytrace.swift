@@ -112,6 +112,8 @@ extension Raytrace.Raytrace {
             let encoder = buffer.makeComputeCommandEncoder()!
             defer { encoder.endEncoding() }
 
+            encoder.label = "Raytrace"
+
             encoder.setComputePipelineState(pipelineStates.compute)
 
             do {
@@ -225,6 +227,8 @@ extension Raytrace.Raytrace.Args.Context {
     func build(to buffer: some MTLCommandBuffer, label: String) -> MTLOnHeap<any MTLBuffer> {
         let encoder = buffer.makeBlitCommandEncoder()!
         defer { encoder.endEncoding() }
+
+        encoder.label = "\(label)/Heap"
 
         let heap = ({
             let desc = MTLHeapDescriptor.init()
