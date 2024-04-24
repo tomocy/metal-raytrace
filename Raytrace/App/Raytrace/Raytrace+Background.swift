@@ -47,7 +47,7 @@ extension Raytrace.Background {
             ).gpuResourceID
         )
 
-        return Raytrace.Metal.bufferBuildable(forGPU).build(
+        return Raytrace.Metal.Buffer.buildable(forGPU).build(
             with: encoder,
             on: heap,
             label: label

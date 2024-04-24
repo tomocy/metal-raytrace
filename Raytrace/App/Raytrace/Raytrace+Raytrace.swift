@@ -180,7 +180,7 @@ extension Raytrace.Raytrace.Args {
             context: context.value.gpuAddress
         )
 
-        return Raytrace.Metal.bufferBuildable(forGPU).build(
+        return Raytrace.Metal.Buffer.buildable(forGPU).build(
             with: device,
             label: label,
             options: .storageModeShared
@@ -282,7 +282,7 @@ extension Raytrace.Raytrace.Args.Context {
             ).gpuAddress
         )
 
-        return Raytrace.Metal.bufferBuildable(forGPU).build(
+        return Raytrace.Metal.Buffer.buildable(forGPU).build(
             with: encoder,
             on: heap,
             label: label

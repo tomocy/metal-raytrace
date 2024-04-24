@@ -7,24 +7,18 @@ extension Raytrace {
 }
 
 extension Raytrace.Metal {
-    static func bufferBuildable<T>(_ value: T) -> some BufferBuildable {
-        return DefaultBufferAllocatable.init(value: value)
-    }
-
-    static func bufferBuildable(_ value: some BufferBuildable) -> some BufferBuildable {
-        return value
-    }
+    enum Buffer {}
 }
 
-extension Raytrace.Metal {
-    typealias BufferBuildable = _ShaderMetalBufferBuildable
+extension Raytrace.Metal.Buffer {
+    typealias Buildable = _ShaderMetalBufferBuildable
 }
 
 protocol _ShaderMetalBufferBuildable {
     func build(with device: some MTLDevice, label: String?, options: MTLResourceOptions) -> (any MTLBuffer)?
 }
 
-extension Raytrace.Metal.BufferBuildable {
+extension Raytrace.Metal.Buffer.Buildable {
     func build(with device: some MTLDevice, label: String? = nil, options: MTLResourceOptions = []) -> (any MTLBuffer)? {
         return build(with: device, label: label, options: options)
     }
@@ -35,13 +29,23 @@ extension Raytrace.Metal.BufferBuildable {
     }
 }
 
-extension Raytrace.Metal {
-    struct DefaultBufferAllocatable<T> {
+extension Raytrace.Metal.Buffer {
+    static func buildable<T>(_ value: T) -> some Buildable {
+        return DefaultBuildable.init(value: value)
+    }
+
+    static func buildable(_ value: some Buildable) -> some Buildable {
+        return value
+    }
+}
+
+extension Raytrace.Metal.Buffer {
+    struct DefaultBuildable<T> {
         var value: T
     }
 }
 
-extension Raytrace.Metal.DefaultBufferAllocatable: Raytrace.Metal.BufferBuildable {
+extension Raytrace.Metal.Buffer.DefaultBuildable: Raytrace.Metal.Buffer.Buildable {
     func build(with device: some MTLDevice, label: String?, options: MTLResourceOptions) -> (any MTLBuffer)? {
         guard let buffer = withUnsafeBytes(of: value, { bytes in
             device.makeBuffer(
@@ -57,7 +61,7 @@ extension Raytrace.Metal.DefaultBufferAllocatable: Raytrace.Metal.BufferBuildabl
     }
 }
 
-extension Array: Raytrace.Metal.BufferBuildable {
+extension Array: Raytrace.Metal.Buffer.Buildable {
     func build(with device: some MTLDevice, label: String?, options: MTLResourceOptions) -> (any MTLBuffer)? {
         guard let buffer = withUnsafeBytes({ bytes in
             device.makeBuffer(
@@ -158,7 +162,7 @@ extension Array {
         on heap: some MTLHeap,
         label: String
     ) -> some MTLBuffer {
-        return Raytrace.Metal.bufferBuildable(self).build(
+        return Raytrace.Metal.Buffer.buildable(self).build(
             with: encoder,
             on: heap,
             label: label

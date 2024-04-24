@@ -40,7 +40,7 @@ extension Raytrace.Echo {
         ]
 
         do {
-            let buffer = Raytrace.Metal.bufferBuildable(vertices).build(
+            let buffer = Raytrace.Metal.Buffer.buildable(vertices).build(
                 with: encoder.device,
                 label: "Vertices",
                 options: .storageModeShared
@@ -55,7 +55,7 @@ extension Raytrace.Echo {
         ]
 
         do {
-            let buffer = Raytrace.Metal.bufferBuildable(indices).build(
+            let buffer = Raytrace.Metal.Buffer.buildable(indices).build(
                 with: encoder.device,
                 label: "Indices",
                 options: .storageModeShared

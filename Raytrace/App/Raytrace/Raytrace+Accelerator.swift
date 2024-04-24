@@ -171,7 +171,7 @@ extension Raytrace.Accelerator.Instanced {
             )
         }
 
-        desc.instanceDescriptorBuffer = Raytrace.Metal.bufferBuildable(instances).build(
+        desc.instanceDescriptorBuffer = Raytrace.Metal.Buffer.buildable(instances).build(
             with: device,
             options: .storageModeShared
         )

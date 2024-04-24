@@ -47,7 +47,7 @@ extension Array where Element == Raytrace.Mesh {
             return forGPU
         }
 
-        return Raytrace.Metal.bufferBuildable(forGPU).build(
+        return Raytrace.Metal.Buffer.buildable(forGPU).build(
             with: encoder,
             on: heap,
             label: label
@@ -98,7 +98,7 @@ extension Array where Element == Raytrace.Mesh.Piece {
             )
         }
 
-        return Raytrace.Metal.bufferBuildable(forGPU).build(
+        return Raytrace.Metal.Buffer.buildable(forGPU).build(
             with: encoder,
             on: heap,
             label: label
@@ -210,7 +210,7 @@ extension MDLMesh {
         }
 
         let positions = Raytrace.Mesh.Positions.init(
-            buffer: Raytrace.Metal.bufferBuildable(vertices.map { $0.position }).build(
+            buffer: Raytrace.Metal.Buffer.buildable(vertices.map { $0.position }).build(
                 with: device,
                 options: .storageModeShared
             )!,
@@ -294,7 +294,7 @@ extension MDLSubmesh {
         return Raytrace.Mesh.Piece.init(
             type: .triangle,
             indices: .init(
-                buffer: Raytrace.Metal.bufferBuildable(indices).build(
+                buffer: Raytrace.Metal.Buffer.buildable(indices).build(
                     with: device,
                     options: .storageModeShared
                 )!,
@@ -302,7 +302,7 @@ extension MDLSubmesh {
                 count: indices.count
             ),
             data: .init(
-                buffer: Raytrace.Metal.bufferBuildable(data).build(
+                buffer: Raytrace.Metal.Buffer.buildable(data).build(
                     with: device,
                     options: .storageModeShared
                 )!,

@@ -14,7 +14,7 @@ extension Raytrace.Frame {
         on heap: some MTLHeap,
         label: String
     ) -> some MTLBuffer {
-        return Raytrace.Metal.bufferBuildable(self).build(
+        return Raytrace.Metal.Buffer.buildable(self).build(
             with: encoder,
             on: heap,
             label: label
