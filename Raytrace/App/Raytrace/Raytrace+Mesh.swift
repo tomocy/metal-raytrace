@@ -15,43 +15,33 @@ extension Raytrace {
     }
 }
 
-extension Raytrace.Mesh {
-    func measureHeapSize(with device: some MTLDevice) -> Int {
-        var size = 0
-
-        size += pieces.reduce(0) { size, piece in
-            size + piece.measureHeapSize(with: device)
-        }
-
-        size += MemoryLayout<ForGPU>.stride
-
-        return size
-    }
-}
-
 extension Array where Element == Raytrace.Mesh {
     func build(
-        with encoder: some MTLBlitCommandEncoder,
-        on heap: some MTLHeap,
+        with encoder: some MTLComputeCommandEncoder,
         label: String
-    ) -> some MTLBuffer {
+    ) -> (any MTLBuffer)? {
         let forGPU = enumerated().map { i, mesh in
-            let forGPU = Element.ForGPU.init(
-                pieces: mesh.pieces.build(
-                    with: encoder,
-                    on: heap,
-                    label: "\(label)/\(i)/Pieces"
-                ).gpuAddress
+            var forGPU = Element.ForGPU.init(
+                pieces: .init()
             )
+
+            do {
+                let buffer = mesh.pieces.build(
+                    with: encoder,
+                    label: "\(label)/\(i)/Pieces"
+                )!
+
+                encoder.useResource(buffer, usage: .read)
+                forGPU.pieces = buffer.gpuAddress
+            }
 
             return forGPU
         }
 
         return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder,
-            on: heap,
+            with: encoder.device,
             label: label
-        )!
+        )
     }
 }
 
@@ -70,39 +60,31 @@ extension Raytrace.Mesh {
     }
 }
 
-extension Raytrace.Mesh.Piece {
-    func measureHeapSize(with device: some MTLDevice) -> Int {
-        var size = 0
-
-        size += material?.measureHeapSize(with: device) ?? 0
-
-        size += MemoryLayout<ForGPU>.stride
-
-        return size
-    }
-}
-
 extension Array where Element == Raytrace.Mesh.Piece {
     func build(
-        with encoder: some MTLBlitCommandEncoder,
-        on heap: some MTLHeap,
+        with encoder: some MTLComputeCommandEncoder,
         label: String
-    ) -> some MTLBuffer {
+    ) -> (any MTLBuffer)? {
         let forGPU = enumerated().map { i, piece in
-            Element.ForGPU.init(
-                material: piece.material?.build(
+            var forGPU = Element.ForGPU.init()
+
+            if let material = piece.material {
+                let buffer = material.build(
                     with: encoder,
-                    on: heap,
                     label: "\(label)/\(i)/Material"
-                ).gpuAddress ?? 0
-            )
+                )!
+
+                encoder.useResource(buffer, usage: .read)
+                forGPU.material = buffer.gpuAddress
+            }
+
+            return forGPU
         }
 
         return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder,
-            on: heap,
+            with: encoder.device,
             label: label
-        )!
+        )
     }
 }
 

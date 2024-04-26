@@ -11,46 +11,43 @@ extension Raytrace {
 }
 
 extension Raytrace.Acceleration {
-    func measureHeapSize(with device: some MTLDevice) -> Int {
-        var size = 0
-
-        size += meshes.reduce(0) { size, mesh in
-            size + mesh.measureHeapSize(with: device)
-        }
-
-        size += MemoryLayout<Raytrace.Primitive.Instance>.stride * primitives.count
-
-        size += MemoryLayout<ForGPU>.stride
-
-        return size
-    }
-
     func build(
-        with encoder: some MTLBlitCommandEncoder,
-        on heap: some MTLHeap,
+        with encoder: some MTLComputeCommandEncoder,
         label: String
-    ) -> some MTLBuffer {
-        let forGPU = Raytrace.Acceleration.ForGPU.init(
-            structure: structure.gpuResourceID,
-
-            meshes: meshes.build(
-                with: encoder,
-                on: heap,
-                label: "\(label)/Meshes"
-            ).gpuAddress,
-
-            primitives: primitives.build(
-                with: encoder,
-                on: heap,
-                label: "\(label)/Primitives"
-            ).gpuAddress
+    ) -> (any MTLBuffer)? {
+        var forGPU = Raytrace.Acceleration.ForGPU.init(
+            structure: .init(),
+            meshes: .init(),
+            primitives: .init()
         )
 
+        do {
+            encoder.useResource(structure, usage: .read)
+            forGPU.structure = structure.gpuResourceID
+        }
+        do {
+            let buffer = meshes.build(
+                with: encoder,
+                label: "\(label)/Meshes"
+            )!
+
+            encoder.useResource(buffer, usage: .read)
+            forGPU.meshes = buffer.gpuAddress
+        }
+        do {
+            let buffer = primitives.build(
+                with: encoder.device,
+                label: "\(label)/Primitives"
+            )!
+
+            encoder.useResource(buffer, usage: .read)
+            forGPU.primitives = buffer.gpuAddress
+        }
+
         return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder,
-            on: heap,
+            with: encoder.device,
             label: label
-        )!
+        )
     }
 }
 

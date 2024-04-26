@@ -24,39 +24,26 @@ extension Raytrace.Material {
 }
 
 extension Raytrace.Material {
-    func measureHeapSize(with device: some MTLDevice) -> Int {
-        var size = 0
-
-        size += albedo?.measureHeapSize(with: device) ?? 0
-        size += metalRoughness?.measureHeapSize(with: device) ?? 0
-
-        size += MemoryLayout<ForGPU>.stride
-
-        return size
-    }
-
     func build(
-        with encoder: some MTLBlitCommandEncoder,
-        on heap: some MTLHeap,
+        with encoder: some MTLComputeCommandEncoder,
         label: String
-    ) -> some MTLBuffer {
-        let forGPU = ForGPU.init(
-            albedo: albedo?.copy(
-                with: encoder,
-                to: heap
-            ).gpuResourceID ?? .init(),
+    ) -> (any MTLBuffer)? {
+        var forGPU = ForGPU.init()
 
-            metalRoughness: metalRoughness?.copy(
-                with: encoder,
-                to: heap
-            ).gpuResourceID ?? .init()
-        )
+        if let texture = albedo {
+            encoder.useResource(texture, usage: .read)
+            forGPU.albedo = texture.gpuResourceID
+        }
+
+        if let texture = metalRoughness {
+            encoder.useResource(texture, usage: .read)
+            forGPU.metalRoughness = texture.gpuResourceID
+        }
 
         return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder,
-            on: heap,
+            with: encoder.device,
             label: label
-        )!
+        )
     }
 }
 

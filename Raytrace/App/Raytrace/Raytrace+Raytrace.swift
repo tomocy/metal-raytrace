@@ -100,14 +100,6 @@ extension Raytrace.Raytrace {
         env: Raytrace.Env,
         acceleration: Raytrace.Acceleration
     ) {
-        let context = Args.Context.init(
-            frame: frame,
-            seeds: seeds,
-            background: background,
-            env: env,
-            acceleration: acceleration
-        ).build(to: buffer, label: "Args/Context")
-
         do {
             let encoder = buffer.makeComputeCommandEncoder()!
             defer { encoder.endEncoding() }
@@ -117,14 +109,16 @@ extension Raytrace.Raytrace {
             encoder.setComputePipelineState(pipelineStates.compute)
 
             do {
-                encoder.useHeap(context.heap)
-
                 let args = Args.init(
                     target: target.texture,
-                    context: context
+                    frame: frame,
+                    seeds: seeds,
+                    background: background,
+                    env: env,
+                    acceleration: acceleration
                 )
 
-                let buffer = args.build(with: encoder.device, label: "Args")!
+                let buffer = args.build(with: encoder, label: "Args")!
 
                 encoder.setBuffer(buffer, offset: 0, index: 0)
             }
@@ -169,19 +163,72 @@ extension Raytrace.Raytrace {
 extension Raytrace.Raytrace {
     struct Args {
         var target: any MTLTexture
-        var context: MTLOnHeap<any MTLBuffer>
+        var frame: Raytrace.Frame
+        var seeds: any MTLTexture
+        var background: Raytrace.Background
+        var env: Raytrace.Env
+        var acceleration: Raytrace.Acceleration
     }
 }
 
 extension Raytrace.Raytrace.Args {
-    func build(with device: some MTLDevice, label: String) -> (any MTLBuffer)? {
-        let forGPU = ForGPU.init(
+    func build(with encoder: some MTLComputeCommandEncoder, label: String) -> (any MTLBuffer)? {
+        var forGPU = ForGPU.init(
             target: target.gpuResourceID,
-            context: context.value.gpuAddress
+            frame: .init(),
+            seeds: .init(),
+            background: .init(),
+            env: .init(),
+            acceleration: .init()
         )
 
+        do {
+            let buffer = Raytrace.Metal.Buffer.buildable(frame).build(
+                with: encoder.device,
+                label: "\(label)/Frame"
+            )!
+
+            encoder.useResource(buffer, usage: .read)
+            forGPU.frame = buffer.gpuAddress
+        }
+
+        do {
+            encoder.useResource(seeds, usage: .read)
+            forGPU.seeds = seeds.gpuResourceID
+        }
+
+        do {
+            let buffer = background.build(
+                with: encoder,
+                label: "\(label)/Background"
+            )!
+
+            encoder.useResource(buffer, usage: .read)
+            forGPU.background = buffer.gpuAddress
+        }
+
+        do {
+            let buffer = env.build(
+                with: encoder,
+                label: "\(label)/Env"
+            )!
+
+            encoder.useResource(buffer, usage: .read)
+            forGPU.env = buffer.gpuAddress
+        }
+
+        do {
+            let buffer = acceleration.build(
+                with: encoder,
+                label: "\(label)/Acceleration"
+            )!
+
+            encoder.useResource(buffer, usage: .read)
+            forGPU.acceleration = buffer.gpuAddress
+        }
+
         return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: device,
+            with: encoder.device,
             label: label,
             options: .storageModeShared
         )
@@ -191,107 +238,7 @@ extension Raytrace.Raytrace.Args {
 extension Raytrace.Raytrace.Args {
     struct ForGPU {
         var target: MTLResourceID
-        var context: UInt64
-    }
-}
 
-extension Raytrace.Raytrace.Args {
-    struct Context {
-        var frame: Raytrace.Frame
-        var seeds: any MTLTexture
-        var background: Raytrace.Background
-        var env: Raytrace.Env
-        var acceleration: Raytrace.Acceleration
-    }
-}
-
-extension Raytrace.Raytrace.Args.Context {
-    func measureHeapSize(with device: some MTLDevice) -> Int {
-        var size = 0
-
-        size += MemoryLayout.stride(ofValue: frame)
-
-        size += seeds.measureHeapSize(with: device)
-
-        size += background.measureHeapSize(with: device)
-
-        size += env.measureHeapSize(with: device)
-
-        size += acceleration.measureHeapSize(with: device)
-
-        size += MemoryLayout<ForGPU>.stride
-
-        return size
-    }
-
-    func build(to buffer: some MTLCommandBuffer, label: String) -> MTLOnHeap<any MTLBuffer> {
-        let encoder = buffer.makeBlitCommandEncoder()!
-        defer { encoder.endEncoding() }
-
-        encoder.label = "\(label)/Heap"
-
-        let heap = ({
-            let desc = MTLHeapDescriptor.init()
-
-            desc.storageMode = .private
-            desc.size = measureHeapSize(with: encoder.device)
-
-            return encoder.device.makeHeap(descriptor: desc)
-        }) ()!
-
-        return .init(
-            value: build(with: encoder, on: heap, label: label),
-            heap: heap
-        )
-    }
-
-    func build(
-        with encoder: some MTLBlitCommandEncoder,
-        on heap: some MTLHeap,
-        label: String
-    ) -> some MTLBuffer {
-        let forGPU = ForGPU.init(
-            frame: frame.build(
-                with: encoder,
-                on: heap,
-                label: "\(label)/Frame"
-            ).gpuAddress,
-
-            seeds: seeds.copy(
-                with: encoder,
-                to: heap,
-                label: "\(label)/Seeds"
-            ).gpuResourceID,
-
-            background: background.build(
-                with: encoder,
-                on: heap,
-                label: "\(label)/Background"
-            ).gpuAddress,
-
-            env: env.build(
-                with: encoder,
-                on: heap,
-                label: "\(label)/Env"
-            ).gpuAddress,
-
-            acceleration: acceleration.build(
-                with: encoder,
-                on: heap,
-                label: "\(label)/Acceleration"
-            ).gpuAddress
-        )
-
-        return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder,
-            on: heap,
-            label: label
-        )!
-    }
-}
-
-extension Raytrace.Raytrace.Args.Context {
-    struct ForGPU {
         var frame: UInt64
         var seeds: MTLResourceID
         var background: UInt64

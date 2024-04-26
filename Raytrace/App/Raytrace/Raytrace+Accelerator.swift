@@ -109,25 +109,9 @@ extension Raytrace.Accelerator.Instanced {
             meshes,
             with: encoder.device
         )
-        let sizes = ({
-            var sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
+        let sizes = encoder.device.accelerationStructureSizes(descriptor: desc)
 
-            sizes.accelerationStructureSize = encoder.device.heapAccelerationStructureSizeAndAlign(
-                descriptor: desc
-            ).aligned
-
-            return sizes
-        }) ()
-
-        let heap = ({
-            let heapDesc = MTLHeapDescriptor.init()
-
-            heapDesc.size = sizes.accelerationStructureSize
-
-            return encoder.device.makeHeap(descriptor: heapDesc)
-        }) ()!
-
-        target = heap.makeAccelerationStructure(size: sizes.accelerationStructureSize)
+        target = encoder.device.makeAccelerationStructure(size: sizes.accelerationStructureSize)
 
         do {
             primitives = []

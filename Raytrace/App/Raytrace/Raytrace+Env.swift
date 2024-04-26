@@ -47,36 +47,26 @@ extension Raytrace.Env {
 }
 
 extension Raytrace.Env {
-    func measureHeapSize(with device: some MTLDevice) -> Int {
-        var size = 0
-
-        size += diffuse.measureHeapSize(with: device)
-        size += specular.measureHeapSize(with: device)
-        size += lut.measureHeapSize(with: device)
-
-        size += MemoryLayout<ForGPU>.stride
-
-        return size
-    }
-
     func build(
-        with encoder: some MTLBlitCommandEncoder,
-        on heap: some MTLHeap,
+        with encoder: some MTLComputeCommandEncoder,
         label: String
-    ) -> some MTLBuffer {
+    ) -> (any MTLBuffer)? {
+        encoder.useResource(diffuse, usage: .read)
+        encoder.useResource(specular, usage: .read)
+        encoder.useResource(lut, usage: .read)
+
         let forGPU = ForGPU.init(
-            diffuse: diffuse.copy(with: encoder, to: heap).gpuResourceID,
+            diffuse: diffuse.gpuResourceID,
 
-            specular: specular.copy(with: encoder, to: heap).gpuResourceID,
+            specular: specular.gpuResourceID,
 
-            lut: lut.copy(with: encoder, to: heap).gpuResourceID
+            lut: lut.gpuResourceID
         )
 
         return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder,
-            on: heap,
+            with: encoder.device,
             label: label
-        )!
+        )
     }
 }
 
