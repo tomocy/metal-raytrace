@@ -192,7 +192,6 @@ kernel void compute(
         .position = float3(0, 0.5, -2),
     };
 
-    // const auto seed = args.seeds.read(id).r;
     const auto seed = args.context.seeds.read(id).r;
 
     // Map Screen (0...width, 0...height) to UV (0...1, 0...1),
@@ -208,10 +207,13 @@ kernel void compute(
         .background = args.context.background,
         .env = args.context.env,
         .intersector = Intersector(args.context.acceleration),
+
+        // We know the directional light for now.
         .directionalLight = {
             .direction = Shader::Geometry::normalize(float3(-1, -1, 1)),
             .color = float3(1) * M_PI_F,
         },
+
         .view = {
             .position = camera.position,
         },
