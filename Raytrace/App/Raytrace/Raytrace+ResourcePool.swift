@@ -16,14 +16,11 @@ extension Raytrace.ResourcePool {
 
 extension Raytrace.ResourcePool.Buffers {
     func take(at key: String, or buffer: () -> (any MTLBuffer)?) -> (any MTLBuffer)? {
-        return take(at: key, or: buffer())
-    }
-
-    func take(at key: String, or buffer: (any MTLBuffer)?) -> (any MTLBuffer)? {
         if let buffer = buffers[key] {
             return buffer
         }
-
+        
+        let buffer = buffer()
         buffers[key] = buffer
 
         return buffer
