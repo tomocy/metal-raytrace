@@ -18,6 +18,7 @@ extension Raytrace {
 extension Array where Element == Raytrace.Mesh {
     func build(
         with encoder: some MTLComputeCommandEncoder,
+        resourcePool: Raytrace.ResourcePool,
         label: String
     ) -> (any MTLBuffer)? {
         let forGPU = enumerated().map { i, mesh in
@@ -28,6 +29,7 @@ extension Array where Element == Raytrace.Mesh {
             do {
                 let buffer = mesh.pieces.build(
                     with: encoder,
+                    resourcePool: resourcePool,
                     label: "\(label)/\(i)/Pieces"
                 )!
 
@@ -38,10 +40,16 @@ extension Array where Element == Raytrace.Mesh {
             return forGPU
         }
 
-        return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder.device,
-            label: label
-        )
+        let buffer = resourcePool.buffers.take(at: label) {
+            Raytrace.Metal.Buffer.buildable(forGPU).build(
+                with: encoder.device,
+                label: label
+            )
+        }!
+
+        Raytrace.IO.writable(forGPU).write(to: buffer)
+
+        return buffer
     }
 }
 
@@ -63,6 +71,7 @@ extension Raytrace.Mesh {
 extension Array where Element == Raytrace.Mesh.Piece {
     func build(
         with encoder: some MTLComputeCommandEncoder,
+        resourcePool: Raytrace.ResourcePool,
         label: String
     ) -> (any MTLBuffer)? {
         let forGPU = enumerated().map { i, piece in
@@ -71,6 +80,7 @@ extension Array where Element == Raytrace.Mesh.Piece {
             if let material = piece.material {
                 let buffer = material.build(
                     with: encoder,
+                    resourcePool: resourcePool,
                     label: "\(label)/\(i)/Material"
                 )!
 
@@ -81,10 +91,16 @@ extension Array where Element == Raytrace.Mesh.Piece {
             return forGPU
         }
 
-        return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder.device,
-            label: label
-        )
+        let buffer = resourcePool.buffers.take(at: label) {
+            Raytrace.Metal.Buffer.buildable(forGPU).build(
+                with: encoder.device,
+                label: label
+            )
+        }!
+
+        Raytrace.IO.writable(forGPU).write(to: buffer)
+
+        return buffer
     }
 }
 

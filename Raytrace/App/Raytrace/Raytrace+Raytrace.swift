@@ -8,6 +8,8 @@ extension Raytrace {
     struct Raytrace {
         var pipelineStates: PipelineStates
 
+        var resourcePool: ResourcePool
+
         var target: Target
         var seeds: any MTLTexture
     }
@@ -24,6 +26,8 @@ extension Raytrace.Raytrace {
         pipelineStates = .init(
             compute: try PipelineStates.make(with: device, for: fn)
         )
+
+        resourcePool = .init()
 
         target = Self.make(with: device, resolution: resolution)!
         seeds = Self.makeSeeds(with: device, resolution: resolution)!
@@ -118,7 +122,7 @@ extension Raytrace.Raytrace {
                     acceleration: acceleration
                 )
 
-                let buffer = args.build(with: encoder, label: "Args")!
+                let buffer = args.build(with: encoder, resourcePool: resourcePool, label: "Args")!
 
                 encoder.setBuffer(buffer, offset: 0, index: 0)
             }
@@ -172,7 +176,11 @@ extension Raytrace.Raytrace {
 }
 
 extension Raytrace.Raytrace.Args {
-    func build(with encoder: some MTLComputeCommandEncoder, label: String) -> (any MTLBuffer)? {
+    func build(
+        with encoder: some MTLComputeCommandEncoder,
+        resourcePool: Raytrace.ResourcePool,
+        label: String
+    ) -> (any MTLBuffer)? {
         var forGPU = ForGPU.init(
             target: target.gpuResourceID,
             frame: .init(),
@@ -183,10 +191,16 @@ extension Raytrace.Raytrace.Args {
         )
 
         do {
-            let buffer = Raytrace.Metal.Buffer.buildable(frame).build(
-                with: encoder.device,
-                label: "\(label)/Frame"
-            )!
+            let label = "\(label)/Frame"
+
+            let buffer = resourcePool.buffers.take(at: label) {
+                Raytrace.Metal.Buffer.buildable(frame).build(
+                    with: encoder.device,
+                    label: label
+                )
+            }!
+
+            Raytrace.IO.writable(frame).write(to: buffer)
 
             encoder.useResource(buffer, usage: .read)
             forGPU.frame = buffer.gpuAddress
@@ -200,6 +214,7 @@ extension Raytrace.Raytrace.Args {
         do {
             let buffer = background.build(
                 with: encoder,
+                resourcePool: resourcePool,
                 label: "\(label)/Background"
             )!
 
@@ -210,6 +225,7 @@ extension Raytrace.Raytrace.Args {
         do {
             let buffer = env.build(
                 with: encoder,
+                resourcePool: resourcePool,
                 label: "\(label)/Env"
             )!
 
@@ -220,6 +236,7 @@ extension Raytrace.Raytrace.Args {
         do {
             let buffer = acceleration.build(
                 with: encoder,
+                resourcePool: resourcePool,
                 label: "\(label)/Acceleration"
             )!
 
@@ -227,11 +244,13 @@ extension Raytrace.Raytrace.Args {
             forGPU.acceleration = buffer.gpuAddress
         }
 
-        return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder.device,
-            label: label,
-            options: .storageModeShared
-        )
+        return resourcePool.buffers.take(at: label) {
+            Raytrace.Metal.Buffer.buildable(forGPU).build(
+                with: encoder.device,
+                label: label,
+                options: .storageModeShared
+            )
+        }
     }
 }
 

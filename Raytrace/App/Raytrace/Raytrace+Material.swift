@@ -26,6 +26,7 @@ extension Raytrace.Material {
 extension Raytrace.Material {
     func build(
         with encoder: some MTLComputeCommandEncoder,
+        resourcePool: Raytrace.ResourcePool,
         label: String
     ) -> (any MTLBuffer)? {
         var forGPU = ForGPU.init()
@@ -40,10 +41,12 @@ extension Raytrace.Material {
             forGPU.metalRoughness = texture.gpuResourceID
         }
 
-        return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder.device,
-            label: label
-        )
+        return resourcePool.buffers.take(at: label) {
+            Raytrace.Metal.Buffer.buildable(forGPU).build(
+                with: encoder.device,
+                label: label
+            )
+        }
     }
 }
 

@@ -27,6 +27,7 @@ extension Raytrace.Background {
 extension Raytrace.Background {
     func build(
         with encoder: some MTLComputeCommandEncoder,
+        resourcePool: Raytrace.ResourcePool,
         label: String
     ) -> (any MTLBuffer)? {
         var forGPU = Raytrace.Background.ForGPU.init(
@@ -38,10 +39,12 @@ extension Raytrace.Background {
             forGPU.source = source.gpuResourceID
         }
 
-        return Raytrace.Metal.Buffer.buildable(forGPU).build(
-            with: encoder.device,
-            label: label
-        )!
+        return resourcePool.buffers.take(at: label) {
+            Raytrace.Metal.Buffer.buildable(forGPU).build(
+                with: encoder.device,
+                label: label
+            )
+        }
     }
 }
 

@@ -49,6 +49,7 @@
 		F5976B242BC41CDC00ABEF37 /* Specular.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B232BC41CDC00ABEF37 /* Specular.swift */; };
 		F5976B302BC449EB00ABEF37 /* Env.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5976B2F2BC449EB00ABEF37 /* Env.swift */; };
 		F5976B322BC44A4A00ABEF37 /* Env.metal in Sources */ = {isa = PBXBuildFile; fileRef = F5976B312BC44A4A00ABEF37 /* Env.metal */; };
+		F5B6FDEC2BDCEB9800025419 /* Raytrace+ResourcePool.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B6FDEB2BDCEB9800025419 /* Raytrace+ResourcePool.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -132,6 +133,7 @@
 		F5976B922BC5AA7900ABEF37 /* Geometry+Normalized.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Geometry+Normalized.h"; sourceTree = "<group>"; };
 		F5976B932BC5AD5400ABEF37 /* Geometry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
 		F5B35B562BB5560200651A54 /* Farm */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Farm; sourceTree = "<group>"; };
+		F5B6FDEB2BDCEB9800025419 /* Raytrace+ResourcePool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Raytrace+ResourcePool.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +232,7 @@
 				F55BD13C2BC732D40074EDFC /* Raytrace+Primitive.swift */,
 				F55BD13F2BC733190074EDFC /* Raytrace+Raytrace.metal */,
 				F58FAA7A2BC7381600624537 /* Raytrace+Raytrace.swift */,
+				F5B6FDEB2BDCEB9800025419 /* Raytrace+ResourcePool.swift */,
 				F58FAA7F2BC73A0400624537 /* Raytrace+Shader.swift */,
 				F55BD12E2BC730DD0074EDFC /* Raytrace+SIMD.swift */,
 				F58FAA7E2BC7397900624537 /* Raytrace+Surface.h */,
@@ -421,6 +424,7 @@
 				F57151AF2BC7433A006F3F60 /* Raytrace+Background.swift in Sources */,
 				F58FAA672BC7336900624537 /* Raytrace+Mesh.swift in Sources */,
 				F55BD1352BC731B20074EDFC /* Raytrace+Memory.swift in Sources */,
+				F5B6FDEC2BDCEB9800025419 /* Raytrace+ResourcePool.swift in Sources */,
 				F55BD1262BC72F670074EDFC /* Engine+View.swift in Sources */,
 				F55BD1312BC731230074EDFC /* Raytrace+Texture.swift in Sources */,
 				F58FAA802BC73A0400624537 /* Raytrace+Shader.swift in Sources */,
