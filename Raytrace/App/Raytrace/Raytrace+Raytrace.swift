@@ -181,57 +181,30 @@ extension Raytrace.Raytrace.Args {
         resourcePool: Raytrace.ResourcePool,
         label: String
     ) -> (any MTLBuffer)? {
+        encoder.useResource(seeds, usage: .read)
+        do {
+            encoder.useResource(background.source, usage: .read)
+        }
+        do {
+            encoder.useResource(env.diffuse, usage: .read)
+            encoder.useResource(env.specular, usage: .read)
+            encoder.useResource(env.lut, usage: .read)
+        }
+
         var forGPU = ForGPU.init(
             target: target.gpuResourceID,
-            frame: .init(),
-            seeds: .init(),
-            background: .init(),
-            env: .init(),
+            frame: frame,
+            seeds: seeds.gpuResourceID,
+            background: .init(
+                source: background.source.gpuResourceID
+            ),
+            env: .init(
+                diffuse: env.diffuse.gpuResourceID,
+                specular: env.specular.gpuResourceID,
+                lut: env.lut.gpuResourceID
+            ),
             acceleration: .init()
         )
-
-        do {
-            let label = "\(label)/Frame"
-
-            let buffer = resourcePool.buffers.take(at: label) {
-                Raytrace.Metal.Buffer.buildable(frame).build(
-                    with: encoder.device,
-                    label: label
-                )
-            }!
-
-            Raytrace.IO.writable(frame).write(to: buffer)
-
-            encoder.useResource(buffer, usage: .read)
-            forGPU.frame = buffer.gpuAddress
-        }
-
-        do {
-            encoder.useResource(seeds, usage: .read)
-            forGPU.seeds = seeds.gpuResourceID
-        }
-
-        do {
-            let buffer = background.build(
-                with: encoder,
-                resourcePool: resourcePool,
-                label: "\(label)/Background"
-            )!
-
-            encoder.useResource(buffer, usage: .read)
-            forGPU.background = buffer.gpuAddress
-        }
-
-        do {
-            let buffer = env.build(
-                with: encoder,
-                resourcePool: resourcePool,
-                label: "\(label)/Env"
-            )!
-
-            encoder.useResource(buffer, usage: .read)
-            forGPU.env = buffer.gpuAddress
-        }
 
         do {
             let buffer = acceleration.build(
@@ -244,13 +217,17 @@ extension Raytrace.Raytrace.Args {
             forGPU.acceleration = buffer.gpuAddress
         }
 
-        return resourcePool.buffers.take(at: label) {
+        let buffer = resourcePool.buffers.take(at: label) {
             Raytrace.Metal.Buffer.buildable(forGPU).build(
                 with: encoder.device,
                 label: label,
                 options: .storageModeShared
             )
-        }
+        }!
+
+        Raytrace.IO.writable(forGPU).write(to: buffer)
+
+        return buffer
     }
 }
 
@@ -258,10 +235,10 @@ extension Raytrace.Raytrace.Args {
     struct ForGPU {
         var target: MTLResourceID
 
-        var frame: UInt64
+        var frame: Raytrace.Frame
         var seeds: MTLResourceID
-        var background: UInt64
-        var env: UInt64
+        var background: Raytrace.Background.ForGPU
+        var env: Raytrace.Env.ForGPU
         var acceleration: UInt64
     }
 }

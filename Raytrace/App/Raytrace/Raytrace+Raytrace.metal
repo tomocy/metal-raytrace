@@ -156,10 +156,10 @@ namespace Raytrace {
 struct Args {
 public:
     metal::texture2d<float, metal::access::write> target;
-    constant Frame& frame;
+    Frame frame;
     metal::texture2d<uint32_t> seeds;
-    constant Background& background;
-    constant Env& env;
+    Background background;
+    Env env;
     constant Acceleration& acceleration;
 };
 
