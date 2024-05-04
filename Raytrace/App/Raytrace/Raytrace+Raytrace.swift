@@ -29,13 +29,13 @@ extension Raytrace.Raytrace {
 
         resourcePool = .init()
 
-        target = Self.make(with: device, resolution: resolution)!
+        target = Self.makeTarget(with: device, resolution: resolution)!
         seeds = Self.makeSeeds(with: device, resolution: resolution)!
     }
 }
 
 extension Raytrace.Raytrace {
-    static func make(
+    static func makeTarget(
         with device: some MTLDevice,
         resolution: CGSize
     ) -> Target? {
