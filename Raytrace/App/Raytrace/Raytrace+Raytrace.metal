@@ -170,7 +170,7 @@ kernel void compute(
 {
     namespace raytracing = metal::raytracing;
 
-    // We know size of the target texture for now.
+    // We know the size of the target texture for now.
     const auto size = uint2(1600, 1200);
 
     // We know the camera for now.

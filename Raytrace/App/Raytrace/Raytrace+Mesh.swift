@@ -289,7 +289,7 @@ extension MDLSubmesh {
             data.append(.init(datum))
         }
 
-        return Raytrace.Mesh.Piece.init(
+        return .init(
             type: .triangle,
             indices: .init(
                 buffer: Raytrace.Metal.Buffer.buildable(indices).build(
