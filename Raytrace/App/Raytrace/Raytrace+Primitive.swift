@@ -7,12 +7,6 @@ extension Raytrace {
 }
 
 extension Raytrace.Primitive {
-    struct Instance {
-        var meshID: UInt16
-    }
-}
-
-extension Raytrace.Primitive {
     struct Data {
         var buffer: any MTLBuffer
         var stride: Int

@@ -16,12 +16,6 @@ public:
     };
 
 public:
-    struct Instance {
-    public:
-        uint16_t meshID;
-    };
-
-public:
     static Primitive from(const thread Triangle& triangle, const thread float2& position)
     {
         Primitive primitive = {};

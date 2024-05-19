@@ -203,8 +203,7 @@ extension Engine.View: MTKViewDelegate {
                     env: env!,
                     acceleration: .init(
                         structure: shader.accelerator.instanced.target!,
-                        meshes: meshes!,
-                        primitives: shader.accelerator.instanced.primitives!
+                        meshes: meshes!
                     )
                 )
 

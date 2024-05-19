@@ -16,6 +16,12 @@ extension Raytrace {
 }
 
 extension Array where Element == Raytrace.Mesh {
+    var pieces: [Element.Piece] {
+        compactMap { $0.pieces }.flatMap { $0 }
+    }
+}
+
+extension Array where Element == Raytrace.Mesh {
     func build(
         with encoder: some MTLComputeCommandEncoder,
         resourcePool: Raytrace.ResourcePool,
