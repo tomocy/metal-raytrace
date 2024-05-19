@@ -10,7 +10,7 @@ namespace Raytrace {
 struct Acceleration {
 public:
     metal::raytracing::instance_acceleration_structure structure;
-    constant Mesh* meshes;
+    constant Mesh::Piece* pieces;
     constant Primitive::Instance* primitives;
 };
 }

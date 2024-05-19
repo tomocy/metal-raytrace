@@ -18,7 +18,7 @@ extension Raytrace.Acceleration {
     ) -> (any MTLBuffer)? {
         var forGPU = Raytrace.Acceleration.ForGPU.init(
             structure: .init(),
-            meshes: .init(),
+            pieces: .init(),
             primitives: .init()
         )
 
@@ -27,14 +27,15 @@ extension Raytrace.Acceleration {
             forGPU.structure = structure.gpuResourceID
         }
         do {
-            let buffer = meshes.build(
+            let pieces = meshes.compactMap { $0.pieces }.flatMap { $0 }
+            let buffer = pieces.build(
                 with: encoder,
                 resourcePool: resourcePool,
-                label: "\(label)/Meshes"
+                label: "\(label)/Pieces"
             )!
 
             encoder.useResource(buffer, usage: .read)
-            forGPU.meshes = buffer.gpuAddress
+            forGPU.pieces = buffer.gpuAddress
         }
         do {
             let label = "\(label)/Primitives"
@@ -62,7 +63,7 @@ extension Raytrace.Acceleration {
 extension Raytrace.Acceleration {
     struct ForGPU {
         var structure: MTLResourceID
-        var meshes: UInt64
+        var pieces: UInt64
         var primitives: UInt64
     }
 }

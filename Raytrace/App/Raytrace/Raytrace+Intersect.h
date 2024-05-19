@@ -43,12 +43,9 @@ public:
     }
 
 public:
-    constant Mesh::Piece* pieceIn(const thread Acceleration& acceleration) const
+    constant Mesh::Piece& pieceIn(const thread Acceleration& acceleration) const
     {
-        const auto primitive = acceleration.primitives[raw_.instance_id];
-        const auto mesh = acceleration.meshes[primitive.meshID];
-
-        return &mesh.pieces[raw_.geometry_id];
+        return acceleration.pieces[raw_.instance_id + raw_.geometry_id];
     }
 
 public:

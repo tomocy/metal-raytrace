@@ -61,7 +61,7 @@ extension Engine {
                         meshes!.append(mesh)
                     }
 
-                    do {
+                    /* do {
                         var mesh = try! raw.toMesh(
                             with: device,
                             instances: [
@@ -82,10 +82,10 @@ extension Engine {
                         )
 
                         meshes!.append(mesh)
-                    }
+                    } */
                 }
 
-                do {
+                /* do {
                     let raw = MDLMesh.init(
                         .init(
                             sphereWithExtent: .init(0.4, 0.4, 0.4),
@@ -121,7 +121,7 @@ extension Engine {
                     )
 
                     meshes!.append(mesh)
-                }
+                } */
 
                 do {
                     let raw = MDLMesh.init(

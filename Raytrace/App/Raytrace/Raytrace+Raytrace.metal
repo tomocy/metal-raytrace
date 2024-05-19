@@ -85,7 +85,7 @@ private:
 
         const auto surface = Surface(
             intersection.toPrimitive(),
-            *intersection.pieceIn(intersector.acceleration)
+            intersection.pieceIn(intersector.acceleration)
         );
 
         TraceResult result = {};

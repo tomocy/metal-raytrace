@@ -12,8 +12,5 @@ public:
     public:
         constant Shader::PBR::Material& material;
     };
-
-public:
-    constant Piece* pieces;
 };
 }
