@@ -80,21 +80,16 @@ extension Array where Element == Raytrace.Mesh.Piece {
         resourcePool: Raytrace.ResourcePool,
         label: String
     ) -> (any MTLBuffer)? {
-        let forGPU = enumerated().map { i, piece in
-            var forGPU = Element.ForGPU.init()
+        let forGPU = map { piece in
+            encoder.useResource(piece.material!.albedo!, usage: .read)
+            encoder.useResource(piece.material!.metalRoughness!, usage: .read)
 
-            if let material = piece.material {
-                let buffer = material.build(
-                    with: encoder,
-                    resourcePool: resourcePool,
-                    label: "\(label)/\(i)/Material"
-                )!
-
-                encoder.useResource(buffer, usage: .read)
-                forGPU.material = buffer.gpuAddress
-            }
-
-            return forGPU
+            return Element.ForGPU.init(
+                material: .init(
+                    albedo: piece.material!.albedo!.gpuResourceID,
+                    metalRoughness: piece.material!.metalRoughness!.gpuResourceID
+                )
+            )
         }
 
         let buffer = resourcePool.buffers.take(at: label) {
@@ -112,7 +107,7 @@ extension Array where Element == Raytrace.Mesh.Piece {
 
 extension Raytrace.Mesh.Piece {
     struct ForGPU {
-        var material: UInt64 = 0
+        var material: Raytrace.Material.ForGPU
     }
 }
 

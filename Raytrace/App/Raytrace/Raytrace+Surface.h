@@ -75,7 +75,7 @@ public:
     const thread float2& textureCoordinate() const { return primitive().textureCoordinate; }
 
 public:
-    constant Shader::PBR::Material& material() const thread { return piece().material; }
+    const thread Shader::PBR::Material& material() const thread { return piece().material; }
 
     Shader::PBR::Material::Albedo albedo() const { return material().albedoAt(textureCoordinate()); }
 

@@ -10,7 +10,7 @@ struct Mesh {
 public:
     struct Piece {
     public:
-        constant Shader::PBR::Material& material;
+        Shader::PBR::Material material;
     };
 };
 }
