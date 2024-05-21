@@ -160,7 +160,7 @@ public:
     metal::texture2d<uint32_t> seeds;
     Background background;
     Env env;
-    constant Acceleration& acceleration;
+    Acceleration acceleration;
 };
 
 kernel void compute(

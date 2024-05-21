@@ -190,6 +190,9 @@ extension Raytrace.Raytrace.Args {
             encoder.useResource(env.specular, usage: .read)
             encoder.useResource(env.lut, usage: .read)
         }
+        do {
+            encoder.useResource(acceleration.structure, usage: .read)
+        }
 
         var forGPU = ForGPU.init(
             target: target.gpuResourceID,
@@ -203,18 +206,21 @@ extension Raytrace.Raytrace.Args {
                 specular: env.specular.gpuResourceID,
                 lut: env.lut.gpuResourceID
             ),
-            acceleration: .init()
+            acceleration: .init(
+                structure: acceleration.structure.gpuResourceID,
+                pieces: 0
+            )
         )
 
         do {
-            let buffer = acceleration.build(
+            let buffer = acceleration.meshes.pieces.build(
                 with: encoder,
                 resourcePool: resourcePool,
-                label: "\(label)/Acceleration"
+                label: "\(label)/Acceleration/Pieces"
             )!
 
             encoder.useResource(buffer, usage: .read)
-            forGPU.acceleration = buffer.gpuAddress
+            forGPU.acceleration.pieces = buffer.gpuAddress
         }
 
         let buffer = resourcePool.buffers.take(at: label) {
@@ -239,6 +245,6 @@ extension Raytrace.Raytrace.Args {
         var seeds: MTLResourceID
         var background: Raytrace.Background.ForGPU
         var env: Raytrace.Env.ForGPU
-        var acceleration: UInt64
+        var acceleration: Raytrace.Acceleration.ForGPU
     }
 }
