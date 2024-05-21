@@ -26,10 +26,8 @@ extension Raytrace.Background {
 
 extension Raytrace.Background {
     func use(with encoder: some MTLComputeCommandEncoder, usage: MTLResourceUsage) -> ForGPU {
-        encoder.useResource(source, usage: usage)
-
         return .init(
-            source: source.gpuResourceID
+            source: source.use(with: encoder, usage: usage)
         )
     }
 

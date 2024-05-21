@@ -115,6 +115,13 @@ extension MTLTexture {
 }
 
 extension MTLTexture {
+    func use(with encoder: some MTLComputeCommandEncoder, usage: MTLResourceUsage) -> MTLResourceID {
+        encoder.useResource(self, usage: usage)
+        return gpuResourceID
+    }
+}
+
+extension MTLTexture {
     func measureHeapSize(with device: some MTLDevice) -> Int {
         return device.heapTextureSizeAndAlign(descriptor: descriptor).aligned
     }

@@ -181,12 +181,10 @@ extension Raytrace.Raytrace.Args {
         resourcePool: Raytrace.ResourcePool,
         label: String
     ) -> (any MTLBuffer)? {
-        encoder.useResource(seeds, usage: .read)
-
         let forGPU = ForGPU.init(
-            target: target.gpuResourceID,
+            target: target.use(with: encoder, usage: .write),
             frame: frame,
-            seeds: seeds.gpuResourceID,
+            seeds: seeds.use(with: encoder, usage: .read),
             background: background.use(with: encoder, usage: .read),
             env: env.use(with: encoder, usage: .read),
             acceleration: acceleration.use(
