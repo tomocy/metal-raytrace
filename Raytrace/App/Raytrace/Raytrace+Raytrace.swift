@@ -182,41 +182,19 @@ extension Raytrace.Raytrace.Args {
         label: String
     ) -> (any MTLBuffer)? {
         encoder.useResource(seeds, usage: .read)
-        do {
-            encoder.useResource(env.diffuse, usage: .read)
-            encoder.useResource(env.specular, usage: .read)
-            encoder.useResource(env.lut, usage: .read)
-        }
-        do {
-            encoder.useResource(acceleration.structure, usage: .read)
-        }
 
-        var forGPU = ForGPU.init(
+        let forGPU = ForGPU.init(
             target: target.gpuResourceID,
             frame: frame,
             seeds: seeds.gpuResourceID,
             background: background.use(with: encoder, usage: .read),
-            env: .init(
-                diffuse: env.diffuse.gpuResourceID,
-                specular: env.specular.gpuResourceID,
-                lut: env.lut.gpuResourceID
-            ),
-            acceleration: .init(
-                structure: acceleration.structure.gpuResourceID,
-                pieces: 0
+            env: env.use(with: encoder, usage: .read),
+            acceleration: acceleration.use(
+                with: encoder, usage: .read,
+                resourcePool: resourcePool,
+                label: "\(label)/Acceleration"
             )
         )
-
-        do {
-            let buffer = acceleration.meshes.pieces.build(
-                with: encoder,
-                resourcePool: resourcePool,
-                label: "\(label)/Acceleration/Pieces"
-            )!
-
-            encoder.useResource(buffer, usage: .read)
-            forGPU.acceleration.pieces = buffer.gpuAddress
-        }
 
         let buffer = resourcePool.buffers.take(at: label) {
             Raytrace.Metal.Buffer.buildable(forGPU).build(

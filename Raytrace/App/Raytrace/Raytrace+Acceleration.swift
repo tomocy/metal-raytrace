@@ -10,6 +10,31 @@ extension Raytrace {
 }
 
 extension Raytrace.Acceleration {
+    func use(
+        with encoder: some MTLComputeCommandEncoder,
+        usage: MTLResourceUsage,
+        resourcePool: Raytrace.ResourcePool,
+        label: String
+    ) -> ForGPU {
+        var forGPU = ForGPU.init(
+            structure: structure.gpuResourceID,
+            pieces: 0
+        )
+
+        do {
+            let buffer = meshes.pieces.build(
+                with: encoder,
+                resourcePool: resourcePool,
+                label: "\(label)/Acceleration/Pieces"
+            )!
+
+            encoder.useResource(buffer, usage: .read)
+            forGPU.pieces = buffer.gpuAddress
+        }
+
+        return forGPU
+    }
+
     func build(
         with encoder: some MTLComputeCommandEncoder,
         resourcePool: Raytrace.ResourcePool,

@@ -47,6 +47,18 @@ extension Raytrace.Env {
 }
 
 extension Raytrace.Env {
+    func use(with encoder: some MTLComputeCommandEncoder, usage: MTLResourceUsage) -> ForGPU {
+        encoder.useResource(diffuse, usage: usage)
+        encoder.useResource(specular, usage: usage)
+        encoder.useResource(lut, usage: usage)
+
+        return .init(
+            diffuse: diffuse.gpuResourceID,
+            specular: specular.gpuResourceID,
+            lut: lut.gpuResourceID
+        )
+    }
+
     func build(
         with encoder: some MTLComputeCommandEncoder,
         resourcePool: Raytrace.ResourcePool,
