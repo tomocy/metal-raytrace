@@ -78,6 +78,13 @@ extension Array: Raytrace.Metal.Buffer.Buildable {
 }
 
 extension MTLBuffer {
+    func use(with encoder: some MTLComputeCommandEncoder, usage: MTLResourceUsage) -> UInt64 {
+        encoder.useResource(self, usage: usage)
+        return gpuAddress
+    }
+}
+
+extension MTLBuffer {
     func copy(
         with encoder: some MTLBlitCommandEncoder,
         to heap: some MTLHeap,

@@ -28,8 +28,7 @@ extension Raytrace.Acceleration {
                 label: "\(label)/Acceleration/Pieces"
             )!
 
-            encoder.useResource(buffer, usage: .read)
-            forGPU.pieces = buffer.gpuAddress
+            forGPU.pieces = buffer.use(with: encoder, usage: .read)
         }
 
         return forGPU
