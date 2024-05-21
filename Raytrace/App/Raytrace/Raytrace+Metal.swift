@@ -150,6 +150,13 @@ extension MTLTexture {
     }
 }
 
+extension MTLAccelerationStructure {
+    func use(with encoder: some MTLComputeCommandEncoder, usage: MTLResourceUsage) -> MTLResourceID {
+        encoder.useResource(self, usage: usage)
+        return gpuResourceID
+    }
+}
+
 extension MTLCommandBuffer {
     func commit(_ code: () -> Void) {
         code()

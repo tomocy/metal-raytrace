@@ -16,22 +16,14 @@ extension Raytrace.Acceleration {
         resourcePool: Raytrace.ResourcePool,
         label: String
     ) -> ForGPU {
-        var forGPU = ForGPU.init(
-            structure: structure.gpuResourceID,
-            pieces: 0
-        )
-
-        do {
-            let buffer = meshes.pieces.build(
+        return .init(
+            structure: structure.use(with: encoder, usage: usage),
+            pieces: meshes.pieces.build(
                 with: encoder,
                 resourcePool: resourcePool,
                 label: "\(label)/Acceleration/Pieces"
-            )!
-
-            forGPU.pieces = buffer.use(with: encoder, usage: .read)
-        }
-
-        return forGPU
+            )!.use(with: encoder, usage: usage)
+        )
     }
 
     func build(
