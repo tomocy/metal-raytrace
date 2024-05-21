@@ -183,9 +183,6 @@ extension Raytrace.Raytrace.Args {
     ) -> (any MTLBuffer)? {
         encoder.useResource(seeds, usage: .read)
         do {
-            encoder.useResource(background.source, usage: .read)
-        }
-        do {
             encoder.useResource(env.diffuse, usage: .read)
             encoder.useResource(env.specular, usage: .read)
             encoder.useResource(env.lut, usage: .read)
@@ -198,9 +195,7 @@ extension Raytrace.Raytrace.Args {
             target: target.gpuResourceID,
             frame: frame,
             seeds: seeds.gpuResourceID,
-            background: .init(
-                source: background.source.gpuResourceID
-            ),
+            background: background.use(with: encoder, usage: .read),
             env: .init(
                 diffuse: env.diffuse.gpuResourceID,
                 specular: env.specular.gpuResourceID,
