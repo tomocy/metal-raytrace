@@ -25,39 +25,6 @@ extension Raytrace.Acceleration {
             )!.use(with: encoder, usage: usage)
         )
     }
-
-    func build(
-        with encoder: some MTLComputeCommandEncoder,
-        resourcePool: Raytrace.ResourcePool,
-        label: String
-    ) -> (any MTLBuffer)? {
-        var forGPU = Raytrace.Acceleration.ForGPU.init(
-            structure: .init(),
-            pieces: .init()
-        )
-
-        do {
-            encoder.useResource(structure, usage: .read)
-            forGPU.structure = structure.gpuResourceID
-        }
-        do {
-            let buffer = meshes.pieces.build(
-                with: encoder,
-                resourcePool: resourcePool,
-                label: "\(label)/Pieces"
-            )!
-
-            encoder.useResource(buffer, usage: .read)
-            forGPU.pieces = buffer.gpuAddress
-        }
-
-        return resourcePool.buffers.take(at: label) {
-            Raytrace.Metal.Buffer.buildable(forGPU).build(
-                with: encoder.device,
-                label: label
-            )
-        }
-    }
 }
 
 extension Raytrace.Acceleration {

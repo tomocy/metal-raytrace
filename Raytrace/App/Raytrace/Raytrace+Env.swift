@@ -54,31 +54,6 @@ extension Raytrace.Env {
             lut: lut.use(with: encoder, usage: usage)
         )
     }
-
-    func build(
-        with encoder: some MTLComputeCommandEncoder,
-        resourcePool: Raytrace.ResourcePool,
-        label: String
-    ) -> (any MTLBuffer)? {
-        encoder.useResource(diffuse, usage: .read)
-        encoder.useResource(specular, usage: .read)
-        encoder.useResource(lut, usage: .read)
-
-        let forGPU = ForGPU.init(
-            diffuse: diffuse.gpuResourceID,
-
-            specular: specular.gpuResourceID,
-
-            lut: lut.gpuResourceID
-        )
-
-        return resourcePool.buffers.take(at: label) {
-            Raytrace.Metal.Buffer.buildable(forGPU).build(
-                with: encoder.device,
-                label: label
-            )
-        }
-    }
 }
 
 extension Raytrace.Env {
